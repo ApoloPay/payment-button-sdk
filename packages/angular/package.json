@@ -1,0 +1,24 @@
+{
+  "name": "@payment-button-sdk/angular",
+  "version": "0.1.0",
+  "description": "Botón de pago de Tu Plataforma para Angular",
+  "main": "./dist/bundles/payment-button-sdk-angular.umd.js",
+  "module": "./dist/fesm2022/payment-button-sdk-angular.mjs",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "ngc -p tsconfig.lib.json",
+    "dev": "ngc -p tsconfig.lib.json --watch"
+  },
+  "dependencies": {
+    "@payment-button-sdk/core": "workspace:*"
+  },
+  "devDependencies": {
+    "tslib": "^2.3.0"
+  },
+  "peerDependencies": {
+    "@angular/core": ">=16.0.0",
+    "@angular/common": ">=16.0.0",
+    "rxjs": ">=7.0.0"
+  },
+  "sideEffects": false
+}
