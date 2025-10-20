@@ -1,0 +1,14 @@
+{
+  "extends": "@tsconfig/svelte/tsconfig.json",
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "strict": true,
+    "rootDir": "src",
+    "outDir": "dist",
+    "declaration": true,
+    "sourceMap": true
+  },
+  "include": ["src/lib/**/*.ts", "src/lib/**/*.svelte"]
+}
