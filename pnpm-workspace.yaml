@@ -1,4 +1,3 @@
 packages:
   - 'apps/*'
-  - "packages/*"
-  - '!packages/flutter_sdk'
+  - "packages/js-sdk/*"

@@ -9,10 +9,10 @@
     ],
     "paths": {
       "@payment-button-sdk/angular": [
-        "../../packages/angular/src/index.ts"
+        "../../packages/js-sdk/angular/src/index.ts"
       ],
       "@payment-button-sdk/core": [
-        "../../packages/core/src/index.ts"
+        "../../packages/js-sdk/core/src/index.ts"
       ]
     }
   },
