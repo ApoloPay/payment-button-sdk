@@ -1,0 +1,23 @@
+name: example
+description: "Demuestra cómo usar el paquete tu_plataforma_sdk."
+publish_to: 'none' 
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # --- ¡AÑADE ESTO! ---
+  payment_button_sdk:
+    path: ../ # Le dice a Flutter que use el paquete de la carpeta padre
+  # --- FIN ---
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
+
+flutter:
+  uses-material-design: true
