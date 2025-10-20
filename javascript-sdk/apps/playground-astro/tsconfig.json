@@ -1,0 +1,16 @@
+{
+  "extends": "astro/tsconfigs/strict",
+  "include": [".astro/types.d.ts", "**/*"],
+  "exclude": ["dist"],
+  "compilerOptions": {
+    "paths": {
+      "@payment-button-sdk/astro": [
+        "../../packages/astro/src/PaymentButton.astro"
+      ],
+
+      "@payment-button-sdk/core": [
+        "../../packages/core/src/index.ts"
+      ]
+    }
+  }
+}

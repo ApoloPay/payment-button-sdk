@@ -1,0 +1,101 @@
+---
+// Parte 1: Lógica del Servidor (se ejecuta en el build)
+import type { PaymentOptions } from '@payment-button-sdk/core';
+
+// Definimos las props que el componente recibirá
+interface Props {
+  apiKey: string;
+  amount: number;
+  currency: string;
+  class?: string; // Permite al usuario añadir sus propias clases
+}
+
+// Obtenemos las props
+const { apiKey, amount, currency, class: className } = Astro.props;
+---
+
+<button
+  class:list={["payment-button-astro", className]}
+  data-api-key={apiKey}
+  data-amount={amount}
+  data-currency={currency}
+>
+  <slot>Pagar</slot> </button>
+
+<script>
+  // Importamos el 'core' que se ejecutará en el cliente
+  import { PaymentClient, type PaymentResponse, type PaymentError } from '@payment-button-sdk/core';
+
+  // Esta función se ejecuta para CADA botón en la página
+  function setupButton(button: HTMLButtonElement) {
+    let status: 'idle' | 'loading' = 'idle';
+    const originalText = button.innerHTML;
+
+    // 1. Leemos las props desde los 'data-attributes'
+    const { apiKey, amount, currency } = button.dataset;
+
+    if (!apiKey || !amount || !currency) {
+      console.error('Faltan atributos (apiKey, amount, currency) en PaymentButton.');
+      return;
+    }
+
+    // 2. Definimos los callbacks
+    const onSuccess = (response: PaymentResponse) => {
+      status = 'idle';
+      button.disabled = false;
+      button.innerHTML = originalText;
+      // Despachamos un evento nativo para que el padre lo escuche
+      button.dispatchEvent(new CustomEvent('success', { detail: response }));
+    };
+
+    const onError = (error: PaymentError) => {
+      status = 'idle';
+      button.disabled = false;
+      button.innerHTML = originalText;
+      // Despachamos un evento de error
+      button.dispatchEvent(new CustomEvent('error', { detail: error }));
+    };
+
+    // 3. Creamos el cliente
+    const client = new PaymentClient({
+      apiKey,
+      amount: parseFloat(amount), // Convertimos a número
+      currency,
+      onSuccess,
+      onError,
+    });
+
+    // 4. Añadimos el listener
+    button.addEventListener('click', () => {
+      if (status === 'loading') return;
+      
+      status = 'loading';
+      button.disabled = true;
+      button.innerHTML = 'Procesando...';
+      client.initiatePayment();
+    });
+  }
+
+  // 5. Buscamos todos los botones de pago en la página y los inicializamos
+  document.querySelectorAll('.payment-button-astro').forEach(button => {
+    if (button instanceof HTMLButtonElement) {
+      setupButton(button);
+    }
+  });
+</script>
+
+<style>
+  .payment-button-astro {
+    background-color: #FF5D01; /* Astro Orange */
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  .payment-button-astro:disabled {
+    background-color: #a1a1a1;
+    cursor: not-allowed;
+  }
+</style>

@@ -8,6 +8,7 @@
     "dev:vue": "turbo dev --filter=playground-vue",
     "dev:svelte": "turbo dev --filter=playground-svelte",
     "dev:angular": "turbo dev --filter=playground-angular",
+    "dev:astro": "turbo dev --filter=playground-astro",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "check-types": "turbo run check-types"

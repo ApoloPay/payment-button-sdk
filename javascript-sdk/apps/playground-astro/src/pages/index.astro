@@ -1,0 +1,55 @@
+---
+// 1. Importa tu componente. 
+// ¡Asegúrate de que el nombre de importación coincida con el componente!
+import PaymentButton from '@payment-button-sdk/astro';
+---
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <title>Playground de Astro</title>
+  </head>
+  <body>
+    <main>
+      <h1>Mi Playground de Astro 🚀</h1>
+
+      <PaymentButton
+        apiKey="pk_test_ASTRO_999"
+        amount={750}
+        currency="USD"
+        class="mi-boton-custom"
+        client:load 
+      >
+        Pagar 7.50 USD
+      </PaymentButton>
+    </main>
+
+    <script>
+      const myButton = document.querySelector('.mi-boton-custom');
+
+      myButton?.addEventListener('success', (event: any) => {
+        console.log('¡Pago exitoso (Astro)!', event.detail);
+        alert('Pago OK: ' + event.detail.transactionId);
+      });
+
+      myButton?.addEventListener('error', (event: any) => {
+        console.error('Error en pago (Astro):', event.detail);
+        alert('Error: ' + event.detail.message);
+      });
+    </script>
+
+    <style is:global>
+      body { 
+        font-family: system-ui; 
+        background-color: #151515; 
+        color: white; 
+      }
+      main { 
+        display: grid;
+        place-content: center;
+        text-align: center;
+        min-height: 100vh;
+        gap: 1rem;
+      }
+    </style>
+  </body>
+</html>
