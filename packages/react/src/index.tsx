@@ -1,5 +1,5 @@
+import './style.css';
 import React, { useState, useCallback } from 'react';
-// ¡Importamos tipos y clases desde nuestro paquete 'core'!
 import { PaymentClient, PaymentOptions, PaymentResponse, PaymentError } from '@payment-button-sdk/core';
 
 // Exportamos los tipos para que el usuario también los tenga

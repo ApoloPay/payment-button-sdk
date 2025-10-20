@@ -1,24 +1,23 @@
 {
-  "name": "@payment-button-sdk/react",
+  "name": "@payment-button-sdk/vue",
   "version": "0.1.0",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "scripts": {
-    "build": "tsup src/index.tsx --format esm,cjs --dts --clean --external react",
-    "dev": "tsup src/index.tsx --format esm,cjs --dts --watch --external react"
+    "build": "tsup src/index.tsx --format esm,cjs --dts --clean --external vue",
+    "dev": "tsup src/index.tsx --format esm,cjs --dts --watch --external vue"
   },
   "dependencies": {
     "@payment-button-sdk/core": "workspace:*"
   },
   "devDependencies": {
-    "react": "^18.0.0",
     "tsup": "^8.0.0",
     "typescript": "^5.0.0",
-    "@types/react": "^18.0.0"
+    "vue": "^3.0.0"
   },
   "peerDependencies": {
-    "react": "^16.8.0 || ^17.0.0 || ^18.0.0"
+    "vue": "^3.0.0"
   },
   "exports": {
     ".": {
