@@ -1,4 +1,5 @@
 import { SvelteComponentTyped } from "svelte";
+import '@payment-button-sdk/ui';
 declare const __propDef: {
     props: {
         apiKey: string;
@@ -6,8 +7,8 @@ declare const __propDef: {
         currency: string;
     };
     events: {
-        success: CustomEvent<any>;
-        error: CustomEvent<any>;
+        success: Event | UIEvent | AnimationEvent | PointerEvent | MouseEvent | InputEvent | ToggleEvent | FocusEvent | CompositionEvent | ClipboardEvent | DragEvent | ErrorEvent | FormDataEvent | KeyboardEvent | ProgressEvent<EventTarget> | SecurityPolicyViolationEvent | SubmitEvent | TouchEvent | TransitionEvent | WheelEvent;
+        error: ErrorEvent;
     } & {
         [evt: string]: CustomEvent<any>;
     };

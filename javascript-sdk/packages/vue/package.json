@@ -9,7 +9,7 @@
     "dev": "tsup src/index.tsx --format esm,cjs --dts --watch --external vue"
   },
   "dependencies": {
-    "@payment-button-sdk/core": "workspace:*"
+    "@payment-button-sdk/ui": "workspace:*"
   },
   "devDependencies": {
     "tsup": "^8.0.0",
@@ -24,7 +24,6 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.mjs",
       "require": "./dist/index.js"
-    },
-    "./style.css": "./dist/index.css"
+    }
   }
 }

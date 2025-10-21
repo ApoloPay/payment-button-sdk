@@ -1,16 +1,19 @@
 {
-  "extends": "astro/tsconfigs/strict",
+  "extends": [
+    "astro/tsconfigs/strict",
+    "../../tsconfig.base.json"
+  ],
   "compilerOptions": {
-    // --- ¡AÑADE ESTE BLOQUE! ---
+    "outDir": "dist",
+    "declaration": true,
     "paths": {
-      // 1. Le dice dónde encontrar el componente de Astro
-      "@payment-button-sdk/astro": [
-        "../../packages/javascript_sdk/astro/src/PaymentButton.astro"
-      ],
-      // 2. Le dice dónde encontrar el 'core' (la causa de tu error)
-      "@payment-button-sdk/core": [
-        "../../packages/javascript_sdk/core/src/index.ts"
+      "@payment-button-sdk/ui": [
+        "../../packages/ui/src/index.ts"
       ]
     }
-  }
+  },
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.d.ts"
+  ]
 }

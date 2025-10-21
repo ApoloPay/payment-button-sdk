@@ -5,17 +5,17 @@
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "scripts": {
-    "build": "tsup src/index.tsx --format esm,cjs --dts --clean --external react",
-    "dev": "tsup src/index.tsx --format esm,cjs --dts --watch --external react"
+    "build": "tsup src/index.tsx --format esm,cjs --dts --clean --external react @payment-button-sdk/ui",
+    "dev": "tsup src/index.tsx --format esm,cjs --dts --watch --external react @payment-button-sdk/ui"
   },
   "dependencies": {
-    "@payment-button-sdk/core": "workspace:*"
+    "@payment-button-sdk/ui": "workspace:*"
   },
   "devDependencies": {
+    "@types/react": "^18.0.0",
     "react": "^18.0.0",
     "tsup": "^8.0.0",
-    "typescript": "^5.0.0",
-    "@types/react": "^18.0.0"
+    "typescript": "^5.0.0"
   },
   "peerDependencies": {
     "react": "^16.8.0 || ^17.0.0 || ^18.0.0"
@@ -25,7 +25,6 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.mjs",
       "require": "./dist/index.js"
-    },
-    "./style.css": "./dist/index.css"
+    }
   }
 }

@@ -14,7 +14,7 @@
     "check:watch": "svelte-check --tsconfig ./tsconfig.json --watch"
   },
   "dependencies": {
-    "@payment-button-sdk/core": "workspace:*"
+    "@payment-button-sdk/ui": "workspace:*"
   },
   "devDependencies": {
     "@sveltejs/package": "^2.0.0",

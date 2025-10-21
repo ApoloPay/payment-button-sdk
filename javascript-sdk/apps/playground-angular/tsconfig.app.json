@@ -11,8 +11,8 @@
       "@payment-button-sdk/angular": [
         "../../packages/angular/src/index.ts"
       ],
-      "@payment-button-sdk/core": [
-        "../../packages/core/src/index.ts"
+      "@payment-button-sdk/ui": [
+        "../../packages/ui/src/index.ts"
       ]
     }
   },

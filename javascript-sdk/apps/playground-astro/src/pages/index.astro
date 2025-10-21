@@ -1,7 +1,9 @@
 ---
-// 1. Importa tu componente. 
-// ¡Asegúrate de que el nombre de importación coincida con el componente!
-import PaymentButton from '@payment-button-sdk/astro';
+import { 
+  PaymentButton,
+  type PaymentResponse,
+  type PaymentError
+} from '@payment-button-sdk/astro';
 ---
 <html lang="es">
   <head>
@@ -16,29 +18,18 @@ import PaymentButton from '@payment-button-sdk/astro';
         apiKey="pk_test_ASTRO_999"
         amount={750}
         currency="USD"
-        class="mi-boton-custom"
-        client:load 
+        on:success={(event: CustomEvent<PaymentResponse>) => {
+          console.log('¡Éxito (Astro)!', event.detail.transactionId);
+        }}
+        on:error={(event: CustomEvent<PaymentError>) => {
+          console.error('Error (Astro):', event.detail.message);
+        }}
       >
         Pagar 7.50 USD
       </PaymentButton>
     </main>
-
-    <script>
-      const myButton = document.querySelector('.mi-boton-custom');
-
-      myButton?.addEventListener('success', (event: any) => {
-        console.log('¡Pago exitoso (Astro)!', event.detail);
-        alert('Pago OK: ' + event.detail.transactionId);
-      });
-
-      myButton?.addEventListener('error', (event: any) => {
-        console.error('Error en pago (Astro):', event.detail);
-        alert('Error: ' + event.detail.message);
-      });
-    </script>
-
     <style is:global>
-      body { 
+      body {
         font-family: system-ui; 
         background-color: #151515; 
         color: white; 

@@ -1,52 +1,66 @@
-import './style.css';
-import React, { useState, useCallback } from 'react';
-import { PaymentClient, PaymentOptions, PaymentResponse, PaymentError } from '@payment-button-sdk/core';
+import '@payment-button-sdk/ui';
+import React, { useRef, useEffect } from 'react';
 
-// Exportamos los tipos para que el usuario también los tenga
-export * from '@payment-button-sdk/core';
+// 2. Importa los tipos para las props
+import type { PaymentResponse } from '@payment-button-sdk/ui';
 
-// El Hook personalizado
-export const usePaymentButton = (options: Omit<PaymentOptions, 'onSuccess' | 'onError'>) => {
-  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
-  const [data, setData] = useState<PaymentResponse | null>(null);
-  const [error, setError] = useState<PaymentError | null>(null);
+// 3. Re-exporta los tipos de 'core' para el usuario final
+//    (Nota: @core es una dependencia de @ui, que es una dependencia nuestra)
+export * from '@payment-button-sdk/ui';
 
-  const pay = useCallback(() => {
-    setStatus('loading');
-
-    const client = new PaymentClient({
-      ...options,
-      onSuccess: (response) => {
-        setData(response);
-        setStatus('success');
-        // (Opcional) Llamar a un onSuccess del usuario
-        // options.onSuccess?.(response);
-      },
-      onError: (error) => {
-        setError(error);
-        setStatus('error');
-        // (Opcional) Llamar a un onError del usuario
-        // options.onError?.(error);
-      },
-    });
-
-    client.initiatePayment();
-  }, [options]); // Depende de 'options', pero simplificado
-
-  return { pay, status, data, error };
+// 3. Define las props "tipo React" (onSuccess, apiKey)
+type PaymentButtonProps = {
+  apiKey: string;
+  amount: number;
+  currency: string;
+  children: React.ReactNode;
+  onSuccess?: (response: PaymentResponse) => void;
+  onError?: (error: any) => void;
 };
 
-// Un componente de botón listo para usar
-interface PaymentButtonProps extends Omit<PaymentOptions, 'onSuccess' | 'onError'> {
-  children: React.ReactNode;
-}
+// 4. El componente de React ahora es un "ADAPTADOR"
+export const PaymentButton: React.FC<PaymentButtonProps> = ({
+  apiKey,
+  amount,
+  currency,
+  children,
+  onSuccess,
+  onError,
+}) => {
+  const ref = useRef<HTMLElement>(null);
 
-export const PaymentButton: React.FC<PaymentButtonProps> = ({ children, ...options }) => {
-  const { pay, status } = usePaymentButton(options);
+  // 5. Esconde la "fricción" de los eventos aquí
+  useEffect(() => {
+    const node = ref.current;
+    if (!node) return;
 
-  return (
-    <button onClick={pay} disabled={status === 'loading'}>
-      {status === 'loading' ? 'Procesando...' : children}
-    </button>
+    // Escucha el evento del Web Component y lo "traduce" al prop de React
+    const handleSuccess = (event: Event) => {
+      onSuccess?.((event as CustomEvent).detail);
+    };
+    const handleError = (event: Event) => {
+      onError?.((event as CustomEvent).detail);
+    };
+
+    node.addEventListener('success', handleSuccess);
+    node.addEventListener('error', handleError);
+
+    return () => {
+      node.removeEventListener('success', handleSuccess);
+      node.removeEventListener('error', handleError);
+    };
+  }, [onSuccess, onError]);
+
+  // 6. Renderiza el Web Component, pasando props de React (camelCase)
+  //    a atributos HTML (kebab-case)
+  return React.createElement(
+    'payment-button',
+    {
+      ref: ref,
+      'api-key': apiKey,
+      amount: amount,
+      currency: currency,
+    },
+    children
   );
 };

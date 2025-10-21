@@ -1,16 +1,28 @@
 <script setup lang="ts">
-import { PaymentButton } from '@payment-button-sdk/vue';
-import '@payment-button-sdk/vue/style.css';
+// 1. Importa el componente y los tipos
+import { PaymentButton, type PaymentResponse } from '@payment-button-sdk/vue';
 
+// 2. Define los manejadores de eventos
+const handleSuccess = (response: PaymentResponse) => {
+  console.log('¡Pago recibido (Vue)!', response.transactionId);
+  alert('¡Gracias por tu compra!');
+};
+
+const handleError = (error: any) => {
+  console.error('Error (Vue):', error.message);
+};
 </script>
 
 <template>
   <div>
     <h1>Mi Playground de Vue 💚</h1>
+
     <PaymentButton
       apiKey="pk_test_VUE_456"
       :amount="2500"
       currency="MXN"
+      @success="handleSuccess"
+      @error="handleError"
     >
       Pagar 25.00 MXN
     </PaymentButton>
@@ -22,7 +34,6 @@ import '@payment-button-sdk/vue/style.css';
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
     padding: 50px;
   }
 </style>

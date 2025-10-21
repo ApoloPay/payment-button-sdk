@@ -1,13 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
-
-// 1. Importa tu componente desde el SDK
-import { 
-  PaymentButtonComponent, 
-  type PaymentResponse, 
-  type PaymentError    
-} from '@payment-button-sdk/angular';
+import { PaymentButtonModule, type PaymentResponse, type PaymentError } from '@payment-button-sdk/angular';
 
 @Component({
   selector: 'app-root',
@@ -15,9 +9,9 @@ import {
   imports: [
     CommonModule, 
     RouterOutlet, 
-    PaymentButtonComponent // <-- 2. Añádelo aquí
+    PaymentButtonModule
   ],
-  templateUrl: './app.html', // <-- Apunta al archivo correcto
+  templateUrl: './app.html',
   styleUrl: './app.css'
 })
 export class App {
@@ -25,7 +19,7 @@ export class App {
 
   // 3. (Opcional) Añade los manejadores de eventos
   onSuccess(response: PaymentResponse) {
-    console.log('Pago exitoso (Angular)!', response);
+    console.log('¡Pago exitoso (Angular)!', response);
     alert('Pago OK: ' + response.transactionId);
   }
 

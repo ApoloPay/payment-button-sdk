@@ -1,4 +1,4 @@
-// Exporta el componente
+// 1. Exporta el componente Svelte (el wrapper)
 export { default as PaymentButton } from './PaymentButton.svelte';
-// Re-exporta todos los tipos de 'core'
-export * from '@payment-button-sdk/core';
+// 2. Re-exporta todos los tipos desde @ui (que ya incluye los de @core)
+export * from '@payment-button-sdk/ui';

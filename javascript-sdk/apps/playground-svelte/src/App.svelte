@@ -1,14 +1,17 @@
 <script lang="ts">
-  // 1. Importa el botón y los tipos
-  import { PaymentButton, type PaymentResponse, type PaymentError } from '@payment-button-sdk/svelte';
+  // 1. Importa el componente y los tipos
+  import { 
+    PaymentButton,
+  } from '@payment-button-sdk/svelte';
 
-  // 2. Manejadores de eventos
-  function handleSuccess(event: CustomEvent<PaymentResponse>) {
-    console.log('Pago exitoso (Svelte)!', event.detail.transactionId);
+  // 2. Define los manejadores de eventos
+  //    (Nota: 'event' es un CustomEvent, 'event.detail' tiene los datos)
+  function handleSuccess(event: any) {
+    console.log('¡Pago exitoso (Svelte)!', event.detail.transactionId);
     alert('Pago exitoso: ' + event.detail.transactionId);
   }
 
-  function handleError(event: CustomEvent<PaymentError>) {
+  function handleError(event: any) {
     console.error('Error en el pago (Svelte):', event.detail.message);
     alert('Error: ' + event.detail.message);
   }
@@ -33,7 +36,6 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
     padding: 50px;
     font-family: Arial, sans-serif;
   }

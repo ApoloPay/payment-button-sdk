@@ -1,16 +1,19 @@
-import { NgModule } from '@angular/core';
+import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PaymentButtonComponent } from './payment-button.component';
-// No importamos el servicio aquí porque es 'providedIn: root'
+import '@payment-button-sdk/ui';
 
 @NgModule({
   declarations: [],
   imports: [
-    CommonModule, // Necesario para ngIf
+    CommonModule,
     PaymentButtonComponent
   ],
   exports: [
-    PaymentButtonComponent // Exporta el componente para que otros módulos lo usen
+    PaymentButtonComponent
+  ],
+  schemas: [
+    CUSTOM_ELEMENTS_SCHEMA
   ]
 })
 export class PaymentButtonModule { }

@@ -10,7 +10,7 @@
     "dev": "ngc -p tsconfig.lib.json --watch"
   },
   "dependencies": {
-    "@payment-button-sdk/core": "workspace:*"
+    "@payment-button-sdk/ui": "workspace:*"
   },
   "devDependencies": {
     "tslib": "^2.3.0"

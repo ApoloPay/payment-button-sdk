@@ -4,11 +4,11 @@
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo dev",
-    "dev:react": "turbo dev --filter=playground-react",
-    "dev:vue": "turbo dev --filter=playground-vue",
-    "dev:svelte": "turbo dev --filter=playground-svelte",
-    "dev:angular": "turbo dev --filter=playground-angular",
-    "dev:astro": "turbo dev --filter=playground-astro",
+    "dev:react": "pnpm run build && turbo dev --filter=playground-react",
+    "dev:vue": "pnpm run build && turbo dev --filter=playground-vue",
+    "dev:svelte": "pnpm run build && turbo dev --filter=playground-svelte",
+    "dev:angular": "pnpm run build && turbo dev --filter=playground-angular",
+    "dev:astro": "pnpm run build && turbo dev --filter=playground-astro",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "check-types": "turbo run check-types"

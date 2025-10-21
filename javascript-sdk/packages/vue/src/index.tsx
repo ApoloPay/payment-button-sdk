@@ -1,68 +1,67 @@
-import './style.css'; // Importa el CSS para que tsup lo procese
-import { ref, defineComponent, h, computed } from 'vue';
+// 1. Importa el Web Component para registrarlo
+import '@payment-button-sdk/ui';
 
-// 1. Importa la lógica y los tipos del CORE
-import { PaymentClient, type PaymentOptions, type PaymentResponse, type PaymentError } from '@payment-button-sdk/core';
+// 2. Importa las herramientas de Vue
+import { defineComponent, h, onMounted, ref } from 'vue';
 
-// 2. Re-exporta los tipos para el usuario final
-export * from '@payment-button-sdk/core';
+// 3. Re-exporta los tipos de 'core' para el usuario final
+//    (Nota: @core es una dependencia de @ui, que es una dependencia nuestra)
+export * from '@payment-button-sdk/ui';
 
-// 3. El "Composable" (equivalente al Hook de React)
-export const usePaymentButton = (options: Omit<PaymentOptions, 'onSuccess' | 'onError'>) => {
-  const status = ref<'idle' | 'loading' | 'success' | 'error'>('idle');
-  const data = ref<PaymentResponse | null>(null);
-  const error = ref<PaymentError | null>(null);
-
-  const pay = () => {
-    status.value = 'loading';
-    const client = new PaymentClient({
-      ...options,
-      onSuccess: (response) => {
-        data.value = response;
-        status.value = 'success';
-      },
-      onError: (err) => {
-        error.value = err;
-        status.value = 'error';
-      },
-    });
-    client.initiatePayment();
-  };
-
-  return { pay, status, data, error };
-};
-
-// 4. El Componente (creado con 'defineComponent' y 'h')
+/**
+ * El componente adaptador de Vue.
+ * Traduce los eventos nativos del DOM a eventos de Vue.
+ */
 export const PaymentButton = defineComponent({
   name: 'PaymentButton',
+  
+  // 1. Define los props que acepta (camelCase)
   props: {
     apiKey: { type: String, required: true },
     amount: { type: Number, required: true },
     currency: { type: String, required: true },
-    // ...puedes añadir más props aquí
   },
-  setup(props, { slots }) {
-    // Usa el composable
-    const { pay, status } = usePaymentButton({
-      apiKey: props.apiKey,
-      amount: props.amount,
-      currency: props.currency,
+
+  // 2. Define los eventos que emite (onSuccess -> @success)
+  emits: ['success', 'error'],
+
+  setup(props, { emit, slots }) {
+    // 3. Crea una ref para el elemento del DOM
+    const buttonRef = ref<HTMLElement | null>(null);
+
+    // 4. Esconde la "fricción" de los eventos en onMounted
+    onMounted(() => {
+      const node = buttonRef.value;
+      if (!node) return;
+
+      // Escucha el evento del Web Component y lo "traduce" a un evento de Vue
+      const handleSuccess = (event: Event) => {
+        emit('success', (event as CustomEvent).detail);
+      };
+      const handleError = (event: Event) => {
+        emit('error', (event as CustomEvent).detail);
+      };
+
+      node.addEventListener('success', handleSuccess);
+      node.addEventListener('error', handleError);
+      
+      // (En Vue, los listeners se limpian automáticamente cuando el componente se desmonta)
     });
 
-    const isDisabled = computed(() => status.value === 'loading');
-
-    // Renderiza el botón
+    // 5. Renderiza el Web Component
     return () => h(
-      'button',
+      'payment-button',
       {
-        class: 'payment-button-vue', // Usa la clase CSS de Vue
-        onClick: pay,
-        disabled: isDisabled.value,
+        // 6. Asigna la ref
+        ref: buttonRef,
+        
+        // 7. Pasa los props, convirtiéndolos a kebab-case
+        'api-key': props.apiKey,
+        'amount': props.amount,
+        'currency': props.currency,
       },
-      // Texto del botón (Slot)
-      status.value === 'loading' 
-        ? 'Procesando...' 
-        : (slots.default ? slots.default() : 'Pagar con Vue')
+      // 8. Pasa el contenido del slot (ej. "Pagar Ahora")
+      slots.default ? slots.default() : []
     );
   },
 });
