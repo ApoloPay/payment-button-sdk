@@ -36,8 +36,8 @@ export class PaymentClient {
       return await new Promise((resolve) => {
         setTimeout(() => {
           resolve([
-            { name: 'USDC', symbol: 'USDC' },
-            { name: 'USDT', symbol: 'USDT' },
+            { id: 1, name: 'USDC', symbol: 'USDC' },
+            { id: 2, name: 'USDT', symbol: 'USDT' },
           ])
         }, 1000)
       });
