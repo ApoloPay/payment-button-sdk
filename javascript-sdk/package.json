@@ -9,6 +9,7 @@
     "dev:svelte": "pnpm run build && turbo dev --filter=playground-svelte",
     "dev:angular": "pnpm run build && turbo dev --filter=playground-angular",
     "dev:astro": "pnpm run build && turbo dev --filter=playground-astro",
+    "dev:vanilla": "turbo dev --filter=playground-vanilla",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "check-types": "turbo run check-types"

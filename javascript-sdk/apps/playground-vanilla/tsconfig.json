@@ -1,0 +1,16 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "lib": ["ESNext", "DOM"],
+    "isolatedModules": true,
+    "noEmit": true,
+    "paths": {
+      "@payment-button-sdk/ui": [
+        "../../packages/ui/src/index.ts"
+      ],
+    }
+  },
+  "include": ["src"]
+}
