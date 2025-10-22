@@ -5,13 +5,11 @@
   // 2. Define los props que el wrapper acepta
   export let apiKey: string;
   export let amount: number;
-  export let currency: string;
 </script>
 
 <payment-button
   api-key={apiKey}
   {amount}
-  {currency}
   on:success
   on:error
 >

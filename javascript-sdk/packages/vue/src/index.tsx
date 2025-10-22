@@ -19,7 +19,6 @@ export const PaymentButton = defineComponent({
   props: {
     apiKey: { type: String, required: true },
     amount: { type: Number, required: true },
-    currency: { type: String, required: true },
   },
 
   // 2. Define los eventos que emite (onSuccess -> @success)
@@ -58,7 +57,6 @@ export const PaymentButton = defineComponent({
         // 7. Pasa los props, convirtiéndolos a kebab-case
         'api-key': props.apiKey,
         'amount': props.amount,
-        'currency': props.currency,
       },
       // 8. Pasa el contenido del slot (ej. "Pagar Ahora")
       slots.default ? slots.default() : []

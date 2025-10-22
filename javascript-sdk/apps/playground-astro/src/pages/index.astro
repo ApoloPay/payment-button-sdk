@@ -17,7 +17,6 @@ import {
       <PaymentButton
         apiKey="pk_test_ASTRO_999"
         amount={750}
-        currency="USD"
         on:success={(event: CustomEvent<PaymentResponse>) => {
           console.log('¡Éxito (Astro)!', event.detail.transactionId);
         }}

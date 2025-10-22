@@ -9,14 +9,12 @@ typedef OnErrorCallback = void Function(PaymentError error);
 class PaymentClient {
   final String apiKey;
   final double amount;
-  final String currency;
   final OnSuccessCallback onSuccess;
   final OnErrorCallback onError;
 
   PaymentClient({
     required this.apiKey,
     required this.amount,
-    required this.currency,
     required this.onSuccess,
     required this.onError,
   });
@@ -32,7 +30,6 @@ class PaymentClient {
       //   },
       //   body: jsonEncode({
       //     'amount': amount,
-      //     'currency': currency,
       //   }),
       // );
 

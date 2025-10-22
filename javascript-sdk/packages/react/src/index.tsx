@@ -12,7 +12,6 @@ export * from '@payment-button-sdk/ui';
 type PaymentButtonProps = {
   apiKey: string;
   amount: number;
-  currency: string;
   children: React.ReactNode;
   onSuccess?: (response: PaymentResponse) => void;
   onError?: (error: any) => void;
@@ -22,7 +21,6 @@ type PaymentButtonProps = {
 export const PaymentButton: React.FC<PaymentButtonProps> = ({
   apiKey,
   amount,
-  currency,
   children,
   onSuccess,
   onError,
@@ -59,7 +57,6 @@ export const PaymentButton: React.FC<PaymentButtonProps> = ({
       ref: ref,
       'api-key': apiKey,
       amount: amount,
-      currency: currency,
     },
     children
   );

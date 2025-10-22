@@ -21,7 +21,6 @@ class MyApp extends StatelessWidget {
           child: PaymentButtonWidget(
             apiKey: 'pk_test_FLUTTER_123',
             amount: 150.50,
-            currency: 'USD',
 
             // 3. Define los callbacks
             onSuccess: (PaymentResponse response) {

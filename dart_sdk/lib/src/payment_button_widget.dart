@@ -9,7 +9,6 @@ class PaymentButtonWidget extends StatefulWidget {
   // 1. Props (Inputs)
   final String apiKey;
   final double amount;
-  final String currency;
   final Widget child; // Para que el usuario ponga su propio texto/icono
 
   // 2. Eventos (Outputs)
@@ -20,7 +19,6 @@ class PaymentButtonWidget extends StatefulWidget {
     Key? key,
     required this.apiKey,
     required this.amount,
-    required this.currency,
     required this.onSuccess,
     required this.onError,
     required this.child,
@@ -39,7 +37,6 @@ class _PaymentButtonWidgetState extends State<PaymentButtonWidget> {
     final client = PaymentClient(
       apiKey: widget.apiKey,
       amount: widget.amount,
-      currency: widget.currency,
       onSuccess: (response) {
         if (mounted) {
           setState(() => _status = ButtonStatus.idle);

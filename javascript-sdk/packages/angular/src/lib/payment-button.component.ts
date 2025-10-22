@@ -10,7 +10,6 @@ import type { PaymentResponse, PaymentError } from '@payment-button-sdk/ui';
     <payment-button
       [attr.api-key]="apiKey"
       [attr.amount]="amount"
-      [attr.currency]="currency"
       (success)="onSuccess($event)"
       (error)="onError($event)"
     >
@@ -27,7 +26,6 @@ export class PaymentButtonComponent {
   // 5. Define los Inputs (props)
   @Input() apiKey!: string;
   @Input() amount!: number;
-  @Input() currency!: string;
 
   // 6. Define los Outputs (eventos)
   @Output() success = new EventEmitter<PaymentResponse>();

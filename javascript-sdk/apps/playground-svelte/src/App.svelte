@@ -23,7 +23,6 @@
   <PaymentButton
     apiKey="pk_test_SVELTE_789"
     amount={500}
-    currency="USD"
     on:success={handleSuccess}
     on:error={handleError}
   >

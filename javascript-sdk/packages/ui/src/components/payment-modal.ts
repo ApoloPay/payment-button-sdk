@@ -1,367 +1,398 @@
 import { LitElement, html, css } from 'lit';
-import { customElement, property, state, query } from 'lit/decorators.js';
+import { customElement, property, query } from 'lit/decorators.js'; // Removed @state
 import type { PaymentError } from '@payment-button-sdk/core';
 
-// Definir los posibles pasos
+// Define step types, ensure consistency with the parent
 type ModalStep = 'selectCoin' | 'selectNetwork' | 'showQR' | 'result';
 
 @customElement('payment-modal')
 export class PaymentModal extends LitElement {
-  // --- Props recibidos del padre ---
+  // --- Props Received from Parent ---
   @property({ type: Boolean }) isOpen = false;
+  @property({ type: String }) currentStep: ModalStep = 'selectCoin';
   @property({ type: String }) status: 'idle' | 'loading' | 'success' | 'error' = 'idle';
   @property({ type: Object }) error: PaymentError | null = null;
+  @property({ type: Boolean }) isLoadingData = true; // For initial coin/chain load
   @property({ type: Array }) stablecoins: any[] = [];
   @property({ type: Array }) blockchains: any[] = [];
+  @property({ type: String }) selectedCoinId: string | null = null;
+  @property({ type: String }) selectedChainId: string | null = null;
+  @property({ type: String }) qrCodeUrl: string | null = null;
+  @property({ type: String }) paymentAddress: string | null = null;
   @property({ type: Number }) amount = 0;
-  @property({ type: String }) currency = 'USD';
 
-  // --- Estado interno (añadimos 'step' y selecciones) ---
-  @state() private selectedCoinId: string | null = null; // Guardamos el ID
-  @state() private selectedChainId: string | null = null; // Guardamos el ID
-  @state() private currentStep: ModalStep = 'selectCoin'; // Empezamos en el primer paso
-
-  // --- QR Code State (Placeholder - Necesitarás datos de tu API) ---
-  @state() private qrCodeUrl: string | null = null; 
-  @state() private paymentAddress: string | null = null;
-
+  // --- DOM Element Reference ---
   @query('dialog') private dialogElement!: HTMLDialogElement;
 
-  // --- Nuevos Métodos para Navegación ---
-  private goToStep(step: ModalStep) {
-    this.currentStep = step;
-  }
-
-  private handleCoinSelected(coinId: string) {
-    this.selectedCoinId = coinId;
-    this.goToStep('selectNetwork'); // Avanza al siguiente paso
-  }
-
-  private handleNetworkSelected(chainId: string) {
-    this.selectedChainId = chainId;
-    // AQUÍ es donde probablemente llamarías a tu API para generar el QR
-    this.generateQrCode(); 
-    this.goToStep('showQR'); // Avanza al paso del QR
-  }
-
-  // Placeholder - Reemplaza con tu lógica real de API
-  private async generateQrCode() {
-      // Simulación: Llama a tu backend con this.selectedCoinId y this.selectedChainId
-      console.log(`Generando QR para ${this.selectedCoinId} en ${this.selectedChainId}`);
-      await new Promise(resolve => setTimeout(resolve, 500)); // Simula espera
-      this.qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=PagoSimulado_${Date.now()}`; // URL de ejemplo
-      this.paymentAddress = `0xSimulatedAddress${Date.now().toString().slice(-4)}`; // Dirección de ejemplo
-  }
-
-  // --- Simpler updated() ---
-  // We'll manage the .closing class here
+  // --- Lifecycle: Manage Dialog State ---
   override async updated(changedProperties: Map<string | number | symbol, unknown>) {
-    await this.updateComplete; 
-    
+    // Wait for Lit's rendering cycle to complete
+    await this.updateComplete;
+
     if (changedProperties.has('isOpen')) {
       const dialog = this.dialogElement;
-      if (!dialog) return; 
+      if (!dialog) return; // Guard clause
 
       if (this.isOpen) {
-        // --- AL ABRIR ---
-        dialog.classList.remove('closing'); 
-        
-        // Check if the dialog isn't already open before calling showModal
-        // This prevents errors if state updates quickly
+        // --- Opening ---
+        dialog.classList.remove('closing'); // Remove closing class if present
         if (!dialog.open) {
-            dialog.showModal(); 
+          dialog.showModal(); // Use showModal() for true modal behavior
         }
-
-        // --- ¡EL ARREGLO! ---
-        // Espera un microtask antes de añadir el listener.
-        // Esto evita que el clic que abrió el modal lo cierre inmediatamente.
-        setTimeout(() => {
-          if (this.isOpen && dialog.open) { // Re-check state in case it closed fast
-             dialog.addEventListener('click', this.handleBackdropClick);
-          }
-        }, 0);
-
-        // Initialize selects if needed
-        if (!this.selectedCoinId && this.stablecoins.length > 0) this.selectedCoinId = this.stablecoins[0].id;
-        if (!this.selectedChainId && this.blockchains.length > 0) this.selectedChainId = this.blockchains[0].id;
+        dialog.addEventListener('click', this.handleBackdropClick); // Add backdrop listener
       } else {
-        // --- AL CERRAR ---
-        dialog.removeEventListener('click', this.handleBackdropClick); // Quita el listener *antes* de animar
-        dialog.classList.add('closing');
+        // --- Closing ---
+        dialog.removeEventListener('click', this.handleBackdropClick); // Remove listener immediately
+        dialog.classList.add('closing'); // Add class to trigger closing animation
 
+        // Listen for animation end, then call native close()
         dialog.addEventListener('transitionend', () => {
-             // Llama a close() DESPUÉS de la animación
-             // Verifica que siga cerrado antes de llamar a close()
-             if(!this.isOpen) { 
-                 dialog.close();
-             }
-             dialog.classList.remove('closing');
-        }, { once: true }); 
+          // Only close if it's still intended to be closed
+          if (!this.isOpen) {
+            dialog.close();
+          }
+          dialog.classList.remove('closing'); // Clean up class
+        }, { once: true }); // Listener cleans itself up
       }
     }
   }
 
-  // Just tells the parent to set isOpen = false
-  private handleClose() {
-    this.goToStep('selectCoin');
-    this.dispatchEvent(new CustomEvent('close'));
+  // --- Event Dispatchers (Emit events to parent) ---
+
+  // Request to close the modal (triggered by X, backdrop, Escape)
+  private requestClose() {
+    // Don't allow closing if a critical loading state is happening (e.g., final payment)
+    if (this.status === 'loading' && this.currentStep === 'result') return;
+    this.dispatchEvent(new CustomEvent('closeRequest'));
   }
 
+  // Handle clicks potentially on the backdrop
   private handleBackdropClick = (event: MouseEvent) => {
+    // Prevent closing if already animating closed
+    if (this.dialogElement.classList.contains('closing')) return;
+
     const rect = this.dialogElement.getBoundingClientRect();
     const clickedOutside = (
       event.clientY < rect.top || event.clientY > rect.bottom ||
       event.clientX < rect.left || event.clientX > rect.right
     );
     if (clickedOutside) {
-      this.handleClose();
+      this.requestClose();
     }
   }
 
-  // --- handleConfirm (AHORA es el paso final del QR) ---
-  // Este método ya no se llama desde un botón "Confirmar" general,
-  // sino que se activa cuando el pago se completa (quizás por WebSocket o polling)
-  // O si tienes un botón "Ya pagué" en el paso del QR.
-  // Por ahora, lo dejaremos como estaba, pero su propósito cambia.
-  // private handleConfirm() {
-  //   if (!this.selectedCoinId || !this.selectedChainId) return;
-
-  //   const details: PaymentDetails = {
-  //     stablecoin: this.selectedCoinId,
-  //     blockchain: this.selectedChainId,
-  //   };
-  //   // Despachamos 'confirm' cuando el pago está listo para ser verificado
-  //   // o ya fue verificado por el backend.
-  //   this.dispatchEvent(new CustomEvent('confirm', { detail: details })); 
-  //   // Podrías ir al paso 'result' aquí si el backend confirma.
-  // }
-  
-  // Handler specifically for the dialog's native close event (Escape key)
+  // Handle the native 'close' event (fired by Escape key)
   private handleDialogNativeClose(event: Event) {
-      // Prevent the default immediate close if triggered by Escape
-      event.preventDefault();
-      // Only trigger our animated close if it's not already closing
-      if (!this.dialogElement.classList.contains('closing')) {
-          this.handleClose();
-      }
+      event.preventDefault(); // Prevent the default immediate close
+      this.requestClose(); // Trigger our animated close flow
   }
 
-  // --- Estilos ---
+  // Emit event when a coin is selected
+  private selectCoin(coinId: string) {
+    this.dispatchEvent(new CustomEvent('coinSelect', { detail: { coinId } }));
+  }
+
+  // Emit event when a network is selected
+  private selectNetwork(chainId: string) {
+    this.dispatchEvent(new CustomEvent('networkSelect', { detail: { chainId } }));
+  }
+
+  // Emit event to request changing step (for "Back" buttons)
+  private changeStep(step: ModalStep, e?: Event) {
+      e?.stopPropagation(); // Prevent event bubbling if from a button click
+      this.dispatchEvent(new CustomEvent('changeStep', { detail: step }));
+  }
+
+  // --- Styles ---
   static override styles = css`
+    :host { display: block; } /* Or potentially remove if parent handles layout */
+
     dialog {
       border: none;
-      border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-      padding: 1.5rem;
-      min-width: 300px;
+      border-radius: 12px; /* Smoother corners */
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      padding: 0; /* Remove padding, handle inside */
+      min-width: 320px;
+      max-width: 400px; /* Limit width */
+      overflow: hidden; /* Prevent content overflow during animations */
 
-      /* Animación de entrada */
+      /* Animations */
       opacity: 0;
-      transform: scale(0.95);
-      transition: opacity 0.2s ease-out, transform 0.2s ease-out, display 0.2s allow-discrete;
+      transform: scale(0.95) translateY(10px);
+      transition: opacity 0.2s ease-out, transform 0.2s ease-out, overlay 0.2s ease-out allow-discrete;
+      display: none; /* Initially hidden */
+    }
 
-      /* Estilo cuando está abierto */
-      &[open] {
-        opacity: 1;
-        transform: scale(1);
-      }
+    dialog[open] {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+      display: block; /* Show when open */
+    }
 
-      /* Estilo para cuando está cerrando */
-      &.closing {
+    @starting-style {
+      dialog[open] {
         opacity: 0;
-        transform: scale(0.95);
-      }
-
-      /* Estilos para navegadores que soportan starting-style (mejora la animación de entrada) */
-      @starting-style {
-        &[open] {
-          opacity: 0;
-          transform: scale(0.95);
-        }
+        transform: scale(0.95) translateY(10px);
       }
     }
 
+    dialog.closing {
+      opacity: 0;
+      transform: scale(0.95) translateY(10px);
+    }
+
+    /* Backdrop */
     dialog::backdrop {
-      background: rgba(0, 0, 0, 0.5);
-      backdrop-filter: blur(2px);
-
-      /* Animación del fondo */
       background-color: rgba(0, 0, 0, 0);
-      transition: background-color 0.2s ease-out, display 0.2s allow-discrete;
-
-      /* Estilo cuando está abierto */
-      dialog[open]::backdrop {
-         background-color: rgba(0, 0, 0, 0.5);
-      }
-
-      /* Estilo para backdrop cerrando */
-      dialog.closing::backdrop {
-        background-color: rgba(0, 0, 0, 0);
-      }
-
-       /* Estilos para navegadores que soportan starting-style */
-      @starting-style {
-         dialog[open]::backdrop {
-           background-color: rgba(0, 0, 0, 0);
-         }
-      }
+      backdrop-filter: blur(0px);
+      transition: background-color 0.2s ease-out, backdrop-filter 0.2s ease-out, overlay 0.2s ease-out allow-discrete;
+      display: none; /* Initially hidden */
     }
 
+    dialog[open]::backdrop {
+      background-color: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(4px);
+      display: block; /* Show when open */
+    }
+     @starting-style {
+       dialog[open]::backdrop {
+         background-color: rgba(0, 0, 0, 0);
+         backdrop-filter: blur(0px);
+       }
+    }
+
+    dialog.closing::backdrop {
+      background-color: rgba(0, 0, 0, 0);
+       backdrop-filter: blur(0px);
+    }
+
+    /* Modal Layout */
     .modal-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid #eee;
     }
+    .modal-header h3 { margin: 0; font-size: 1.1rem; }
+    .modal-body { padding: 1.5rem; }
+    .close-button {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      line-height: 1;
+      cursor: pointer;
+      color: #888;
+    }
+    .close-button:hover { color: #333; }
 
-
-    .modal-body {
-      padding-top: 1rem;
-    }
-    .selection-list {
-      display: grid;
-      gap: 0.75rem;
-      margin: 1rem 0;
-    }
+    /* Selection List Styles (Matches images) */
+    .selection-list { display: grid; gap: 1rem; margin: 1.5rem 0; }
     .selection-item {
       display: flex;
       align-items: center;
-      padding: 0.75rem 1rem;
-      border: 1px solid #e0e0e0;
-      border-radius: var(--border-radius, 5px);
+      padding: 0.8rem 1rem;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
       cursor: pointer;
       background-color: #fff;
       text-align: left;
       font-size: 1rem;
       transition: border-color 0.2s, box-shadow 0.2s;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
     }
-    .selection-item:hover {
-      border-color: var(--brand-color, #4f46e5);
-    }
+    .selection-item:hover { border-color: #a5b4fc; } /* Lighter focus color */
     .selection-item.selected {
-      border-color: var(--brand-color, #4f46e5);
-      box-shadow: 0 0 0 2px var(--brand-color, #4f46e5);
+      border-color: #6366f1; /* Brand color */
+      box-shadow: 0 0 0 2px #a5b4fc;
     }
-    /* Estilos para logos dentro de los botones, si los usas */
-    .selection-item img { 
-      width: 24px; 
-      height: 24px; 
-      margin-right: 0.75rem; 
+     .selection-item img { width: 28px; height: 28px; margin-right: 1rem; border-radius: 50%; }
+     .selection-item span { font-weight: 500; } /* Make text slightly bolder */
+     
+    .footer-note { font-size: 0.85rem; color: #6b7280; text-align: center; margin-top: 1rem; }
+    
+    /* QR Code Styles */
+     .qr-code-container { text-align: center; margin: 1.5rem 0; }
+     .qr-code-container img { display: block; margin: 1rem auto; border: 1px solid #eee; border-radius: 4px; }
+     .qr-code-container code {
+       display: block;
+       background-color: #f3f4f6;
+       padding: 0.5rem;
+       border-radius: 4px;
+       font-family: monospace;
+       word-break: break-all; /* Wrap long addresses */
+       margin-top: 0.5rem;
+     }
+
+    /* Result Styles */
+    .result-icon { font-size: 3rem; margin-bottom: 1rem; } /* Placeholder for checkmark/error icon */
+    .result-message h2 { margin-bottom: 0.5rem; }
+    .result-message p { color: #6b7280; margin-bottom: 1.5rem; }
+
+    /* Generic Button Styles (Back, Retry, Close in result) */
+    .action-button {
+        padding: 0.6rem 1rem;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+        background-color: #f9fafb;
+        cursor: pointer;
+        margin-right: 0.5rem; /* Spacing between buttons */
+        font-weight: 500;
     }
-    .footer-note {
-      font-size: 0.8rem;
-      color: #777;
-      text-align: center;
+    .action-button:hover { background-color: #f3f4f6; }
+    .primary-button { /* For Confirm Payment button */
+        padding: 0.8rem 1.2rem;
+        border-radius: 8px;
+        border: none;
+        background-color: #6366f1; /* Brand color */
+        color: white;
+        cursor: pointer;
+        font-weight: 600;
+        width: 100%; /* Make confirm button full width */
+        margin-top: 1rem;
     }
+    .primary-button:disabled { background-color: #a5b4fc; cursor: not-allowed; }
+
+    /* Loading Indicators */
+    .loading-indicator { text-align: center; padding: 2rem 0; color: #6b7280; }
+    .spinner { /* Basic spinner example, replace with your preferred one */
+      border: 4px solid #f3f4f6;
+      border-top: 4px solid #6366f1;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      animation: spin 1s linear infinite;
+      margin: 1rem auto;
+    }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
   `;
 
-  // --- Render ---
+  // --- Render Method ---
   protected override render() {
-    // Variable para almacenar el contenido del paso actual
     let stepContent;
 
-    switch (this.currentStep) {
-      case 'selectCoin':
-        stepContent = html`
-          <h2>Selecciona la stablecoin</h2>
-          <p>Selecciona la stablecoin con la que deseas pagar</p>
-          <div class="selection-list">
-            ${this.stablecoins.map(coin => html`
-              <button
-                class="selection-item ${this.selectedCoinId === coin.id ? 'selected' : ''}"
-                @click=${(e: Event) => {
-                  e.stopPropagation();
-                  this.handleCoinSelected(coin.id)
-                }}
-              >
-                ${coin.name} (${coin.symbol})
-              </button>
-            `)}
-          </div>
-          <p class="footer-note">Luego podrás seleccionar la red de tu preferencia</p>
-        `;
-        break; // Fin selectCoin
+    // Show loading indicator if initial data isn't ready for selection steps
+    if (this.isLoadingData && (this.currentStep === 'selectCoin' || this.currentStep === 'selectNetwork')) {
+      stepContent = html`<div class="loading-indicator">Cargando opciones...<div class="spinner"></div></div>`;
+    } else {
+      // --- Render content based on the current step ---
+      switch (this.currentStep) {
+        case 'selectCoin':
+          if (!this.stablecoins || this.stablecoins.length === 0) {
+            stepContent = html`<p>No hay stablecoins disponibles en este momento.</p>`;
+          } else {
+            stepContent = html`
+              <h2>Selecciona la <span style="color: #6366f1;">stablecoin</span></h2>
+              <p>Selecciona la stablecoin con la que deseas pagar.</p>
+              <div class="selection-list">
+                ${this.stablecoins.map(coin => html`
+                  <button
+                    class="selection-item ${this.selectedCoinId === coin.id ? 'selected' : ''}"
+                    @click=${() => this.selectCoin(coin.id)}
+                  >
+                    <span>${coin.name} (${coin.symbol})</span>
+                  </button>
+                `)}
+              </div>
+              <p class="footer-note">Luego podrás seleccionar la red de tu preferencia</p>
+            `;
+          }
+          break; // End selectCoin
 
-      case 'selectNetwork':
-        stepContent = html`
-          <h2>Selecciona la red</h2>
-          <p>Selecciona la red de tu preferencia</p>
-          <div class="selection-list">
-             ${this.blockchains.map(chain => html`
-              <button 
-                class="selection-item ${this.selectedChainId === chain.id ? 'selected' : ''}" 
-                @click=${(e: Event) => {
-                  e.stopPropagation();
-                  this.handleNetworkSelected(chain.id)
-                }}
-              >
-                 ${chain.name}
-              </button>
-            `)}
-          </div>
-          <button @click=${(e: Event) => {
-            e.stopPropagation();
-            this.goToStep('selectCoin')
-          }}>Volver</button> 
-        `;
-        break; // Fin selectNetwork
+        case 'selectNetwork':
+           if (!this.blockchains || this.blockchains.length === 0) {
+              stepContent = html`
+                <p>No hay redes disponibles para esta moneda.</p>
+                <button class="action-button" @click=${(e: Event) => this.changeStep('selectCoin', e)}>Volver</button>
+              `;
+           } else {
+              stepContent = html`
+                <h2>Selecciona la <span style="color: #6366f1;">red</span></h2>
+                <p>Selecciona la red de tu preferencia.</p>
+                <div class="selection-list">
+                   ${this.blockchains.map(chain => html`
+                    <button
+                      class="selection-item ${this.selectedChainId === chain.id ? 'selected' : ''}"
+                      @click=${() => this.selectNetwork(chain.id)}
+                    >
+                      <span>${chain.name}</span>
+                    </button>
+                  `)}
+                </div>
+                <button class="action-button" @click=${(e: Event) => this.changeStep('selectCoin', e)}>Volver</button>
+              `;
+           }
+          break; // End selectNetwork
 
-      case 'showQR':
-        // Muestra spinner mientras se genera el QR
-        if (!this.qrCodeUrl) {
-            stepContent = html`<p>Generando código QR...</p><div class="spinner"></div>`; // Necesitarás CSS para el spinner
-        } else {
+        case 'showQR':
+          // Show loading spinner if status is 'loading' (QR generation)
+          if (this.status === 'loading') {
+             stepContent = html`<div class="loading-indicator">Generando código QR...<div class="spinner"></div></div>`;
+          } else if (this.qrCodeUrl) {
+            // Show QR code and address
             stepContent = html`
               <h2>Escanea para Pagar</h2>
-              <p>Escanea el código QR con tu wallet para completar el pago de ${this.amount} ${this.currency} (${this.selectedCoinId}) en la red ${this.selectedChainId}.</p>
-              <img src=${this.qrCodeUrl} alt="Código QR de pago" />
-              <p>O envía a:</p>
-              <code>${this.paymentAddress}</code>
-              <button @click=${(e: Event) => {
-                e.stopPropagation();
-                this.goToStep('selectNetwork')
-              }}>Volver</button> 
+              <p>Envía ${this.amount} (${this.selectedCoinId}) usando la red ${this.selectedChainId}.</p>
+              <div class="qr-code-container">
+                  <img src=${this.qrCodeUrl} alt="Código QR de pago" />
+                  <p>O envía manualmente a:</p>
+                  <code>${this.paymentAddress}</code>
+                  </div>
+              <p class="footer-note">Esperando confirmación del pago...</p>
+              <button class="action-button" @click=${(e: Event) => this.changeStep('selectNetwork', e)}>Volver</button>
               `;
-        }
-        break; // Fin showQR
+          } else {
+             // Show error if QR generation failed (error prop should be set)
+             stepContent = html`
+                <h2>Error</h2>
+                <p>${this.error?.message || 'No se pudo generar la información de pago.'}</p>
+                <button class="action-button" @click=${(e: Event) => this.changeStep('selectNetwork', e)}>Volver</button>
+             `;
+          }
+          break; // End showQR
 
-      case 'result':
-        // Muestra éxito o error basado en el 'status' final
-        if (this.status === 'success') {
+        case 'result':
+          // Display final success or error message
+          if (this.status === 'success') {
             stepContent = html`
-                <h2>¡Pago Exitoso!</h2>
-                <p>Tu pago ha sido confirmado.</p>
-                <button @click=${this.handleClose}>Cerrar</button>
+                <div class="result-message" style="text-align: center;">
+                  <div class="result-icon">✅</div> <h2>¡Pago Exitoso!</h2>
+                  <p>Tu pago ha sido confirmado correctamente.</p>
+                  <button class="primary-button" @click=${this.requestClose}>Cerrar</button>
+                </div>
             `;
-        } else if (this.status === 'error') {
+          } else if (this.status === 'error') {
             stepContent = html`
-                <h2>Error en el Pago</h2>
-                <p>${this.error?.message || 'Ocurrió un error inesperado.'}</p>
-                <button @click=${() => this.goToStep('showQR')}>Reintentar</button> 
-                <button @click=${this.handleClose}>Cancelar</button>
+                <div class="result-message" style="text-align: center;">
+                   <div class="result-icon">❌</div> <h2>Error en el Pago</h2>
+                   <p>${this.error?.message || 'Ocurrió un error inesperado durante el pago.'}</p>
+                   <button class="action-button" @click=${this.requestClose}>Cerrar</button>
+                </div>
             `;
-        } else {
-            stepContent = html`<p>Verificando pago...</p>`; // Estado intermedio
-        }
-        break; // Fin result
-    }
+          } else {
+             // Intermediate state while waiting for WebSocket confirmation (optional)
+            stepContent = html`<div class="loading-indicator">Verificando pago...<div class="spinner"></div></div>`;
+          }
+          break; // End result
+      } // End switch
+    } // End else (isLoadingData)
 
-    // Renderiza el <dialog> con el contenido del paso actual
+    // Final Render of the dialog shell
     return html`
       <dialog @close=${this.handleDialogNativeClose}>
         <div class="modal-header">
-          <h3>Pago</h3> 
-          <button @click=${this.handleClose} aria-label="Cerrar">X</button>
+          <h3>Realizar Pago</h3>
+          <button @click=${this.requestClose} class="close-button" aria-label="Cerrar">×</button>
         </div>
-        
         <div class="modal-body">
           ${stepContent}
         </div>
-        
       </dialog>
     `;
-  }
-}
+  } // End render
+} // End class
 
+// Global type declaration
 declare global {
   interface HTMLElementTagNameMap {
     'payment-modal': PaymentModal;

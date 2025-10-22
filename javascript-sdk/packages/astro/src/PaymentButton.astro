@@ -1,15 +1,16 @@
 ---
-// 1. (Opcional) Esta importación del lado del servidor es útil
-//    si Lit/WC soportara SSR, pero no es crítica.
-import '@payment-button-sdk/ui';
+// Explicitly get apiKey from props
+const { apiKey, amount, ...rest } = Astro.props;
 ---
 
-<payment-button {...Astro.props}>
+<payment-button
+  api-key={apiKey}
+  amount={amount}
+  {...rest}
+>
   <slot />
 </payment-button>
 
 <script>
-  // Esta importación se ejecuta en el CLIENTE.
-  // Registra el Web Component (<payment-button>) en el navegador.
-import '@payment-button-sdk/ui';
+  import '@payment-button-sdk/ui';
 </script>
