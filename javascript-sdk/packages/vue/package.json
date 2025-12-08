@@ -5,19 +5,24 @@
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "scripts": {
-    "build": "tsup src/index.tsx --format esm,cjs --dts --clean --external vue",
-    "dev": "tsup src/index.tsx --format esm,cjs --dts --watch --external vue"
+    "build": "tsup src/index.ts --format esm,cjs --dts --clean --external vue", 
+    "dev": "tsup src/index.ts --format esm,cjs --dts --watch --external vue"
+  },
+  "files": ["dist"],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
   },
   "dependencies": {
     "@payment-button-sdk/ui": "workspace:*"
   },
   "devDependencies": {
-    "tsup": "^8.0.0",
-    "typescript": "^5.0.0",
-    "vue": "^3.0.0"
+    "tsup": "8.0.0",
+    "typescript": "5.0.0",
+    "vue": "3.0.0"
   },
   "peerDependencies": {
-    "vue": "^3.0.0"
+    "vue": "3.0.0"
   },
   "exports": {
     ".": {

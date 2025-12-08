@@ -15,10 +15,10 @@
   },
   "dependencies": {
     "@payment-button-sdk/core": "workspace:*",
-    "lit": "^3.0.0",
-    "tslib": "^2.8.1"
+    "lit": "3.0.0",
+    "tslib": "2.8.1"
   },
   "devDependencies": {
-    "typescript": "^5.0.0"
+    "typescript": "5.0.0"
   }
 }
