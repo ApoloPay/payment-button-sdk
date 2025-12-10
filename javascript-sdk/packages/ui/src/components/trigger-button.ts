@@ -1,45 +1,66 @@
 import { LitElement, html, css } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
+import { sharedStyles } from '../styles/shared-styles.js';
 
 @customElement('trigger-button')
 export class TriggerButton extends LitElement {
-  @property({ type: String })
-  status: 'idle' | 'loading' | 'success' | 'error' = 'idle';
+  @property({ type: Boolean }) loading = false;
+  @property({ type: Boolean }) disabled = false;
+  @property({ type: Number }) amount = 0;
+  @property({ type: String }) label?: string = undefined;
 
-  private handleClick() {
-    // Despacha un evento 'open' para que el padre lo escuche
-    this.dispatchEvent(new CustomEvent('open'));
-  }
+  static override styles = [
+    sharedStyles,
+    css`
+      :host {
+        display: inline-block;
+      }
+      
+      button {
+        /* Usamos las variables definidas en shared-styles */
+        background-color: var(--apolo-primary);
+        color: var(--apolo-on-primary);
+        border: none;
+        padding: 10px 20px;
+        border-radius: var(--apolo-radius);
+        font-family: var(--apolo-font);
+        font-weight: 600;
+        cursor: pointer;
+        transition: opacity 0.2s;
+        
+        /* Asegura que el botón ocupe todo el espacio del host */
+        width: 100%;
+        height: 100%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
 
-  static override styles = css`
-    button {
-      background-color: #4f46e5; /* Color por defecto */
-      color: white;
-      padding: 10px 15px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      font-weight: bold;
-    }
-    button:disabled {
-      background-color: #a1a1a1;
-      cursor: not-allowed;
-    }
-    /* Puedes añadir más estilos o usar variables de shared-styles */
-  `;
+      button:hover {
+        opacity: 0.9;
+      }
+
+      button:disabled {
+        background-color: #a1a1a1;
+        cursor: not-allowed;
+      }
+    `
+  ];
 
   protected override render() {
-    const isLoading = this.status === 'loading';
+    // Calculamos el texto del botón por defecto
+    const defaultLabel = this.loading
+      ? 'Cargando...'
+      : this.label ?? `Pagar ${this.amount > 0 ? '$' + this.amount : ''}`;
+
     return html`
-      <button @click=${this.handleClick} ?disabled=${isLoading}>
-        ${isLoading ? 'Procesando...' : html`<slot>Pagar</slot>`}
+      <button ?disabled=${this.disabled || this.loading} type="button">
+        ${defaultLabel}
       </button>
     `;
   }
 }
 
-// Declara el tipo globalmente para que TypeScript no se queje
-// al usar <trigger-button> en otros archivos.
 declare global {
   interface HTMLElementTagNameMap {
     'trigger-button': TriggerButton;

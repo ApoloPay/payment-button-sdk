@@ -19,41 +19,36 @@ export class PaymentButton extends LitElement {
   // --- Component Properties (passed as HTML attributes) ---
   @property({ type: String, attribute: 'api-key' })
   apiKey = '';
-
   @property({ type: Number })
   amount = 0; // The amount in the base coin
+  @property({ type: String })
+  label?: string = undefined;
+  @property({ type: Boolean })
+  loading: boolean = false;
+  @property({ type: Boolean })
+  disabled: boolean = false;
 
   // --- Internal State ---
   @state()
   private isOpen = false; // Controls modal visibility
-
   @state()
   private status: 'idle' | 'loading' | 'success' | 'error' = 'idle'; // General status, used for QR generation and final result
-
   @state()
   private currentStep: ModalStep = 'selectCoin'; // Current step in the modal flow
-
   @state()
   private selectedCoinId: string | null = null; // ID of the chosen stablecoin
-
   @state()
   private selectedChainId: string | null = null; // ID of the chosen blockchain
-
   @state()
   private qrCodeUrl: string | null = null; // URL for the QR code image
-
   @state()
   private paymentAddress: string | null = null; // Wallet address for payment
-
   @state()
   private stablecoins: any[] = []; // List fetched from API
-
   @state()
   private blockchains: any[] = []; // List fetched from API
-
   @state()
   private error: PaymentError | null = null; // Stores error details if something fails
-
   @state()
   private isLoadingData = true; // Tracks initial loading of coins/chains
 
@@ -61,7 +56,6 @@ export class PaymentButton extends LitElement {
   private client!: PaymentClient;
 
   // --- Lifecycle Methods ---
-
   // Called when the component is added to the DOM
   override connectedCallback() {
     super.connectedCallback();
@@ -118,7 +112,6 @@ export class PaymentButton extends LitElement {
   }
 
   // --- Event Handlers (Triggered by Child Components) ---
-
   // Triggered by <trigger-button> when clicked
   private handleOpen() {
     this.isOpen = true;
@@ -185,24 +178,29 @@ export class PaymentButton extends LitElement {
 
   // Triggered by <payment-modal> "Back" buttons
   private handleChangeStep(event: CustomEvent<ModalStep>) {
-      // Disconnect WebSocket if going back from QR step before completion
-      if (this.currentStep === 'showQR' && event.detail !== 'result') {
-        this.client?.disconnectWebSocket();
-      }
-      this.currentStep = event.detail;
-      this.status = 'idle'; // Reset status when moving back
-      this.error = null;
-      // Clear QR data if moving back from the QR step
-      if(this.currentStep !== 'showQR'){
-          this.qrCodeUrl = null;
-          this.paymentAddress = null;
-      }
+    // Disconnect WebSocket if going back from QR step before completion
+    if (this.currentStep === 'showQR' && event.detail !== 'result') {
+      this.client?.disconnectWebSocket();
+    }
+    this.currentStep = event.detail;
+    this.status = 'idle'; // Reset status when moving back
+    this.error = null;
+    // Clear QR data if moving back from the QR step
+    if (this.currentStep !== 'showQR'){
+      this.qrCodeUrl = null;
+      this.paymentAddress = null;
+    }
   }
 
   // --- Styles ---
   static override styles = css`
     :host {
-      display: inline-block; /* Behaves like a button */
+      display: inline-block;
+    }
+
+    #trigger-wrapper {
+      display: inline-block;
+      cursor: pointer;
     }
   `;
 
@@ -210,12 +208,16 @@ export class PaymentButton extends LitElement {
   protected override render() {
     // Renders the trigger button and the modal, passing down all necessary state
     return html`
-      <trigger-button
-        .status=${this.status} 
-        ?disabled=${this.isLoadingData || !this.apiKey} /* Disable if loading initial data or no API key */
-        @open=${this.handleOpen}
-      >
-        <slot></slot> </trigger-button>
+      <div id="trigger-wrapper" @click=${this.handleOpen}>
+        <slot>
+          <trigger-button 
+            .label=${this.label}
+            .amount=${this.amount}
+            .loading=${this.loading || this.isLoadingData}
+            ?disabled=${this.disabled}
+          ></trigger-button>
+        </slot>
+      </div>
 
       <payment-modal
         ?isOpen=${this.isOpen}

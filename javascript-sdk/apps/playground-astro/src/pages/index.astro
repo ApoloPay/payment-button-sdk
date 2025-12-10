@@ -11,14 +11,9 @@ import PaymentButton from '@payment-button-sdk/astro/PaymentButton.astro';
       <h1>Mi Playground de Astro 🚀</h1>
 
       <PaymentButton
-        apiKey="pk_test_ASTRO_999"
-        amount={750}
-        on:success={(event: any) => {
-          console.log('¡Éxito (Astro)!', event.detail.transactionId);
-        }}
-        on:error={(event: any) => {
-          console.error('Error (Astro):', event.detail.message);
-        }}
+        id="mi-btn"
+        apiKey="pk_test_123"
+        amount={100}
       ></PaymentButton>
     </main>
     <style is:global>
@@ -37,3 +32,15 @@ import PaymentButton from '@payment-button-sdk/astro/PaymentButton.astro';
     </style>
   </body>
 </html>
+
+<script>
+  import type { PaymentResponse, PaymentError } from '@payment-button-sdk/ui';
+
+  const btn = document.getElementById('mi-btn');
+  btn?.addEventListener('success', (e) => {
+    console.log('¡Éxito (Astro)!', (e as any as CustomEvent<PaymentResponse>).detail.transactionId);
+  });
+  btn?.addEventListener('error', (e) => {
+    console.error('Error (Astro):', (e as any as CustomEvent<PaymentError>).detail.message);
+  });
+</script>

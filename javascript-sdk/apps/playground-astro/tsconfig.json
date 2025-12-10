@@ -7,10 +7,12 @@
   "exclude": ["dist"],
   "compilerOptions": {
     "paths": {
+      "@payment-button-sdk/astro/*": [
+        "../../packages/astro/src/*"
+      ],
       "@payment-button-sdk/astro": [
         "../../packages/astro/src/index.ts"
       ],
-
       "@payment-button-sdk/ui": [
         "../../packages/ui/src/index.ts"
       ]

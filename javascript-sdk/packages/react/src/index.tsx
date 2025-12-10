@@ -13,6 +13,9 @@ type PaymentButtonProps = {
   apiKey: string;
   amount: number;
   children?: React.ReactNode;
+  disabled?: boolean;
+  loading?: boolean;
+  label?: string;
   onSuccess?: (response: PaymentResponse) => void;
   onError?: (error: any) => void;
 };
@@ -22,6 +25,9 @@ export const PaymentButton: React.FC<PaymentButtonProps> = ({
   apiKey,
   amount,
   children,
+  disabled,
+  loading,
+  label,
   onSuccess,
   onError,
 }) => {
@@ -54,9 +60,12 @@ export const PaymentButton: React.FC<PaymentButtonProps> = ({
   return React.createElement(
     'payment-button',
     {
-      ref: ref,
+      ref,
       'api-key': apiKey,
-      amount: amount,
+      amount,
+      disabled,
+      loading,
+      label,
     },
     children
   );

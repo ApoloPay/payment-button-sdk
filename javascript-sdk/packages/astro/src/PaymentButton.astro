@@ -1,15 +1,45 @@
 ---
-// Explicitly get apiKey from props
-const { apiKey, amount, ...rest } = Astro.props;
+import type { HTMLAttributes } from 'astro/types';
+
+import type { PaymentResponse, PaymentError } from '@payment-button-sdk/ui';
+
+interface Props extends HTMLAttributes<'div'> {
+  apiKey: string;
+  amount: number;
+  disabled?: boolean;
+  loading?: boolean;
+  label?: string;
+  onSuccess?: (event: CustomEvent<PaymentResponse>) => void;
+  onError?: (event: CustomEvent<PaymentError>) => void;
+}
+
+const { apiKey, amount, disabled, loading, label, ...restProps } = Astro.props;
+const hasContent = Astro.slots.has('default');
 ---
 
-<payment-button
-  api-key={apiKey}
-  amount={amount}
-  {...rest}
->
-  <slot />
-</payment-button>
+{
+  hasContent ? (
+    <payment-button
+      api-key={apiKey}
+      amount={amount}
+      disabled={disabled}
+      loading={loading}
+      label={label}
+      {...restProps}
+    >
+      <slot />
+    </payment-button>
+  ) : (
+    <payment-button
+      api-key={apiKey}
+      amount={amount}
+      disabled={disabled}
+      loading={loading}
+      label={label}
+      {...restProps}
+    />
+  )
+}
 
 <script>
   import '@payment-button-sdk/ui';
