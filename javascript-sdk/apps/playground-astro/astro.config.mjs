@@ -10,7 +10,7 @@ export default defineConfig({
         {
           find: '@payment-button-sdk/astro',
           replacement: fileURLToPath(new URL(
-            '../../packages/astro/src/index.ts',
+            '../../packages/astro/src',
             import.meta.url
           )),
         },

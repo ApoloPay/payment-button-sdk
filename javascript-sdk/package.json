@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "build": "turbo run build",
-    "dev": "turbo dev",
+    "dev": "pnpm run build && turbo dev --filter=playground-react --filter=playground-vue --filter=playground-svelte --filter=playground-angular --filter=playground-astro --filter=playground-vanilla",
     "dev:react": "pnpm run build && turbo dev --filter=playground-react",
     "dev:vue": "pnpm run build && turbo dev --filter=playground-vue",
     "dev:svelte": "pnpm run build && turbo dev --filter=playground-svelte",
