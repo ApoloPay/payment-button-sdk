@@ -1,16 +1,16 @@
-import { Component } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterOutlet } from '@angular/router';
-import { PaymentButtonModule, type PaymentResponse, type PaymentError } from '@payment-button-sdk/angular';
+import { PaymentButtonModule } from '@payment-button-sdk/angular';
+import { type PaymentResponse, type PaymentError } from '@payment-button-sdk/core';
 
 @Component({
   selector: 'app-root',
   standalone: true,
   imports: [
-    CommonModule, 
-    RouterOutlet, 
+    CommonModule,
     PaymentButtonModule
   ],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })

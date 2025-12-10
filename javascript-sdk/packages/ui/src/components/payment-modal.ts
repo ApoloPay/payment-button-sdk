@@ -1,5 +1,5 @@
 import { LitElement, html, css } from 'lit';
-import { customElement, property, query } from 'lit/decorators.js'; // Removed @state
+import { customElement, property, query } from 'lit/decorators.js';
 import type { PaymentError } from '@payment-button-sdk/core';
 
 // Define step types, ensure consistency with the parent

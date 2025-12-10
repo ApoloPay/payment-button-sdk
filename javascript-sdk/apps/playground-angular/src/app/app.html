@@ -1,14 +1,13 @@
 <div style="text-align: center; padding: 50px;">
-  <h1>Mi Playground de Angular ❤️</h1>
+  <h1>Mi Playground de Angular (v17) ❤️</h1>
   
-  <apolo-payment-button
-    apiKey="pk_test_ANGULAR_123"
+  <payment-button
+    api-key="pk_test_ANGULAR_123"
     [amount]="5000"
-    (success)="onSuccess($event)"
-    (error)="onError($event)"
+    (success)="onSuccess($any($event).detail)"
+    (error)="onError($any($event).detail)"
   >
     Pagar $5.000 CLP
-  </apolo-payment-button>
+  </payment-button>
 
 </div>
-<router-outlet />
