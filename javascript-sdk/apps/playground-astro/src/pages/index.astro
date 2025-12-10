@@ -1,5 +1,4 @@
 ---
-import type { PaymentResponse, PaymentError } from '@payment-button-sdk/astro';
 import PaymentButton from '@payment-button-sdk/astro/PaymentButton.astro';
 ---
 <html lang="es">
@@ -14,15 +13,13 @@ import PaymentButton from '@payment-button-sdk/astro/PaymentButton.astro';
       <PaymentButton
         apiKey="pk_test_ASTRO_999"
         amount={750}
-        on:success={(event: CustomEvent<PaymentResponse>) => {
+        on:success={(event: any) => {
           console.log('¡Éxito (Astro)!', event.detail.transactionId);
         }}
-        on:error={(event: CustomEvent<PaymentError>) => {
+        on:error={(event: any) => {
           console.error('Error (Astro):', event.detail.message);
         }}
-      >
-        Pagar 7.50 USD
-      </PaymentButton>
+      ></PaymentButton>
     </main>
     <style is:global>
       body {

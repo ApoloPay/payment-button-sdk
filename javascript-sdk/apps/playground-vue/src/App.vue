@@ -22,9 +22,7 @@ const handleError = (error: any) => {
       :amount="2500"
       @success="handleSuccess"
       @error="handleError"
-    >
-      Pagar 25.00 MXN
-    </PaymentButton>
+    ></PaymentButton>
   </div>
 </template>
 

@@ -4,17 +4,16 @@
   "scripts": {
     "build": "turbo run build",
     "dev": "node scripts/dev.js",
-    "dev:react": "pnpm run build && turbo dev --filter=playground-react",
-    "dev:vue": "pnpm run build && turbo dev --filter=playground-vue",
-    "dev:svelte": "pnpm run build && turbo dev --filter=playground-svelte",
-    "dev:angular": "pnpm run build && turbo dev --filter=playground-angular",
-    "dev:astro": "pnpm run build && turbo dev --filter=playground-astro",
-    "dev:vanilla": "turbo dev --filter=playground-vanilla",
+    "clean": "pnpm run clean:dist && pnpm run clean:deps && pnpm run clean:turbo",
+    "clean:dist": "npx --yes rimraf@latest --glob \"apps/*/dist\" \"packages/*/dist\" \"apps/*/.angular\" \"packages/*/.angular\"",
+    "clean:deps": "npx --yes rimraf@latest --glob \"apps/*/node_modules\" \"packages/*/node_modules\" pnpm-lock.yaml && npx --yes rimraf@latest node_modules",
+    "clean:turbo": "npx --yes rimraf@latest --glob .turbo \"apps/*/.turbo\" \"packages/*/.turbo\"",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "check-types": "turbo run check-types"
   },
   "devDependencies": {
+    "rimraf": "^6.1.2",
     "turbo": "2.5.8",
     "typescript": "5.4.5"
   },

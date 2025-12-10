@@ -12,7 +12,7 @@ export * from '@payment-button-sdk/ui';
 type PaymentButtonProps = {
   apiKey: string;
   amount: number;
-  children: React.ReactNode;
+  children?: React.ReactNode;
   onSuccess?: (response: PaymentResponse) => void;
   onError?: (error: any) => void;
 };

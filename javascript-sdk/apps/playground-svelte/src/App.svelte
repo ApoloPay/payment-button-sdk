@@ -25,9 +25,7 @@
     amount={500}
     on:success={handleSuccess}
     on:error={handleError}
-  >
-    Pagar 5.00 USD
-  </PaymentButton>
+  ></PaymentButton>
 </main>
 
 <style>

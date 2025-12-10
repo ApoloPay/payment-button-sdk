@@ -15,6 +15,13 @@ export default defineConfig({
           )),
         },
         {
+          find: '@payment-button-sdk/ui',
+          replacement: fileURLToPath(new URL(
+            '../../packages/ui/src/index.ts',
+            import.meta.url
+          )),
+        },
+        {
           find: '@payment-button-sdk/core',
           replacement: fileURLToPath(new URL(
             '../../packages/core/src/index.ts',

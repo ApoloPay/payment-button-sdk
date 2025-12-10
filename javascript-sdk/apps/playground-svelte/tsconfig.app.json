@@ -9,18 +9,12 @@
     "noEmit": true,
     "paths": {
       "@payment-button-sdk/svelte": [
-        "../../packages/svelte/src/index.ts"
+        "../../packages/svelte/src/lib/index.ts"
       ],
       "@payment-button-sdk/ui": [
         "../../packages/ui/src/index.ts"
       ]
     },
-    /**
-     * Typecheck JS in `.svelte` and `.js` files by default.
-     * Disable checkJs if you'd like to use dynamic types in JS.
-     * Note that setting allowJs false does not prevent the use
-     * of JS in `.svelte` files.
-     */
     "allowJs": true,
     "checkJs": true,
     "moduleDetection": "force"

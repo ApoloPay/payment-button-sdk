@@ -18,9 +18,7 @@ function App() {
         amount={2500}
         onSuccess={handleSuccess}
         onError={(error) => { console.error(error); }}
-      >
-        Pagar $25.00 USD
-      </PaymentButton>
+      ></PaymentButton>
     </div>
   );
 }

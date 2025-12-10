@@ -4,7 +4,20 @@
     "outDir": "./out-tsc/app",
     "types": [],
     "target": "ES2022",
-    "useDefineForClassFields": false
+    "useDefineForClassFields": false,
+    "paths": {
+      "@payment-button-sdk/angular": [
+        "../../packages/angular/dist/index.d.ts"
+      ],
+      "@payment-button-sdk/angular/*": [
+        "../../packages/angular/dist/*"
+      ],
+      "@payment-button-sdk/ui": ["../../packages/ui/dist/index.d.ts"],
+      "@payment-button-sdk/ui/*": ["../../packages/ui/dist/*"],
+      
+      "@payment-button-sdk/core": ["../../packages/core/dist/index.d.ts"],
+      "@payment-button-sdk/core/*": ["../../packages/core/dist/*"]
+    }
   },
   "files": [
     "src/main.ts"
