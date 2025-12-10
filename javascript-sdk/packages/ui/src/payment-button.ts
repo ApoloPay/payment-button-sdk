@@ -17,40 +17,24 @@ type ModalStep = 'selectCoin' | 'selectNetwork' | 'showQR' | 'result';
 @customElement('payment-button')
 export class PaymentButton extends LitElement {
   // --- Component Properties (passed as HTML attributes) ---
-  @property({ type: String, attribute: 'api-key' })
-  apiKey = '';
-  @property({ type: Number })
-  amount = 0; // The amount in the base coin
-  @property({ type: String })
-  label?: string = undefined;
-  @property({ type: Boolean })
-  loading: boolean = false;
-  @property({ type: Boolean })
-  disabled: boolean = false;
+  @property({ type: String, attribute: 'api-key' }) apiKey = '';
+  @property({ type: Number }) amount = 0; // The amount in the base coin
+  @property({ type: String }) label?: string = undefined;
+  @property({ type: Boolean }) loading: boolean = false;
+  @property({ type: Boolean }) disabled: boolean = false;
 
   // --- Internal State ---
-  @state()
-  private isOpen = false; // Controls modal visibility
-  @state()
-  private status: 'idle' | 'loading' | 'success' | 'error' = 'idle'; // General status, used for QR generation and final result
-  @state()
-  private currentStep: ModalStep = 'selectCoin'; // Current step in the modal flow
-  @state()
-  private selectedCoinId: string | null = null; // ID of the chosen stablecoin
-  @state()
-  private selectedChainId: string | null = null; // ID of the chosen blockchain
-  @state()
-  private qrCodeUrl: string | null = null; // URL for the QR code image
-  @state()
-  private paymentAddress: string | null = null; // Wallet address for payment
-  @state()
-  private stablecoins: any[] = []; // List fetched from API
-  @state()
-  private blockchains: any[] = []; // List fetched from API
-  @state()
-  private error: PaymentError | null = null; // Stores error details if something fails
-  @state()
-  private isLoadingData = true; // Tracks initial loading of coins/chains
+  @state() private isOpen = false; // Controls modal visibility
+  @state() private status: 'idle' | 'loading' | 'success' | 'error' = 'idle'; // General status, used for QR generation and final result
+  @state() private currentStep: ModalStep = 'selectCoin'; // Current step in the modal flow
+  @state() private selectedCoinId: string | null = null; // ID of the chosen stablecoin
+  @state() private selectedChainId: string | null = null; // ID of the chosen blockchain
+  @state() private qrCodeUrl: string | null = null; // URL for the QR code image
+  @state() private paymentAddress: string | null = null; // Wallet address for payment
+  @state() private stablecoins: any[] = []; // List fetched from API
+  @state() private blockchains: any[] = []; // List fetched from API
+  @state() private error: PaymentError | null = null; // Stores error details if something fails
+  @state() private isLoadingData = true; // Tracks initial loading of coins/chains
 
   // --- API Client Instance ---
   private client!: PaymentClient;

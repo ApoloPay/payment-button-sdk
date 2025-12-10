@@ -10,7 +10,7 @@ function App() {
 
   return (
     <div>
-      <h1>Bienvenido a mi Tienda</h1>
+      <h1>Playground de React 🚀</h1>
       
       {/* 4. Lo usa como un componente nativo de React */}
       <PaymentButton

@@ -4,12 +4,13 @@ import type { PaymentResponse, PaymentError } from '@payment-button-sdk/ui';
 @Component({
   selector: 'apolo-payment-button',
   standalone: true,
-  // 2. El template ahora solo renderiza el Web Component
-  //    y traduce los eventos.
   template: `
     <payment-button
       [attr.api-key]="apiKey"
-      [attr.amount]="amount"
+      [amount]="amount"
+      [label]="label"
+      [loading]="loading"
+      [disabled]="disabled"
       (success)="onSuccess($event)"
       (error)="onError($event)"
     >
@@ -17,7 +18,11 @@ import type { PaymentResponse, PaymentError } from '@payment-button-sdk/ui';
     </payment-button>
   `,
   // 4. Asegura que el wrapper se comporte como un bloque
-  styles: [':host { display: inline-block; }'],
+  styles: [`
+    :host { display: inline-block; }
+
+    payment-button { display: block; }
+  `],
   schemas: [
     CUSTOM_ELEMENTS_SCHEMA
   ]
@@ -26,6 +31,9 @@ export class PaymentButtonComponent {
   // 5. Define los Inputs (props)
   @Input() apiKey!: string;
   @Input() amount!: number;
+  @Input() label?: string;
+  @Input() loading?: boolean;
+  @Input() disabled?: boolean;
 
   // 6. Define los Outputs (eventos)
   @Output() success = new EventEmitter<PaymentResponse>();

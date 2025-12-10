@@ -51,7 +51,7 @@ export class TriggerButton extends LitElement {
     // Calculamos el texto del botón por defecto
     const defaultLabel = this.loading
       ? 'Cargando...'
-      : this.label ?? `Pagar ${this.amount > 0 ? '$' + this.amount : ''}`;
+      : this.label || `Pagar ${this.amount > 0 ? '$' + this.amount : ''}`;
 
     return html`
       <button ?disabled=${this.disabled || this.loading} type="button">
