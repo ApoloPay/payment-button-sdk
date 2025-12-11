@@ -2,6 +2,7 @@ import { LitElement, html, css } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 
 import {
+  ModalStep,
   PaymentClient,
   type PaymentError,
   type QrRequestDetails,
@@ -11,8 +12,6 @@ import {
 import './components/trigger-button.js';
 import './components/payment-modal.js';
 
-// Define the steps for clarity
-type ModalStep = 'selectAsset' | 'selectNetwork' | 'showQR' | 'result';
 
 @customElement('payment-button')
 export class PaymentButton extends LitElement {
@@ -27,7 +26,7 @@ export class PaymentButton extends LitElement {
   // --- Internal State ---
   @state() private isOpen = false; // Controls modal visibility
   @state() private status: 'idle' | 'loading' | 'success' | 'error' = 'idle'; // General status, used for QR generation and final result
-  @state() private currentStep: ModalStep = 'selectAsset'; // Current step in the modal flow
+  @state() private currentStep: ModalStep = ModalStep.SELECT_ASSET; // Current step in the modal flow
   @state() private selectedAsset: string | null = null; // ID of the chosen asset
   @state() private selectedNetwork: string | null = null; // ID of the chosen blockchain
   @state() private qrCodeUrl: string | null = null; // URL for the QR code image
@@ -55,7 +54,7 @@ export class PaymentButton extends LitElement {
       // Callback triggered by WebSocket on successful payment confirmation
       onSuccess: (response) => {
         this.status = 'success';
-        this.currentStep = 'result'; // Show the success step in the modal
+        this.currentStep = ModalStep.RESULT; // Show the success step in the modal
         this.dispatchEvent(new CustomEvent('success', { detail: response }));
         // WebSocket is disconnected automatically by the client on success
       },
@@ -63,7 +62,7 @@ export class PaymentButton extends LitElement {
       onError: (error) => {
         this.status = 'error';
         this.error = error;
-        this.currentStep = 'result'; // Show the error step in the modal
+        this.currentStep = ModalStep.RESULT; // Show the error step in the modal
         this.dispatchEvent(new CustomEvent('error', { detail: error }));
         // WebSocket is disconnected automatically by the client on error
       }
@@ -98,7 +97,7 @@ export class PaymentButton extends LitElement {
   private handleOpen() {
     this.isOpen = true;
     // Reset state for a fresh flow each time the modal opens
-    this.currentStep = 'selectAsset';
+    this.currentStep = ModalStep.SELECT_ASSET;
     this.selectedAsset = null;
     this.selectedNetwork = null;
     this.qrCodeUrl = null;
@@ -111,7 +110,7 @@ export class PaymentButton extends LitElement {
   private handleCloseRequest() {
     this.isOpen = false;
     // Disconnect WebSocket if the user cancels before payment completion
-    if (this.currentStep === 'showQR' && this.status !== 'success' && this.status !== 'error') {
+    if (this.currentStep === ModalStep.SHOW_QR && this.status !== 'success' && this.status !== 'error') {
       this.client?.disconnectWebSocket();
     }
   }
@@ -119,7 +118,7 @@ export class PaymentButton extends LitElement {
   // Triggered by <payment-modal> when an asset is selected
   private handleAssetSelect(event: CustomEvent<{ assetId: string }>) {
     this.selectedAsset = event.detail.assetId;
-    this.currentStep = 'selectNetwork'; // Move to the next step
+    this.currentStep = ModalStep.SELECT_NETWORK; // Move to the next step
     this.error = null; // Clear previous errors
   }
 
@@ -138,7 +137,7 @@ export class PaymentButton extends LitElement {
 
     // 2. Update UI state to show loading for QR
     this.status = 'loading'; // Indicate QR generation is in progress
-    this.currentStep = 'showQR'; // Move to QR step (will show loading initially)
+    this.currentStep = ModalStep.SHOW_QR; // Move to QR step (will show loading initially)
     this.qrCodeUrl = null; // Clear previous QR data
     this.paymentAddress = null;
     this.error = null;
@@ -154,21 +153,21 @@ export class PaymentButton extends LitElement {
       this.error = { code: 'QR_FETCH_ERROR', message: (e instanceof Error ? e.message : 'Failed to get payment details.') };
       this.status = 'error'; // Set error status
       // Revert to network selection on QR fetch error to allow retry
-      this.currentStep = 'selectNetwork'; 
+      this.currentStep = ModalStep.SELECT_NETWORK;
     }
   }
 
   // Triggered by <payment-modal> "Back" buttons
   private handleChangeStep(event: CustomEvent<ModalStep>) {
     // Disconnect WebSocket if going back from QR step before completion
-    if (this.currentStep === 'showQR' && event.detail !== 'result') {
+    if (this.currentStep === ModalStep.SHOW_QR && event.detail !== ModalStep.RESULT) {
       this.client?.disconnectWebSocket();
     }
     this.currentStep = event.detail;
     this.status = 'idle'; // Reset status when moving back
     this.error = null;
     // Clear QR data if moving back from the QR step
-    if (this.currentStep !== 'showQR'){
+    if (this.currentStep !== ModalStep.SHOW_QR) {
       this.qrCodeUrl = null;
       this.paymentAddress = null;
     }

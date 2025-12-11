@@ -1,4 +1,4 @@
-import { PaymentOptions, QrRequestDetails, QrResponseData } from "./payment-client";
+import { PaymentOptions, QrRequestDetails, QrResponseData } from "./types/payment-client-types";
 import { Asset } from "./types/asset";
 
 export class Repository {

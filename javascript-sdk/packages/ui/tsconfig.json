@@ -4,5 +4,8 @@
     "outDir": "dist",
     "declaration": true
   },
-  "include": ["src"]
+  "include": [
+    "src",
+    "../core/src/types/modal-step.ts"
+  ]
 }
