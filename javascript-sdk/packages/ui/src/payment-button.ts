@@ -12,13 +12,14 @@ import './components/trigger-button.js';
 import './components/payment-modal.js';
 
 // Define the steps for clarity
-type ModalStep = 'selectCoin' | 'selectNetwork' | 'showQR' | 'result';
+type ModalStep = 'selectAsset' | 'selectNetwork' | 'showQR' | 'result';
 
 @customElement('payment-button')
 export class PaymentButton extends LitElement {
   // --- Component Properties (passed as HTML attributes) ---
   @property({ type: String, attribute: 'api-key' }) apiKey = '';
-  @property({ type: Number }) amount = 0; // The amount in the base coin
+  @property({ type: Number }) amount = 0; // The amount in the base asset
+  @property({ type: String }) email = '';
   @property({ type: String }) label?: string = undefined;
   @property({ type: Boolean }) loading: boolean = false;
   @property({ type: Boolean }) disabled: boolean = false;
@@ -26,15 +27,14 @@ export class PaymentButton extends LitElement {
   // --- Internal State ---
   @state() private isOpen = false; // Controls modal visibility
   @state() private status: 'idle' | 'loading' | 'success' | 'error' = 'idle'; // General status, used for QR generation and final result
-  @state() private currentStep: ModalStep = 'selectCoin'; // Current step in the modal flow
-  @state() private selectedCoinId: string | null = null; // ID of the chosen stablecoin
-  @state() private selectedChainId: string | null = null; // ID of the chosen blockchain
+  @state() private currentStep: ModalStep = 'selectAsset'; // Current step in the modal flow
+  @state() private selectedAsset: string | null = null; // ID of the chosen asset
+  @state() private selectedNetwork: string | null = null; // ID of the chosen blockchain
   @state() private qrCodeUrl: string | null = null; // URL for the QR code image
   @state() private paymentAddress: string | null = null; // Wallet address for payment
-  @state() private stablecoins: any[] = []; // List fetched from API
-  @state() private blockchains: any[] = []; // List fetched from API
+  @state() private assets: any[] = []; // List fetched from API
   @state() private error: PaymentError | null = null; // Stores error details if something fails
-  @state() private isLoadingData = true; // Tracks initial loading of coins/chains
+  @state() private isLoadingData = true; // Tracks initial loading of assets/networks
 
   // --- API Client Instance ---
   private client!: PaymentClient;
@@ -51,6 +51,7 @@ export class PaymentButton extends LitElement {
     this.client = new PaymentClient({
       apiKey: this.apiKey,
       amount: this.amount,
+      email: this.email,
       // Callback triggered by WebSocket on successful payment confirmation
       onSuccess: (response) => {
         this.status = 'success';
@@ -67,7 +68,7 @@ export class PaymentButton extends LitElement {
         // WebSocket is disconnected automatically by the client on error
       }
     });
-    this.loadInitialData(); // Fetch stablecoins and blockchains immediately
+    this.loadInitialData(); // Fetch assets and blockchains immediately
   }
 
   // Called when the component is removed from the DOM
@@ -82,10 +83,7 @@ export class PaymentButton extends LitElement {
     this.isLoadingData = true;
     this.error = null;
     try {
-      [this.stablecoins, this.blockchains] = await Promise.all([
-        this.client.getStableCoins(),
-        this.client.getBlockchains()
-      ]);
+      this.assets = await this.client.getAssets();
     } catch (e) {
       console.error('Error loading initial payment options:', e);
       this.error = { code: 'DATA_LOAD_ERROR', message: 'Could not load payment options.' };
@@ -100,9 +98,9 @@ export class PaymentButton extends LitElement {
   private handleOpen() {
     this.isOpen = true;
     // Reset state for a fresh flow each time the modal opens
-    this.currentStep = 'selectCoin';
-    this.selectedCoinId = null;
-    this.selectedChainId = null;
+    this.currentStep = 'selectAsset';
+    this.selectedAsset = null;
+    this.selectedNetwork = null;
     this.qrCodeUrl = null;
     this.paymentAddress = null;
     this.status = 'idle';
@@ -118,25 +116,25 @@ export class PaymentButton extends LitElement {
     }
   }
 
-  // Triggered by <payment-modal> when a stablecoin is selected
-  private handleCoinSelect(event: CustomEvent<{ coinId: string }>) {
-    this.selectedCoinId = event.detail.coinId;
+  // Triggered by <payment-modal> when an asset is selected
+  private handleAssetSelect(event: CustomEvent<{ assetId: string }>) {
+    this.selectedAsset = event.detail.assetId;
     this.currentStep = 'selectNetwork'; // Move to the next step
     this.error = null; // Clear previous errors
   }
 
   // Triggered by <payment-modal> when a network is selected
-  private async handleInitiatePayment(event: CustomEvent<{ chainId: string }>) {
-    this.selectedChainId = event.detail.chainId;
-    if (!this.selectedCoinId || !this.selectedChainId) return; // Should not happen
+  private async handleInitiatePayment(event: CustomEvent<{ networkId: string }>) {
+    this.selectedNetwork = event.detail.networkId;
+    if (!this.selectedAsset || !this.selectedNetwork) return; // Should not happen
 
-    const details: QrRequestDetails = {
-      coinId: this.selectedCoinId,
-      chainId: this.selectedChainId
+    const detail: QrRequestDetails = {
+      assetId: this.selectedAsset,
+      networkId: this.selectedNetwork
     };
 
     // 1. Dispatch custom event before fetching QR data
-    this.dispatchEvent(new CustomEvent('generateQr', { detail: details }));
+    this.dispatchEvent(new CustomEvent('generateQr', { detail }));
 
     // 2. Update UI state to show loading for QR
     this.status = 'loading'; // Indicate QR generation is in progress
@@ -147,7 +145,7 @@ export class PaymentButton extends LitElement {
 
     // 3. Call the core client to fetch QR details (this also connects WebSocket)
     try {
-      const qrData = await this.client.fetchQrCodeDetails(details);
+      const qrData = await this.client.fetchQrCodeDetails(detail);
       this.qrCodeUrl = qrData.qrCodeUrl;
       this.paymentAddress = qrData.address;
       this.status = 'idle'; // QR data loaded, waiting for payment via WebSocket
@@ -209,16 +207,14 @@ export class PaymentButton extends LitElement {
         .status=${this.status}
         .error=${this.error}
         .isLoadingData=${this.isLoadingData}
-        .stablecoins=${this.stablecoins}
-        .blockchains=${this.blockchains}
-        .selectedCoinId=${this.selectedCoinId}
-        .selectedChainId=${this.selectedChainId}
+        .assets=${this.assets}
+        .selectedAsset=${this.selectedAsset}
+        .selectedNetwork=${this.selectedNetwork}
         .qrCodeUrl=${this.qrCodeUrl}
         .paymentAddress=${this.paymentAddress}
         .amount=${this.amount}
         @closeRequest=${this.handleCloseRequest}
-        @coinSelect=${this.handleCoinSelect}
-        @apoloNetworkSelect=${this.handleInitiatePayment}
+        @assetSelect=${this.handleAssetSelect}
         @networkSelect=${this.handleInitiatePayment}
         @changeStep=${this.handleChangeStep}
       ></payment-modal>

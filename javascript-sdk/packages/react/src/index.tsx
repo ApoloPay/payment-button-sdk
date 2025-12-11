@@ -12,6 +12,7 @@ export * from '@payment-button-sdk/ui';
 type PaymentButtonProps = {
   apiKey: string;
   amount: number;
+  email: string;
   children?: React.ReactNode;
   disabled?: boolean;
   loading?: boolean;
@@ -24,6 +25,7 @@ type PaymentButtonProps = {
 export const PaymentButton: React.FC<PaymentButtonProps> = ({
   apiKey,
   amount,
+  email,
   children,
   disabled,
   loading,
@@ -63,6 +65,7 @@ export const PaymentButton: React.FC<PaymentButtonProps> = ({
       ref,
       'api-key': apiKey,
       amount,
+      email,
       disabled,
       loading,
       label,

@@ -13,7 +13,7 @@
     "check-types": "turbo run check-types"
   },
   "devDependencies": {
-    "rimraf": "^6.1.2",
+    "rimraf": "6.1.2",
     "turbo": "2.5.8",
     "typescript": "5.4.5"
   },

@@ -6,6 +6,7 @@ import type { PaymentResponse, PaymentError } from '@payment-button-sdk/ui';
 interface Props extends HTMLAttributes<'div'> {
   apiKey: string;
   amount: number;
+  email: string;
   disabled?: boolean;
   loading?: boolean;
   label?: string;
@@ -13,7 +14,7 @@ interface Props extends HTMLAttributes<'div'> {
   onError?: (event: CustomEvent<PaymentError>) => void;
 }
 
-const { apiKey, amount, disabled, loading, label, ...restProps } = Astro.props;
+const { apiKey, amount, email, disabled, loading, label, ...restProps } = Astro.props;
 const hasContent = Astro.slots.has('default');
 ---
 
@@ -22,6 +23,7 @@ const hasContent = Astro.slots.has('default');
     <payment-button
       api-key={apiKey}
       amount={amount}
+      email={email}
       disabled={disabled}
       loading={loading}
       label={label}
@@ -33,6 +35,7 @@ const hasContent = Astro.slots.has('default');
     <payment-button
       api-key={apiKey}
       amount={amount}
+      email={email}
       disabled={disabled}
       loading={loading}
       label={label}

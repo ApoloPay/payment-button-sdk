@@ -1,36 +1,51 @@
-import { QrRequestDetails, QrResponseData } from ".";
+import { PaymentOptions, QrRequestDetails, QrResponseData } from "./payment-client";
+import { Asset } from "./types/asset";
 
 export class Repository {
-  static async getStableCoins(): Promise<any[]> {
-    console.log('Obteniendo stablecoins...');
+  static apiUrl = "https://pb-test-api.apolopay.app"
+  static wsUrl = "wss://api.apolopay.com"
 
-    await new Promise(resolve => setTimeout(resolve, 500)); 
-    return [
-      { id: 'usdc', name: 'USD Coin', symbol: 'USDC' },
-      { id: 'usdt', name: 'Tether', symbol: 'USDT' },
-    ];
+  static headers = {
+    'Content-Type': 'application/json'
   }
 
-  static async getBlockchains(): Promise<any[]> {
-    console.log('Obteniendo blockchains...');
-    await new Promise(resolve => setTimeout(resolve, 500)); 
+  static async getAssets(): Promise<Asset[]> {
+    const response = await fetch(`${this.apiUrl}/payment-button/assets`, {
+      method: 'GET',
+      headers: this.headers,
+    })
+    const data = await response.json()
 
-    return [
-      { id: 'polygon', name: 'Polygon' },
-      { id: 'bsc', name: 'BNB Chain' },
-      { id: 'arbitrum', name: 'Arbitrum'},
-    ];
+    return data;
   }
 
-  static async fetchQrCodeDetails(details: QrRequestDetails & { amount: number }): Promise<QrResponseData> {
-    console.log(`Requesting QR details for ${details.amount} ${details.coinId} via ${details.chainId}`);
+  static async fetchQrCodeDetails({
+    amount,
+    assetId,
+    networkId,
+    email,
+    apiKey
+  }: (QrRequestDetails & Omit<PaymentOptions, 'onSuccess' | 'onError'>)): Promise<QrResponseData> {
+    // const response = await fetch(`${this.apiUrl}/payment-button/process`, {
+    //   method: 'POST',
+    //   headers: this.headers,
+    //   body: JSON.stringify({
+    //     amount,
+    //     assetId,
+    //     networkId,
+    //     metadata: {
+    //       orderId: "ORD-9821",
+    //       customerEmail: email
+    //     },
+    //   })
+    // })
+    // const data = await response.json()
+    // console.log(data, 'data');
 
-    await new Promise(resolve => setTimeout(resolve, 700));
-    const mockQrData: QrResponseData = {
+    return {
       paymentId: `pay_${Date.now()}`,
-      address: `0xAddress_${details.coinId}_${details.chainId}_${Date.now().toString().slice(-5)}`,
-      qrCodeUrl: `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${details.coinId}_${details.chainId}_${Date.now()}`
-    };
-    return mockQrData
+      address: `0xAddress_${assetId}_${networkId}_${Date.now().toString().slice(-5)}`,
+      qrCodeUrl: `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${assetId}_${networkId}_${Date.now()}`
+    }
   }
 }

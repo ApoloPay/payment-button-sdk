@@ -16,6 +16,7 @@ function App() {
       <PaymentButton
         apiKey="pk_live_cliente123"
         amount={2500}
+        email="test@example.com"
         onSuccess={handleSuccess}
         onError={(error) => { console.error(error); }}
       ></PaymentButton>

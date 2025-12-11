@@ -23,6 +23,7 @@
   <PaymentButton
     apiKey="pk_test_SVELTE_789"
     amount={500}
+    email="test@example.com"
     on:success={handleSuccess}
     on:error={handleError}
   ></PaymentButton>

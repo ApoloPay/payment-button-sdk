@@ -20,6 +20,7 @@ const handleError = (error: any) => {
     <PaymentButton
       apiKey="pk_test_VUE_456"
       :amount="2500"
+      email="test@example.com"
       @success="handleSuccess"
       @error="handleError"
     ></PaymentButton>

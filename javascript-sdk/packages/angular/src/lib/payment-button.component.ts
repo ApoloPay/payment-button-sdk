@@ -9,6 +9,7 @@ import type { PaymentResponse, PaymentError } from '@payment-button-sdk/ui';
       [attr.api-key]="apiKey"
       [amount]="amount"
       [label]="label"
+      [email]="email"
       [loading]="loading"
       [disabled]="disabled"
       (success)="onSuccess($event)"
@@ -31,6 +32,7 @@ export class PaymentButtonComponent {
   // 5. Define los Inputs (props)
   @Input() apiKey!: string;
   @Input() amount!: number;
+  @Input() email!: string;
   @Input() label?: string;
   @Input() loading?: boolean;
   @Input() disabled?: boolean;

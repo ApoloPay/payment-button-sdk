@@ -19,6 +19,7 @@ export const PaymentButton = defineComponent({
   props: {
     apiKey: { type: String, required: true },
     amount: { type: Number, required: true },
+    email: { type: String, required: true },
     disabled: { type: Boolean, required: false },
     loading: { type: Boolean, required: false },
     label: { type: String, required: false },
@@ -60,6 +61,7 @@ export const PaymentButton = defineComponent({
         // 7. Pasa los props, convirtiéndolos a kebab-case
         'api-key': props.apiKey,
         'amount': props.amount,
+        'email': props.email,
         'disabled': props.disabled,
         'loading': props.loading,
         'label': props.label,

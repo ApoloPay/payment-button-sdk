@@ -1,25 +1,24 @@
 import { LitElement, html, css } from 'lit';
 import { customElement, property, query } from 'lit/decorators.js';
-import type { PaymentError } from '@payment-button-sdk/core';
+import type { Asset, Network, PaymentError } from '@payment-button-sdk/core';
 import { modalBaseStyles } from '../styles/modal-base';
 import { sharedStyles } from '../styles/shared-styles';
 import { spinnerStyles } from '../styles/spinner';
 
 // Define step types, ensure consistency with the parent
-type ModalStep = 'selectCoin' | 'selectNetwork' | 'showQR' | 'result';
+type ModalStep = 'selectAsset' | 'selectNetwork' | 'showQR' | 'result';
 
 @customElement('payment-modal')
 export class PaymentModal extends LitElement {
   // --- Props Received from Parent ---
   @property({ type: Boolean }) isOpen = false;
-  @property({ type: String }) currentStep: ModalStep = 'selectCoin';
+  @property({ type: String }) currentStep: ModalStep = 'selectAsset';
   @property({ type: String }) status: 'idle' | 'loading' | 'success' | 'error' = 'idle';
   @property({ type: Object }) error: PaymentError | null = null;
-  @property({ type: Boolean }) isLoadingData = true; // For initial coin/chain load
-  @property({ type: Array }) stablecoins: any[] = [];
-  @property({ type: Array }) blockchains: any[] = [];
-  @property({ type: String }) selectedCoinId: string | null = null;
-  @property({ type: String }) selectedChainId: string | null = null;
+  @property({ type: Boolean }) isLoadingData = true; // For initial asset/network load
+  @property({ type: Array }) assets: any[] = [];
+  @property({ type: String }) selectedAsset: string | null = null;
+  @property({ type: String }) selectedNetwork: string | null = null;
   @property({ type: String }) qrCodeUrl: string | null = null;
   @property({ type: String }) paymentAddress: string | null = null;
   @property({ type: Number }) amount = 0;
@@ -90,19 +89,14 @@ export class PaymentModal extends LitElement {
     this.requestClose(); // Trigger our animated close flow
   }
 
-  // Emit event when a coin is selected
-  private selectCoin(coinId: string) {
-    this.dispatchEvent(new CustomEvent('coinSelect', { detail: { coinId } }));
-  }
-
-  // Emit event when Apolo network is selected
-  private selectApoloNetwork() {
-    this.dispatchEvent(new CustomEvent('apoloNetworkSelect', { detail: { chainId: 'apolopay' } }));
+  // Emit event when a asset is selected
+  private selectAsset(assetId: string) {
+    this.dispatchEvent(new CustomEvent('assetSelect', { detail: { assetId } }));
   }
 
   // Emit event when a network is selected
-  private selectNetwork(chainId: string) {
-    this.dispatchEvent(new CustomEvent('networkSelect', { detail: { chainId } }));
+  private selectNetwork(networkId: string) {
+    this.dispatchEvent(new CustomEvent('networkSelect', { detail: { networkId } }));
   }
 
   // Emit event to request changing step (for "Back" buttons)
@@ -237,61 +231,57 @@ export class PaymentModal extends LitElement {
   protected override render() {
     let stepContent;
 
+    const currentAsset: Asset | undefined = this.assets.find(asset => asset.id === this.selectedAsset);
+
     // Show loading indicator if initial data isn't ready for selection steps
-    if (this.isLoadingData && (this.currentStep === 'selectCoin' || this.currentStep === 'selectNetwork')) {
+    if (this.isLoadingData && (this.currentStep === 'selectAsset' || this.currentStep === 'selectNetwork')) {
       stepContent = html`<div class="loading-indicator">Cargando opciones...<div class="spinner"></div></div>`;
     } else {
       // --- Render content based on the current step ---
       switch (this.currentStep) {
-        case 'selectCoin':
-          if (!this.stablecoins || this.stablecoins.length === 0) {
-            stepContent = html`<p>No hay stablecoins disponibles en este momento.</p>`;
+        case 'selectAsset':
+          if (!this.assets || !this.assets.length) {
+            stepContent = html`<p>No hay assets disponibles en este momento.</p>`;
           } else {
             stepContent = html`
-              <h2>Selecciona la <span style="color: #6366f1;">stablecoin</span></h2>
-              <p>Selecciona la stablecoin con la que deseas pagar.</p>
+              <h2>Selecciona la <span style="color: #6366f1;">activo</span></h2>
+              <p>Selecciona el activo con el que deseas pagar.</p>
               <div class="selection-list">
-                ${this.stablecoins.map(coin => html`
+                ${this.assets.map((asset: Asset) => html`
                   <button
-                    class="selection-item ${this.selectedCoinId === coin.id ? 'selected' : ''}"
-                    @click=${() => this.selectCoin(coin.id)}
+                    class="selection-item ${this.selectedAsset === asset.id ? 'selected' : ''}"
+                    @click=${() => this.selectAsset(asset.id)}
                   >
-                    <span>${coin.name} (${coin.symbol})</span>
+                    <span>${asset.name} (${asset.symbol})</span>
                   </button>
                 `)}
               </div>
               <p class="footer-note">Luego podrás seleccionar la red de tu preferencia</p>
             `;
           }
-          break; // End selectCoin
+          break; // End selectAsset
 
         case 'selectNetwork':
-           if (!this.blockchains || this.blockchains.length === 0) {
+           if (!currentAsset || !currentAsset.networks?.length) {
               stepContent = html`
                 <p>No hay redes disponibles para esta moneda.</p>
-                <button class="action-button" @click=${(e: Event) => this.changeStep('selectCoin', e)}>Volver</button>
+                <button class="action-button" @click=${(e: Event) => this.changeStep('selectAsset', e)}>Volver</button>
               `;
            } else {
               stepContent = html`
                 <h2>Selecciona la <span style="color: #6366f1;">red</span></h2>
                 <p>Selecciona la red de tu preferencia.</p>
                 <div class="selection-list">
-                  <button
-                    class="selection-item ${this.selectedChainId === 'apolopay' ? 'selected' : ''}"
-                    @click=${this.selectApoloNetwork}
-                  >
-                    <span>Apolo Pay</span>
-                  </button>
-                   ${this.blockchains.map(chain => html`
+                   ${currentAsset.networks.map((network: Network) => html`
                     <button
-                      class="selection-item ${this.selectedChainId === chain.id ? 'selected' : ''}"
-                      @click=${() => this.selectNetwork(chain.id)}
+                      class="selection-item ${this.selectedNetwork === network.id ? 'selected' : ''}"
+                      @click=${() => this.selectNetwork(network.id)}
                     >
-                      <span>${chain.name}</span>
+                      <span>${network.name}</span>
                     </button>
                   `)}
                 </div>
-                <button class="action-button" @click=${(e: Event) => this.changeStep('selectCoin', e)}>Volver</button>
+                <button class="action-button" @click=${(e: Event) => this.changeStep('selectAsset', e)}>Volver</button>
               `;
            }
           break; // End selectNetwork
@@ -304,7 +294,7 @@ export class PaymentModal extends LitElement {
             // Show QR code and address
             stepContent = html`
               <h2>Escanea para Pagar</h2>
-              <p>Envía ${this.amount} (${this.selectedCoinId}) usando la red ${this.selectedChainId}.</p>
+              <p>Envía ${this.amount} (${this.selectedAsset}) usando la red ${this.selectedNetwork}.</p>
               <div class="qr-code-container">
                 <img src=${this.qrCodeUrl} alt="Código QR de pago" />
                 <p>O envía manualmente a:</p>
@@ -314,12 +304,12 @@ export class PaymentModal extends LitElement {
               <button class="action-button" @click=${(e: Event) => this.changeStep('selectNetwork', e)}>Volver</button>
               `;
           } else {
-             // Show error if QR generation failed (error prop should be set)
-             stepContent = html`
-              <h2>Error</h2>
-              <p>${this.error?.message || 'No se pudo generar la información de pago.'}</p>
-              <button class="action-button" @click=${(e: Event) => this.changeStep('selectNetwork', e)}>Volver</button>
-             `;
+            // Show error if QR generation failed (error prop should be set)
+            stepContent = html`
+            <h2>Error</h2>
+            <p>${this.error?.message || 'No se pudo generar la información de pago.'}</p>
+            <button class="action-button" @click=${(e: Event) => this.changeStep('selectNetwork', e)}>Volver</button>
+            `;
           }
           break; // End showQR
 
