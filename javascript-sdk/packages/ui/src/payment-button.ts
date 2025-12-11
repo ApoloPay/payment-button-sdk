@@ -20,11 +20,12 @@ export class PaymentButton extends LitElement {
   @property({ type: String, attribute: 'api-key' }) apiKey: string = '';
   @property({ type: Number }) amount: number = 0; // The amount in the base asset
   @property({ type: String }) email: string = '';
-  @property({ type: String }) productTitle? = undefined;
+  @property({ type: String, attribute: 'product-title' }) productTitle? = undefined;
   @property({ type: String }) lang: Locale = 'es';
   @property({ type: String }) label?: string = undefined;
   @property({ type: Boolean }) loading: boolean = false;
   @property({ type: Boolean }) disabled: boolean = false;
+  @property({ type: Boolean, attribute: 'barrier-dismissible' }) barrierDismissible: boolean = true;
 
   // Detectar cambios en propiedades
   override willUpdate(changedProperties: Map<string, any>) {
@@ -238,6 +239,7 @@ export class PaymentButton extends LitElement {
 
       <payment-modal
         ?isOpen=${this.isOpen}
+        .barrierDismissible=${this.barrierDismissible}
         .lang=${this.lang}
         .currentStep=${this.currentStep}
         .status=${this.status}

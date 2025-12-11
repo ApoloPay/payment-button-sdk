@@ -16,6 +16,7 @@ import { spinnerStyles } from '../styles/spinner-styles';
 export class PaymentModal extends LitElement {
   // --- Props Received from Parent ---
   @property({ type: Boolean }) isOpen = false;
+  @property({ type: Boolean }) barrierDismissible: boolean = true;
   @property({ type: String }) lang: Locale = 'es';
   @property({ type: String }) productTitle = '';
   @property({ type: Number }) currentStep: ModalStep = ModalStep.SELECT_ASSET;
@@ -131,6 +132,7 @@ export class PaymentModal extends LitElement {
 
     // Prevent closing if already animating closed
     if (this.dialogElement.classList.contains('closing')) return;
+    if (!this.barrierDismissible) return;
 
     const rect = this.dialogElement.getBoundingClientRect();
     const clickedOutside = (

@@ -4,7 +4,8 @@
   <apolo-payment-button
     apiKey="pk_test_ANGULAR_123"
     [amount]="5000"
-    email="test@example.com"
+    email="test@apolopay.app"
+    [barrierDismissible]="false"
     (success)="onSuccess($event)"
     (error)="onError($event)"
   ></apolo-payment-button>

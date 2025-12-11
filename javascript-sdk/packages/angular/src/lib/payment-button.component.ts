@@ -11,9 +11,10 @@ import type { PaymentResponse, PaymentError, Locale } from '@payment-button-sdk/
       [label]="label"
       [email]="email"
       [lang]="lang"
-      [productTitle]="productTitle"
+      [attr.product-title]="productTitle"
       [loading]="loading"
       [disabled]="disabled"
+      [attr.barrier-dismissible]="barrierDismissible"
       (success)="onSuccess($event)"
       (error)="onError($event)"
     >
@@ -40,6 +41,7 @@ export class PaymentButtonComponent {
   @Input() label?: string;
   @Input() loading?: boolean;
   @Input() disabled?: boolean;
+  @Input() barrierDismissible?: boolean;
 
   // 6. Define los Outputs (eventos)
   @Output() success = new EventEmitter<PaymentResponse>();

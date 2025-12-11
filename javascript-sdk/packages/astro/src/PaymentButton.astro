@@ -12,11 +12,12 @@ interface Props extends HTMLAttributes<'div'> {
   disabled?: boolean;
   loading?: boolean;
   label?: string;
+  barrierDismissible?: boolean;
   onSuccess?: (event: CustomEvent<PaymentResponse>) => void;
   onError?: (event: CustomEvent<PaymentError>) => void;
 }
 
-const { apiKey, amount, email, productTitle, lang, disabled, loading, label, ...restProps } = Astro.props;
+const { apiKey, amount, email, productTitle, lang, disabled, loading, label, barrierDismissible, ...restProps } = Astro.props;
 const hasContent = Astro.slots.has('default');
 ---
 
@@ -26,11 +27,12 @@ const hasContent = Astro.slots.has('default');
       api-key={apiKey}
       amount={amount}
       email={email}
-      productTitle={productTitle}
+      product-title={productTitle}
       lang={lang}
       disabled={disabled}
       loading={loading}
       label={label}
+      barrier-dismissible={barrierDismissible}
       {...restProps}
     >
       <slot />
@@ -40,11 +42,12 @@ const hasContent = Astro.slots.has('default');
       api-key={apiKey}
       amount={amount}
       email={email}
-      productTitle={productTitle}
+      product-title={productTitle}
       lang={lang}
       disabled={disabled}
       loading={loading}
       label={label}
+      barrier-dismissible={barrierDismissible}
       {...restProps}
     />
   )

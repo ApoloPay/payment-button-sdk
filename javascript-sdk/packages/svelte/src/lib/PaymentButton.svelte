@@ -12,17 +12,19 @@
   export let disabled: boolean = false;
   export let loading: boolean = false;
   export let label: string | undefined = undefined;
+  export let barrierDismissible: boolean = true;
 </script>
 
 <payment-button
   api-key={apiKey}
-  {amount}
-  {email}
-  {productTitle}
-  {lang}
-  {disabled}
-  {loading}
-  {label}
+  amount={amount}
+  email={email}
+  product-title={productTitle}
+  lang={lang}
+  disabled={disabled}
+  loading={loading}
+  label={label}
+  barrier-dismissible={barrierDismissible}
   on:success
   on:error
 >

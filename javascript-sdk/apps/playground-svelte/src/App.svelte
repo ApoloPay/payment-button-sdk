@@ -23,7 +23,8 @@
   <PaymentButton
     apiKey="pk_test_SVELTE_789"
     amount={500}
-    email="test@example.com"
+    email="test@apolopay.app"
+    barrierDismissible={false}
     on:success={handleSuccess}
     on:error={handleError}
   ></PaymentButton>

@@ -15,6 +15,7 @@ type PaymentButtonProps = {
   email: string;
   productTitle?: string;
   lang?: Locale;
+  barrierDismissible?: boolean;
   children?: React.ReactNode;
   disabled?: boolean;
   loading?: boolean;
@@ -30,6 +31,7 @@ export const PaymentButton: React.FC<PaymentButtonProps> = ({
   email,
   productTitle,
   lang,
+  barrierDismissible,
   children,
   disabled,
   loading,
@@ -70,11 +72,12 @@ export const PaymentButton: React.FC<PaymentButtonProps> = ({
       'api-key': apiKey,
       amount,
       email,
-      productTitle,
+      'product-title': productTitle,
       lang,
       disabled,
       loading,
       label,
+      'barrier-dismissible': barrierDismissible,
     },
     children
   );

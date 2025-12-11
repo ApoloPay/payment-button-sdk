@@ -25,6 +25,7 @@ export const PaymentButton = defineComponent({
     disabled: { type: Boolean, required: false },
     loading: { type: Boolean, required: false },
     label: { type: String, required: false },
+    barrierDismissible: { type: Boolean, required: false },
   },
 
   // 2. Define los eventos que emite (onSuccess -> @success)
@@ -64,11 +65,12 @@ export const PaymentButton = defineComponent({
         'api-key': props.apiKey,
         'amount': props.amount,
         'email': props.email,
-        'productTitle': props.productTitle,
+        'product-title': props.productTitle,
         'lang': props.lang,
         'disabled': props.disabled,
         'loading': props.loading,
         'label': props.label,
+        'barrier-dismissible': props.barrierDismissible,
       },
       // 8. Pasa el contenido del slot (ej. "Pagar Ahora")
       slots.default ? slots.default() : []
