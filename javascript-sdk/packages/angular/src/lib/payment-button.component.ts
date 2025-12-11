@@ -1,5 +1,5 @@
 import { Component, Input, Output, EventEmitter, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import type { PaymentResponse, PaymentError } from '@payment-button-sdk/ui';
+import type { PaymentResponse, PaymentError, Locale } from '@payment-button-sdk/ui';
 
 @Component({
   selector: 'apolo-payment-button',
@@ -10,6 +10,8 @@ import type { PaymentResponse, PaymentError } from '@payment-button-sdk/ui';
       [amount]="amount"
       [label]="label"
       [email]="email"
+      [lang]="lang"
+      [productTitle]="productTitle"
       [loading]="loading"
       [disabled]="disabled"
       (success)="onSuccess($event)"
@@ -33,6 +35,8 @@ export class PaymentButtonComponent {
   @Input() apiKey!: string;
   @Input() amount!: number;
   @Input() email!: string;
+  @Input() productTitle?: string;
+  @Input() lang?: Locale;
   @Input() label?: string;
   @Input() loading?: boolean;
   @Input() disabled?: boolean;

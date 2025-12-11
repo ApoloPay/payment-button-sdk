@@ -1,15 +1,19 @@
 import { LitElement, html, css } from 'lit';
 import { customElement, property, query } from 'lit/decorators.js';
-import { ModalStep, type Asset, type Network, type PaymentError } from '@payment-button-sdk/core';
+import { I18n, ModalStep } from '@payment-button-sdk/core';
+import type { Locale, Asset, Network, PaymentError, Dictionary } from '@payment-button-sdk/core';
 import { modalBaseStyles } from '../styles/modal-base';
 import { sharedStyles } from '../styles/shared-styles';
 import { textFieldBaseStyles } from '../styles/text-field-base';
 import { supportUrl } from '../utils/constants';
+import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 
 @customElement('payment-modal')
 export class PaymentModal extends LitElement {
   // --- Props Received from Parent ---
   @property({ type: Boolean }) isOpen = false;
+  @property({ type: String }) lang: Locale = 'es';
+  @property({ type: String }) productTitle = '';
   @property({ type: Number }) currentStep: ModalStep = ModalStep.SELECT_ASSET;
   @property({ type: String }) status: 'idle' | 'loading' | 'success' | 'error' = 'idle';
   @property({ type: Object }) error: PaymentError | null = null;
@@ -24,6 +28,17 @@ export class PaymentModal extends LitElement {
 
   // --- DOM Element Reference ---
   @query('dialog') private dialogElement!: HTMLDialogElement;
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    // 🛡️ SEGURIDAD CRÍTICA:
+    // Si el componente se desmonta del DOM mientras el diálogo está abierto,
+    // forzamos el cierre nativo inmediatamente para eliminar el backdrop.
+    const dialog = this.dialogElement;
+    if (dialog && dialog.open) {
+      dialog.close(); 
+    }
+  }
 
   // --- Lifecycle: Manage Dialog State ---
   override async updated(changedProperties: Map<string | number | symbol, unknown>) {
@@ -42,20 +57,39 @@ export class PaymentModal extends LitElement {
         }
         dialog.addEventListener('click', this.handleBackdropClick); // Add backdrop listener
       } else {
-        // --- Closing ---
-        dialog.removeEventListener('click', this.handleBackdropClick); // Remove listener immediately
-        dialog.classList.add('closing'); // Add class to trigger closing animation
+        // --- LÓGICA DE CIERRE MEJORADA ---
+        dialog.removeEventListener('click', this.handleBackdropClick);
+        
+        // Si ya está cerrado, no hacemos nada
+        if (!dialog.open) return;
 
-        // Listen for animation end, then call native close()
-        dialog.addEventListener('transitionend', () => {
-          // Only close if it's still intended to be closed
-          if (!this.isOpen) {
-            dialog.close();
+        dialog.classList.add('closing');
+
+        const onAnimationEnd = (e: AnimationEvent) => {
+          // 🛡️ FILTRO: Asegurarse de que el evento viene del dialog y no de un hijo (spinner, etc)
+          if (e.target === dialog) {
+            this.closeDialogFinal(dialog, onAnimationEnd);
           }
-          dialog.classList.remove('closing'); // Clean up class
-        }, { once: true }); // Listener cleans itself up
+        };
+
+        dialog.addEventListener('animationend', onAnimationEnd);
+        
+        // 🛡️ TIMEOUT DE SEGURIDAD REDUCIDO:
+        // Si la animación falla o el navegador se congela, forzamos cierre en 200ms
+        setTimeout(() => {
+          if (dialog.open) this.closeDialogFinal(dialog, onAnimationEnd);
+        }, 200);
       }
     }
+  }
+
+  // Helper actualizado
+  private closeDialogFinal(dialog: HTMLDialogElement, listener: any) {
+    dialog.removeEventListener('animationend', listener);
+    dialog.classList.remove('closing');
+
+    // Verificamos de nuevo si sigue abierto antes de cerrar
+    if (dialog.open) dialog.close();
   }
 
   // --- Event Dispatchers (Emit events to parent) ---
@@ -346,79 +380,83 @@ export class PaymentModal extends LitElement {
     `
   ];
 
+  private time: string = '30:00 min'
+
+  private timer: string = '29 min : 59 seg'
+
   // --- RENDERIZADO DEL QR (Lógica bifurcada) ---
-  private renderQRStep() {
+  private renderQRStep(t: Dictionary) {
     // 1. Caso Apolo Pay (Imagen 7cfdc3.png)
     if (this.isApoloPayNetwork) {
       return html`
-        <span class="timer">29 min : 59 seg</span>
+        <span class="timer">${this.timer}</span>
         
         <div class="qr-frame">
           <img src="${this.qrCodeUrl}" alt="QR Apolo Pay" />
-          <span class="amount-badge">${this.amount} USDT</span>
+          <span class="amount-badge">${this.amount} ${this.currentAsset?.symbol}</span>
         </div>
 
         <div class="warning-text">
           <ul>
-            <li>Asegúrate de que la <strong>red de tu wallet coincida</strong> con la red de destino.</li>
-            <li>No envíes NFTs a esta wallet.</li>
-            <li>Solo se aceptan <strong>depósitos en USDT</strong>. El envío de otro tipo de token podría resultar en su pérdida.</li>
+            <li>${unsafeHTML(t.modal.warnings.networkMatch)}</li>
+            <li>${unsafeHTML(t.modal.warnings.noNFT)}</li>
+            <li>${unsafeHTML(I18n.interpolate(t.modal.warnings.onlyToken, { symbol: this.currentAsset?.symbol || '' }))}</li>
           </ul>
-          <p>Realiza el pago dentro del tiempo indicado. <strong>30:00 min</strong> De lo contrario, el código QR se vencerá y deberás generar uno nuevo.</p>
+          <p>${unsafeHTML(I18n.interpolate(t.modal.warnings.timer, { time: this.time }))}</p>
         </div>
 
-        <button class="btn-dark">
-          Escanea con tu celular y continua desde la app de <span style="color: var(--apolo-accent)">Apolo Pay</span>
-        </button>
+        <button class="btn-dark">${unsafeHTML(t.modal.actions.scanApp)}</button>
         
         <button class="btn-primary" @click=${() => {
           this.status = "success"
           this.changeStep(ModalStep.RESULT)
         }}>
-          Ya pagué
+          ${t.modal.actions.paid}
         </button>
       `;
     }
 
     // 2. Caso Red Externa (Imagen 7cfdbd.png)
     return html`
-      <span class="timer">29 min : 59 seg</span>
+      <span class="timer">${this.timer}</span>
       
       <div class="qr-frame">
         <img src="${this.qrCodeUrl}" alt="QR Wallet" />
-        <span class="amount-badge">${this.amount} USDT</div>
+        <span class="amount-badge">${this.amount} ${this.currentAsset?.symbol}</span>
       </div>
 
       <div class="text-field">
-        <label class="text-field-label">Red</label>
+        <label class="text-field-label">${t.modal.labels.network}</label>
         <input class="text-field-input" readonly value="${this.selectedNetwork}" />
       </div>
 
       <div class="text-field">
-        <label class="text-field-label">Dirección de depósito</label>
+        <label class="text-field-label">${t.modal.labels.address}</label>
         <input class="text-field-input" readonly value="${this.paymentAddress}" />
       </div>
 
       <div class="warning-text">
         <ul>
-          <li>Asegúrate de que la <strong>red de tu wallet coincida</strong> con la red de destino.</li>
-          <li>No envíes NFTs a esta wallet.</li>
-          <li>Solo se aceptan <strong>depósitos en USDT</strong>. El envío de otro tipo de token podría resultar en su pérdida.</li>
+          <li>${unsafeHTML(t.modal.warnings.networkMatch)}</li>
+          <li>${unsafeHTML(t.modal.warnings.noNFT)}</li>
+          <li>${unsafeHTML(I18n.interpolate(t.modal.warnings.onlyToken, { symbol: this.currentAsset?.symbol || '' }))}</li>
         </ul>
-        <p>Realiza el pago dentro del tiempo indicado. <strong>30:00 min</strong> De lo contrario, el código QR se vencerá y deberás generar uno nuevo.</p>
+        <p>${unsafeHTML(I18n.interpolate(t.modal.warnings.timer, { time: this.time }))}</p>
       </div>
 
       <button class="btn-primary" @click=${() => {
         this.status = "error"
         this.changeStep(ModalStep.RESULT)
       }}>
-        Ya pagué
+        ${t.modal.actions.paid}
       </button>
     `;
   }
 
   // --- Render Method ---
   protected override render() {
+    const t = I18n.t;
+
     let content;
 
     // Header simple con navegación
@@ -434,8 +472,8 @@ export class PaymentModal extends LitElement {
     // Selección de Asset
     if (this.currentStep === ModalStep.SELECT_ASSET) {
       content = html`
-        <h2>Selecciona la <span class="highlight">stablecoin</span></h2>
-        <p class="subtitle">Selecciona la stablecoin con la que deseas pagar</p>
+        <h2>${unsafeHTML(t.modal.titles.selectAsset)}</h2>
+        <p class="subtitle">${t.modal.subtitles.selectAsset}</p>
         
         <div class="selection-list">
           ${this.assets.map(asset => html`
@@ -449,15 +487,15 @@ export class PaymentModal extends LitElement {
           `)}
         </div>
         <p class="warning-text" style="font-size: 0.9rem; text-align: center; margin-top: 1.5rem">
-          Luego podrás seleccionar la red de tu preferencia
+          ${t.modal.warnings.selectNetworkLater}
         </p>
       `;
     }
     // Selección de Red
     else if (this.currentStep === ModalStep.SELECT_NETWORK) {
       content = html`
-        <h2>Selecciona la <span class="highlight">red</span></h2>
-        <p class="subtitle">Selecciona la red de tu preferencia</p>
+        <h2>${unsafeHTML(t.modal.titles.selectNetwork)}</h2>
+        <p class="subtitle">${t.modal.subtitles.selectNetwork}</p>
 
         <div class="selection-list">
           ${this.currentAsset?.networks.map((network: Network) => html`
@@ -474,9 +512,9 @@ export class PaymentModal extends LitElement {
     // QR
     else if (this.currentStep === ModalStep.SHOW_QR) {
       content = html`
-        <h2>Depósito <span class="highlight">USDT</span></h2>
-        <p class="subtitle">Titulo del producto o servicio a pagar</p>
-        ${this.renderQRStep()}
+        <h2>${unsafeHTML(I18n.interpolate(t.modal.titles.scanQr, { symbol: this.currentAsset?.symbol || '' }))}</h2>
+        <p class="subtitle">${this.productTitle || t.modal.subtitles.scanQr}</p>
+        ${this.renderQRStep(t)}
       `;
     }
     // Resultado
@@ -492,34 +530,30 @@ export class PaymentModal extends LitElement {
               </svg>
             </div>
 
-            <h2 class="result-title">¡Gracias por <span class="highlight">tu compra!</span></h2>
+            <h2 class="result-title">${unsafeHTML(t.modal.titles.success)}</h2>
             
             <p class="result-desc">
-              Tu pago fue exitoso y en breve recibirás un correo 
-              (${this.email ? html`<span class="highlight">${this.email}</span>` : 'de confirmación'})
-              con los detalles de tu producto o servicio
+              ${t.modal.success.message} (<span class="highlight">${this.email}</span>) ${t.modal.success.message2}
             </p>
 
             <div class="purchase-details">
-              <h3 class="details-title">Detalles de la compra</h3>
+              <h3 class="details-title">${t.modal.success.details}</h3>
               
               <div class="text-field">
-                <label class="text-field-label">Producto o Servicio</label>
-                <input class="text-field-input" readonly value="Titulo del producto o servicio" />
+                <label class="text-field-label">${t.modal.labels.product}</label>
+                <input class="text-field-input" readonly value=${this.productTitle || t.modal.subtitles.scanQr} />
               </div>
 
               <div class="text-field">
-                <label class="text-field-label">Monto</label>
-                <input class="text-field-input" readonly value="${this.amount} USD" />
+                <label class="text-field-label">${t.modal.labels.amount}</label>
+                <input class="text-field-input" readonly value="${this.amount} ${this.currentAsset?.symbol || ''}" />
               </div>
             </div>
 
-            <p class="support-text">
-              Cualquier duda o inquietud puedes comunicarte con soporte
-            </p>
+            <p class="support-text">${t.modal.success.support}</p>
 
             <button class="btn-primary" @click=${() => window.open(supportUrl, '_blank')}>
-              Soporte
+              ${t.modal.actions.support}
             </button>
           </div>
         `;
@@ -527,9 +561,9 @@ export class PaymentModal extends LitElement {
         content = html`
           <div class="result-container">
             <div class="error-icon">❌</div>
-            <h2 class="result-title">Error en el Pago</h2>
-            <p class="result-desc">${this.error?.message || 'Ocurrió un error inesperado.'}</p>
-            <button class="btn-primary" @click=${this.requestClose}>Cerrar</button>
+            <h2 class="result-title">${t.modal.titles.error}</h2>
+            <p class="result-desc">${this.error?.message || t.errors.generic}</p>
+            <button class="btn-primary" @click=${this.requestClose}>${t.modal.actions.close}</button>
           </div>
         `;
       } else {

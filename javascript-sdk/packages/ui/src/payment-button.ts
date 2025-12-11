@@ -1,5 +1,6 @@
 import { LitElement, html, css } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
+import { I18n, type Locale } from '@payment-button-sdk/core';
 
 import {
   ModalStep,
@@ -16,12 +17,20 @@ import './components/payment-modal.js';
 @customElement('payment-button')
 export class PaymentButton extends LitElement {
   // --- Component Properties (passed as HTML attributes) ---
-  @property({ type: String, attribute: 'api-key' }) apiKey = '';
-  @property({ type: Number }) amount = 0; // The amount in the base asset
-  @property({ type: String }) email = '';
+  @property({ type: String, attribute: 'api-key' }) apiKey: string = '';
+  @property({ type: Number }) amount: number = 0; // The amount in the base asset
+  @property({ type: String }) email: string = '';
+  @property({ type: String }) productTitle? = undefined;
+  @property({ type: String }) lang: Locale = 'es';
   @property({ type: String }) label?: string = undefined;
   @property({ type: Boolean }) loading: boolean = false;
   @property({ type: Boolean }) disabled: boolean = false;
+
+  // Detectar cambios en propiedades
+  override willUpdate(changedProperties: Map<string, any>) {
+    if (changedProperties.has('lang')) I18n.setLocale(this.lang);
+    super.willUpdate(changedProperties);
+  }
 
   // --- Internal State ---
   @state() private isOpen = false; // Controls modal visibility
@@ -193,6 +202,7 @@ export class PaymentButton extends LitElement {
       <div id="trigger-wrapper" @click=${this.handleOpen}>
         <slot>
           <trigger-button 
+            .lang=${this.lang}
             .label=${this.label}
             .amount=${this.amount}
             .loading=${this.loading || this.isLoadingData}
@@ -203,8 +213,10 @@ export class PaymentButton extends LitElement {
 
       <payment-modal
         ?isOpen=${this.isOpen}
+        .lang=${this.lang}
         .currentStep=${this.currentStep}
         .status=${this.status}
+        .productTitle=${this.productTitle}
         .error=${this.error}
         .isLoadingData=${this.isLoadingData}
         .assets=${this.assets}

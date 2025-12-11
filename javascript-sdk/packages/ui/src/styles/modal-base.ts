@@ -39,15 +39,15 @@ export const modalBaseStyles = css`
     box-shadow: var(--apolo-shadow);
     font-family: var(--apolo-font);
 
-    /* IMPORTANTE: Por defecto invisible para evitar parpadeos */
-    opacity: 0; 
+    opacity: 0;
+    pointer-events: none;
   }
 
   /* 3. Estado: ABIERTO (Animación de Entrada) */
   dialog[open] {
     opacity: 1;
-    /* "forwards" mantiene el estado final */
     animation: modal-enter 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    pointer-events: auto;
   }
 
   /* 4. Estado: CERRANDO (Animación de Salida) */
@@ -67,5 +67,10 @@ export const modalBaseStyles = css`
 
   dialog.closing::backdrop {
     animation: backdrop-exit 0.15s ease-in forwards;
+  }
+
+  dialog:not([open])::backdrop {
+    display: none;
+    pointer-events: none;
   }
 `;

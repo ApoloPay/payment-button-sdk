@@ -2,7 +2,7 @@ import '@payment-button-sdk/ui';
 import React, { useRef, useEffect } from 'react';
 
 // 2. Importa los tipos para las props
-import type { PaymentResponse } from '@payment-button-sdk/ui';
+import type { Locale, PaymentResponse } from '@payment-button-sdk/ui';
 
 // 3. Re-exporta los tipos de 'core' para el usuario final
 //    (Nota: @core es una dependencia de @ui, que es una dependencia nuestra)
@@ -13,6 +13,8 @@ type PaymentButtonProps = {
   apiKey: string;
   amount: number;
   email: string;
+  productTitle?: string;
+  lang?: Locale;
   children?: React.ReactNode;
   disabled?: boolean;
   loading?: boolean;
@@ -26,6 +28,8 @@ export const PaymentButton: React.FC<PaymentButtonProps> = ({
   apiKey,
   amount,
   email,
+  productTitle,
+  lang,
   children,
   disabled,
   loading,
@@ -66,6 +70,8 @@ export const PaymentButton: React.FC<PaymentButtonProps> = ({
       'api-key': apiKey,
       amount,
       email,
+      productTitle,
+      lang,
       disabled,
       loading,
       label,

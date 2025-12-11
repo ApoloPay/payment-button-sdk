@@ -2,9 +2,11 @@ import { LitElement, html, css } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { sharedStyles } from '../styles/shared-styles.js';
 import { logoApolo } from '../assets/logo_apolo.js'
+import { I18n, type Locale } from '@payment-button-sdk/core';
 
 @customElement('trigger-button')
 export class TriggerButton extends LitElement {
+  @property({ type: String }) lang: Locale = 'es';
   @property({ type: Boolean }) loading = false;
   @property({ type: Boolean }) disabled = false;
   @property({ type: Number }) amount = 0;
@@ -93,9 +95,9 @@ export class TriggerButton extends LitElement {
   ];
 
   protected override render() {
-    const defaultLabel = this.loading
-      ? 'Cargando...'
-      : this.label || `Apolo Pay`;
+    const t = I18n.t;
+
+    const defaultLabel = this.loading ? t.trigger.loading : (this.label || 'Apolo Pay');
 
     return html`
       <div class="button-wrapper">

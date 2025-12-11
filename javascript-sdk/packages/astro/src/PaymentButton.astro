@@ -1,12 +1,14 @@
 ---
 import type { HTMLAttributes } from 'astro/types';
 
-import type { PaymentResponse, PaymentError } from '@payment-button-sdk/ui';
+import type { PaymentResponse, PaymentError, Locale } from '@payment-button-sdk/ui';
 
 interface Props extends HTMLAttributes<'div'> {
   apiKey: string;
   amount: number;
   email: string;
+  productTitle?: string;
+  lang?: Locale;
   disabled?: boolean;
   loading?: boolean;
   label?: string;
@@ -14,7 +16,7 @@ interface Props extends HTMLAttributes<'div'> {
   onError?: (event: CustomEvent<PaymentError>) => void;
 }
 
-const { apiKey, amount, email, disabled, loading, label, ...restProps } = Astro.props;
+const { apiKey, amount, email, productTitle, lang, disabled, loading, label, ...restProps } = Astro.props;
 const hasContent = Astro.slots.has('default');
 ---
 
@@ -24,6 +26,8 @@ const hasContent = Astro.slots.has('default');
       api-key={apiKey}
       amount={amount}
       email={email}
+      productTitle={productTitle}
+      lang={lang}
       disabled={disabled}
       loading={loading}
       label={label}
@@ -36,6 +40,8 @@ const hasContent = Astro.slots.has('default');
       api-key={apiKey}
       amount={amount}
       email={email}
+      productTitle={productTitle}
+      lang={lang}
       disabled={disabled}
       loading={loading}
       label={label}
