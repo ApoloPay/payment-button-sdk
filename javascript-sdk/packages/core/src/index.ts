@@ -1,12 +1,4 @@
-export interface PaymentOptions {
-  apiKey: string;
-  amount: number;
-  onSuccess: (response: PaymentResponse) => void;
-  onError: (error: PaymentError) => void;
-  // (Opcional) Podrías añadir una URL base para tu API y WebSocket
-  // apiBaseUrl?: string;
-  // wsBaseUrl?: string;
-}
+import { Repository } from "./repository";
 
 // Detalles que necesitamos para obtener el QR
 export interface QrRequestDetails {
@@ -21,6 +13,16 @@ export interface QrResponseData {
   qrCodeUrl: string; // URL de la imagen del QR (o los datos para generarla)
   // (Podría incluir también el monto exacto en crypto a enviar)
   // expectedAmountCrypto?: string; 
+}
+
+export interface PaymentOptions {
+  apiKey: string;
+  amount: number;
+  onSuccess: (response: PaymentResponse) => void;
+  onError: (error: PaymentError) => void;
+  // (Opcional) Podrías añadir una URL base para tu API y WebSocket
+  // apiBaseUrl?: string;
+  // wsBaseUrl?: string;
 }
 
 // Tipos para WebSocket (Ejemplo)
@@ -53,45 +55,22 @@ export class PaymentClient {
 
   // --- Métodos para obtener datos ---
   public async getStableCoins(): Promise<any[]> {
-    console.log('Obteniendo stablecoins...');
-    // --- Reemplaza con tu llamada real a la API ---
-    await new Promise(resolve => setTimeout(resolve, 500)); 
-    return [
-      { id: 'usdc', name: 'USD Coin', symbol: 'USDC' },
-      { id: 'usdt', name: 'Tether', symbol: 'USDT' },
-    ];
+    const stableCoins = await Repository.getStableCoins();
+
+    return stableCoins;
   }
 
   public async getBlockchains(): Promise<any[]> {
-     console.log('Obteniendo blockchains...');
-    // --- Reemplaza con tu llamada real a la API ---
-    await new Promise(resolve => setTimeout(resolve, 500));
-    return [
-      { id: 'polygon', name: 'Polygon' },
-      { id: 'bsc', name: 'BNB Chain' },
-      { id: 'arbitrum', name: 'Arbitrum'},
-    ];
+    const blockchains = await Repository.getBlockchains();
+
+    return blockchains;
   }
 
   // --- Método para obtener datos del QR ---
   public async fetchQrCodeDetails(details: QrRequestDetails): Promise<QrResponseData> {
-    console.log(`Requesting QR details for ${this.options.amount} ${details.coinId} via ${details.chainId}`);
+    const qrData = await Repository.fetchQrCodeDetails({ ...details, amount: this.options.amount });
 
-    // --- Replace with your actual API call ---
-    try {
-      await new Promise(resolve => setTimeout(resolve, 700)); // Simulate API call
-      const mockQrData: QrResponseData = {
-        paymentId: `pay_${Date.now()}`,
-        address: `0xAddress_${details.coinId}_${details.chainId}_${Date.now().toString().slice(-5)}`,
-        qrCodeUrl: `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${details.coinId}_${details.chainId}_${Date.now()}`
-      };
-
-      return mockQrData; 
-
-    } catch (apiError) {
-      console.error("Error fetching QR data:", apiError);
-      throw new Error('Could not generate payment information.'); 
-    }
+    return qrData;
   }
 
   // --- CORRECCIÓN EN WEBSOCKET ---

@@ -130,7 +130,7 @@ export class PaymentButton extends LitElement {
     this.selectedChainId = event.detail.chainId;
     if (!this.selectedCoinId || !this.selectedChainId) return; // Should not happen
 
-    const details: QrRequestDetails = { 
+    const details: QrRequestDetails = {
       coinId: this.selectedCoinId,
       chainId: this.selectedChainId
     };
@@ -218,6 +218,7 @@ export class PaymentButton extends LitElement {
         .amount=${this.amount}
         @closeRequest=${this.handleCloseRequest}
         @coinSelect=${this.handleCoinSelect}
+        @apoloNetworkSelect=${this.handleInitiatePayment}
         @networkSelect=${this.handleInitiatePayment}
         @changeStep=${this.handleChangeStep}
       ></payment-modal>

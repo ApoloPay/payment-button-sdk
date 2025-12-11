@@ -2,36 +2,26 @@ import { css } from 'lit';
 
 export const sharedStyles = css`
   :host {
-    /* --- API DE DISEÑO PÚBLICA (Lo que el cliente puede tocar) --- */
+    /* --- API PÚBLICA DE COLORES (THEMING) --- */
+    --apolo-primary: var(--payment-button-primary, #6366f1);
+    --apolo-primary-hover: var(--payment-button-primary-hover, #4f46e5);
+    --apolo-on-primary: var(--payment-button-on-primary, #ffffff);
     
-    /* Colores */
-    --apolo-primary: #6366f1;         /* Color principal de tu marca */
-    --apolo-on-primary: #ffffff;      /* Texto sobre color principal */
-    --apolo-bg: #ffffff;              /* Fondo del modal */
-    --apolo-text: #1f2937;            /* Color de texto principal */
-    --apolo-text-muted: #6b7280;      /* Color de texto secundario */
-    --apolo-border: #e5e7eb;          /* Color de bordes */
+    --apolo-bg: var(--payment-button-bg, #ffffff);
+    --apolo-text: var(--payment-button-text, #1f2937);
+    --apolo-text-muted: var(--payment-button-text-muted, #6b7280);
+    --apolo-border: var(--payment-button-border, #e5e7eb);
     
-    /* Forma */
-    --apolo-radius: 12px;             /* Redondeo del modal y botones */
-    --apolo-font: 'Inter', system-ui, sans-serif; /* Tipografía */
-    --apolo-z-index: 9999;            /* Z-Index del modal */
+    /* --- API PÚBLICA DE FORMA Y TIPOGRAFÍA --- */
+    --apolo-radius: var(--payment-button-radius, 12px);
+    --apolo-font: var(--payment-button-font, 'Inter', system-ui, -apple-system, sans-serif);
+    --apolo-shadow: var(--payment-button-shadow, 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1));
+    --apolo-z-index: var(--payment-button-z-index, 9999);
   }
 
-  /* --- ESTILOS INTERNOS (Lo que está estandarizado y protegido) --- */
-  
-  /* Aplicamos las variables */
-  button.primary {
-    background-color: var(--apolo-primary);
-    color: var(--apolo-on-primary);
-    border-radius: var(--apolo-radius);
-    cursor: pointer;
-  }
-
-  .modal-container {
-    background-color: var(--apolo-bg);
-    border-radius: var(--apolo-radius);
+  /* Reset global para componentes internos */
+  * {
+    box-sizing: border-box;
     font-family: var(--apolo-font);
-    color: var(--apolo-text);
   }
 `;
