@@ -180,6 +180,7 @@ export class PaymentButton extends LitElement {
     }
 
     #trigger-wrapper {
+      position: relative;
       display: inline-block;
       cursor: pointer;
     }
@@ -212,6 +213,7 @@ export class PaymentButton extends LitElement {
         .qrCodeUrl=${this.qrCodeUrl}
         .paymentAddress=${this.paymentAddress}
         .amount=${this.amount}
+        .email=${this.email}
         @closeRequest=${this.handleCloseRequest}
         @assetSelect=${this.handleAssetSelect}
         @networkSelect=${this.handleInitiatePayment}

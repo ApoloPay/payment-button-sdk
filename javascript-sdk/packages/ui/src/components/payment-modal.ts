@@ -1,9 +1,10 @@
 import { LitElement, html, css } from 'lit';
 import { customElement, property, query } from 'lit/decorators.js';
-import { Asset, ModalStep, type Network, type PaymentError } from '@payment-button-sdk/core';
+import { ModalStep, type Asset, type Network, type PaymentError } from '@payment-button-sdk/core';
 import { modalBaseStyles } from '../styles/modal-base';
 import { sharedStyles } from '../styles/shared-styles';
 import { textFieldBaseStyles } from '../styles/text-field-base';
+import { supportUrl } from '../utils/constants';
 
 @customElement('payment-modal')
 export class PaymentModal extends LitElement {
@@ -19,6 +20,7 @@ export class PaymentModal extends LitElement {
   @property({ type: String }) qrCodeUrl: string | null = null;
   @property({ type: String }) paymentAddress: string | null = null;
   @property({ type: Number }) amount = 0;
+  @property({ type: String }) email = '';
 
   // --- DOM Element Reference ---
   @query('dialog') private dialogElement!: HTMLDialogElement;
@@ -155,9 +157,8 @@ export class PaymentModal extends LitElement {
         font-size: 1.25rem;
         font-weight: 700;
         margin: 0 0 0.5rem;
-        color: #111827;
       }
-      .highlight { color: #ea580c; } /* Naranja de tus imágenes */
+      .highlight { color: var(--apolo-accent); } /* Naranja de tus imágenes */
       
       p.subtitle {
         font-size: 0.9rem;
@@ -188,14 +189,13 @@ export class PaymentModal extends LitElement {
       .selection-card:hover {
         transform: translateY(-2px);
         box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08);
-        border-color: #ea580c; /* Hover naranja */
+        border-color: var(--apolo-accent); /* Hover naranja */
       }
 
       .coin-icon {
         width: 40px;
         height: 40px;
         margin-right: 1rem;
-        border-radius: 50%;
         object-fit: cover;
       }
 
@@ -204,12 +204,12 @@ export class PaymentModal extends LitElement {
         display: flex;
         flex-direction: column;
       }
-      .card-title { font-weight: 600; font-size: 1rem; color: #1f2937; }
-      .card-sub { font-size: 0.8rem; color: #757575; text-transform: uppercase;}
+      .card-title { font-weight: 600; font-size: 1rem; color: var(--apolo-text); }
+      .card-sub { font-size: 0.8rem; color: var(--apolo-text-muted); text-transform: uppercase;}
 
       /* --- QR SCREENS --- */
       .timer {
-        color: #ea580c;
+        color: var(--apolo-accent);
         font-weight: 600;
         font-size: 0.9rem;
         margin-bottom: 1rem;
@@ -220,7 +220,7 @@ export class PaymentModal extends LitElement {
         background: white;
         padding: 10px;
         padding-bottom: 14px;
-        border-radius: 12px;
+        border-radius: var(--apolo-radius);
         box-shadow: 0 4px 15px rgba(0,0,0,0.08);
         display: inline-block;
         margin-bottom: 1rem;
@@ -228,7 +228,7 @@ export class PaymentModal extends LitElement {
       .qr-frame img { display: block; border-radius: 8px; width: 130px; height: 130px; }
       
       .amount-badge {
-        color: #ea580c;
+        color: var(--apolo-accent);
         font-weight: 700;
         font-size: 1.2rem;
         display: inline-block;
@@ -237,10 +237,10 @@ export class PaymentModal extends LitElement {
 
       /* Botón Naranja Grande */
       .btn-primary {
-        background-color: #ea580c; /* Naranja Apolo */
+        background-color: var(--apolo-accent); /* Naranja Apolo */
         color: white;
         padding: 0.5rem 1.5rem;
-        border-radius: 30px; /* Pill shape */
+        border-radius: var(--apolo-radius-lg); /* Pill shape */
         border: none;
         font-weight: 400;
         font-size: .9rem;
@@ -252,11 +252,11 @@ export class PaymentModal extends LitElement {
       
       /* Botón Azul Oscuro (Apolo Pay QR) */
       .btn-dark {
-        background-color: #041c4c;
+        background-color: var(--apolo-primary-darkest);
         color: white;
         width: 100%;
         padding: 1rem;
-        border-radius: 12px;
+        border-radius: var(--apolo-radius);
         border: none;
         font-weight: 600;
         cursor: pointer;
@@ -265,16 +265,84 @@ export class PaymentModal extends LitElement {
 
       .warning-text {
         font-size: 0.75rem;
-        color: #1c315c;
         text-align: left;
         margin-top: 1.5rem;
         line-height: 1.5;
       }
-      .warning-text strong { color: #ea580c; }
+      .warning-text strong { color: var(--apolo-accent); }
 
       .warning-text ul {
         padding-left: 1.5rem;
       }
+
+
+      /* --- PANTALLA DE RESULTADO --- */
+      .result-container {
+        text-align: center;
+        animation: fadeIn 0.5s ease-out;
+      }
+
+      /* Animación simple de entrada */
+      @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+      .success-icon {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 1.5rem;
+      }
+
+      /* Animación del Check SVG */
+      .checkmark-circle {
+        stroke-dasharray: 166;
+        stroke-dashoffset: 166;
+        stroke-width: 2;
+        stroke: #22c55e; /* Verde éxito */
+        fill: none;
+        animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+      }
+      .checkmark-check {
+        transform-origin: 50% 50%;
+        stroke-dasharray: 48;
+        stroke-dashoffset: 48;
+        stroke: #22c55e;
+        stroke-width: 4;
+        animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.6s forwards;
+      }
+      @keyframes stroke { 100% { stroke-dashoffset: 0; } }
+
+      .result-title {
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+      }
+
+      .result-desc {
+        font-size: 0.95rem;
+        margin-bottom: 1.5rem;
+        line-height: 1.5;
+      }
+
+      .purchase-details {
+        text-align: left;
+        margin-bottom: 1.5rem;
+      }
+
+      .details-title {
+        font-size: 1rem;
+        font-weight: 700;
+        text-decoration: underline;
+        text-decoration-color: var(--apolo-text);
+        text-underline-offset: 4px;
+        text-align: center;
+        margin-bottom: 1.5rem;
+      }
+
+      .support-text {
+        font-size: 0.85rem;
+        margin-bottom: 1rem;
+      }
+      
+      /* Estilo Error */
+      .error-icon { font-size: 4rem; margin-bottom: 1rem; }
     `
   ];
 
@@ -300,7 +368,7 @@ export class PaymentModal extends LitElement {
         </div>
 
         <button class="btn-dark">
-          Escanea con tu celular y continua desde la app de <span style="color: #ea580c">Apolo Pay</span>
+          Escanea con tu celular y continua desde la app de <span style="color: var(--apolo-accent)">Apolo Pay</span>
         </button>
         
         <button class="btn-primary" @click=${() => {
@@ -416,18 +484,52 @@ export class PaymentModal extends LitElement {
       // Display final success or error message
       if (this.status === 'success') {
         content = html`
-          <div class="result-message" style="text-align: center;">
-            <div class="result-icon">✅</div> <h2>¡Pago Exitoso!</h2>
-            <p>Tu pago ha sido confirmado correctamente.</p>
-            <button class="primary-button" @click=${this.requestClose}>Cerrar</button>
+          <div class="result-container">
+            <div class="success-icon">
+              <svg viewBox="0 0 52 52">
+                <circle class="checkmark-circle" cx="26" cy="26" r="25" fill="none"/>
+                <path class="checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+              </svg>
+            </div>
+
+            <h2 class="result-title">¡Gracias por <span class="highlight">tu compra!</span></h2>
+            
+            <p class="result-desc">
+              Tu pago fue exitoso y en breve recibirás un correo 
+              (${this.email ? html`<span class="highlight">${this.email}</span>` : 'de confirmación'})
+              con los detalles de tu producto o servicio
+            </p>
+
+            <div class="purchase-details">
+              <h3 class="details-title">Detalles de la compra</h3>
+              
+              <div class="text-field">
+                <label class="text-field-label">Producto o Servicio</label>
+                <input class="text-field-input" readonly value="Titulo del producto o servicio" />
+              </div>
+
+              <div class="text-field">
+                <label class="text-field-label">Monto</label>
+                <input class="text-field-input" readonly value="${this.amount} USD" />
+              </div>
+            </div>
+
+            <p class="support-text">
+              Cualquier duda o inquietud puedes comunicarte con soporte
+            </p>
+
+            <button class="btn-primary" @click=${() => window.open(supportUrl, '_blank')}>
+              Soporte
+            </button>
           </div>
         `;
       } else if (this.status === 'error') {
         content = html`
-          <div class="result-message" style="text-align: center;">
-              <div class="result-icon">❌</div> <h2>Error en el Pago</h2>
-              <p>${this.error?.message || 'Ocurrió un error inesperado durante el pago.'}</p>
-              <button class="action-button" @click=${this.requestClose}>Cerrar</button>
+          <div class="result-container">
+            <div class="error-icon">❌</div>
+            <h2 class="result-title">Error en el Pago</h2>
+            <p class="result-desc">${this.error?.message || 'Ocurrió un error inesperado.'}</p>
+            <button class="btn-primary" @click=${this.requestClose}>Cerrar</button>
           </div>
         `;
       } else {
