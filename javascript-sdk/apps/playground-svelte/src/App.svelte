@@ -24,7 +24,7 @@
     apiKey="pk_test_SVELTE_789"
     amount={500}
     email="test@apolopay.app"
-    barrierDismissible={false}
+    barrierDismissible
     on:success={handleSuccess}
     on:error={handleError}
   ></PaymentButton>

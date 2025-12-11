@@ -14,7 +14,7 @@ import type { PaymentResponse, PaymentError, Locale } from '@payment-button-sdk/
       [attr.product-title]="productTitle"
       [loading]="loading"
       [disabled]="disabled"
-      [attr.barrier-dismissible]="barrierDismissible"
+      [attr.barrier-dismissible]="barrierDismissible ? '' : null"
       (success)="onSuccess($event)"
       (error)="onError($event)"
     >

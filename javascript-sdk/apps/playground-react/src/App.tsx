@@ -17,7 +17,7 @@ function App() {
         apiKey="pk_live_cliente123"
         amount={2500}
         email="test@apolopay.app"
-        barrierDismissible={false}
+        barrierDismissible
         onSuccess={handleSuccess}
         onError={(error) => { console.error(error); }}
       ></PaymentButton>

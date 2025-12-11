@@ -12,7 +12,7 @@
   export let disabled: boolean = false;
   export let loading: boolean = false;
   export let label: string | undefined = undefined;
-  export let barrierDismissible: boolean = true;
+  export let barrierDismissible: boolean = false;
 </script>
 
 <payment-button

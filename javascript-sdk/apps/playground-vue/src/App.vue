@@ -21,7 +21,7 @@ const handleError = (error: any) => {
       apiKey="pk_test_VUE_456"
       :amount="2500"
       email="test@apolopay.app"
-      :barrierDismissible="false"
+      barrierDismissible
       @success="handleSuccess"
       @error="handleError"
     ></PaymentButton>

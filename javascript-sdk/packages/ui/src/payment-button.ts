@@ -25,7 +25,17 @@ export class PaymentButton extends LitElement {
   @property({ type: String }) label?: string = undefined;
   @property({ type: Boolean }) loading: boolean = false;
   @property({ type: Boolean }) disabled: boolean = false;
-  @property({ type: Boolean, attribute: 'barrier-dismissible' }) barrierDismissible: boolean = true;
+  @property({
+    type: Boolean,
+    attribute: 'barrier-dismissible',
+    converter: {
+      fromAttribute: (value: string | null) => {
+        if (value === null) return false;
+        return value !== 'false';
+      },
+      toAttribute: (value: boolean) => value ? '' : null
+    }
+  }) barrierDismissible: boolean = false;
 
   // Detectar cambios en propiedades
   override willUpdate(changedProperties: Map<string, any>) {

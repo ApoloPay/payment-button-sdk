@@ -16,7 +16,7 @@ import { spinnerStyles } from '../styles/spinner-styles';
 export class PaymentModal extends LitElement {
   // --- Props Received from Parent ---
   @property({ type: Boolean }) isOpen = false;
-  @property({ type: Boolean }) barrierDismissible: boolean = true;
+  @property({ type: Boolean }) barrierDismissible: boolean = false;
   @property({ type: String }) lang: Locale = 'es';
   @property({ type: String }) productTitle = '';
   @property({ type: Number }) currentStep: ModalStep = ModalStep.SELECT_ASSET;
