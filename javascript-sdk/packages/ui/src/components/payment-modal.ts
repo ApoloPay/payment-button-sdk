@@ -1,5 +1,5 @@
 import { LitElement, html, css } from 'lit';
-import { customElement, property, query } from 'lit/decorators.js';
+import { customElement, property, query, state } from 'lit/decorators.js';
 import { I18n, ModalStep } from '@payment-button-sdk/core';
 import type { Locale, Asset, Network, PaymentError, Dictionary } from '@payment-button-sdk/core';
 import { modalBaseStyles } from '../styles/modal-base';
@@ -25,11 +25,16 @@ export class PaymentModal extends LitElement {
   @property({ type: String }) paymentAddress: string | null = null;
   @property({ type: Number }) amount = 0;
   @property({ type: String }) email = '';
+  @property({ type: String }) qrCodeExpiresAt: string | null = null;
+
+  @state() private timerString: string = '-- : --';
+  private _timerInterval: number | null = null;
 
   // --- DOM Element Reference ---
   @query('dialog') private dialogElement!: HTMLDialogElement;
 
   override disconnectedCallback() {
+    this.stopTimer();
     super.disconnectedCallback();
     // 🛡️ SEGURIDAD CRÍTICA:
     // Si el componente se desmonta del DOM mientras el diálogo está abierto,
@@ -42,8 +47,25 @@ export class PaymentModal extends LitElement {
 
   // --- Lifecycle: Manage Dialog State ---
   override async updated(changedProperties: Map<string | number | symbol, unknown>) {
+    super.updated(changedProperties);
+
     // Wait for Lit's rendering cycle to complete
     await this.updateComplete;
+
+    // Si entramos al paso QR y tenemos fecha de expiración
+    if (
+      (changedProperties.has('currentStep') || changedProperties.has('isOpen') || changedProperties.has('qrCodeExpiresAt')) &&
+      this.isOpen && 
+      this.currentStep === ModalStep.SHOW_QR &&
+      this.qrCodeExpiresAt // Solo iniciamos si hay fecha
+    ) {
+      this.startTimerFromDate(this.qrCodeExpiresAt);
+    } 
+    
+    // Limpieza si salimos
+    else if (!this.isOpen || this.currentStep !== ModalStep.SHOW_QR) {
+      this.stopTimer();
+    }
 
     if (changedProperties.has('isOpen')) {
       const dialog = this.dialogElement;
@@ -124,6 +146,55 @@ export class PaymentModal extends LitElement {
     this.requestClose(); // Trigger our animated close flow
   }
 
+
+  // --- LÓGICA DEL TIMER BASADA EN FECHA ---
+  private startTimerFromDate(isoDateString: string) {
+    this.stopTimer();
+
+    // Convertimos la fecha del backend a milisegundos locales
+    const endTime = new Date(isoDateString).getTime();
+
+    // Validamos que sea una fecha válida
+    if (isNaN(endTime)) {
+      console.error('Fecha de expiración inválida:', isoDateString);
+      this.timerString = "00:00";
+      return;
+    }
+
+    // Función de actualización
+    const tick = () => {
+      const now = Date.now();
+      const distance = endTime - now;
+
+      if (distance <= 0) {
+        this.stopTimer();
+        this.timerString = "00 min : 00 seg";
+        // Avisar al padre que expiró
+        this.dispatchEvent(new CustomEvent('expired'));
+        return;
+      }
+
+      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+      const m = minutes.toString().padStart(2, '0');
+      const s = seconds.toString().padStart(2, '0');
+
+      this.timerString = `${m} min : ${s} seg`;
+    };
+
+    // Ejecutar inmediatamente y luego cada segundo
+    tick();
+    this._timerInterval = window.setInterval(tick, 1000);
+  }
+
+  private stopTimer() {
+    if (this._timerInterval) {
+      clearInterval(this._timerInterval);
+      this._timerInterval = null;
+    }
+  }
+
   // Emit event when a asset is selected
   private selectAsset(assetId: string) {
     this.dispatchEvent(new CustomEvent('assetSelect', { detail: { assetId } }));
@@ -149,6 +220,21 @@ export class PaymentModal extends LitElement {
     const network = this.currentAsset?.networks.find(network => network.id === this.selectedNetwork);
 
     return network?.network === 'apolopay';
+  }
+
+  private getFormattedTimeWindow(): string {
+    if (!this.qrCodeExpiresAt) return '30 min';
+
+    const endTime = new Date(this.qrCodeExpiresAt).getTime();
+    const now = Date.now();
+    const diffMs = endTime - now;
+
+    if (diffMs <= 0) return '0 min';
+
+    // Convertimos ms a minutos y redondeamos hacia arriba
+    const minutes = Math.ceil(diffMs / (1000 * 60));
+    
+    return `${minutes} min`;
   }
 
   // --- Styles ---
@@ -380,16 +466,14 @@ export class PaymentModal extends LitElement {
     `
   ];
 
-  private time: string = '30:00 min'
-
-  private timer: string = '29 min : 59 seg'
-
   // --- RENDERIZADO DEL QR (Lógica bifurcada) ---
   private renderQRStep(t: Dictionary) {
+    const time = this.getFormattedTimeWindow();
+
     // 1. Caso Apolo Pay (Imagen 7cfdc3.png)
     if (this.isApoloPayNetwork) {
       return html`
-        <span class="timer">${this.timer}</span>
+        <span class="timer">${this.timerString}</span>
         
         <div class="qr-frame">
           <img src="${this.qrCodeUrl}" alt="QR Apolo Pay" />
@@ -402,7 +486,7 @@ export class PaymentModal extends LitElement {
             <li>${unsafeHTML(t.modal.warnings.noNFT)}</li>
             <li>${unsafeHTML(I18n.interpolate(t.modal.warnings.onlyToken, { symbol: this.currentAsset?.symbol || '' }))}</li>
           </ul>
-          <p>${unsafeHTML(I18n.interpolate(t.modal.warnings.timer, { time: this.time }))}</p>
+          <p>${unsafeHTML(I18n.interpolate(t.modal.warnings.timer, { time }))}</p>
         </div>
 
         <button class="btn-dark">${unsafeHTML(t.modal.actions.scanApp)}</button>
@@ -418,7 +502,7 @@ export class PaymentModal extends LitElement {
 
     // 2. Caso Red Externa (Imagen 7cfdbd.png)
     return html`
-      <span class="timer">${this.timer}</span>
+      <span class="timer">${this.timerString}</span>
       
       <div class="qr-frame">
         <img src="${this.qrCodeUrl}" alt="QR Wallet" />
@@ -441,7 +525,7 @@ export class PaymentModal extends LitElement {
           <li>${unsafeHTML(t.modal.warnings.noNFT)}</li>
           <li>${unsafeHTML(I18n.interpolate(t.modal.warnings.onlyToken, { symbol: this.currentAsset?.symbol || '' }))}</li>
         </ul>
-        <p>${unsafeHTML(I18n.interpolate(t.modal.warnings.timer, { time: this.time }))}</p>
+        <p>${unsafeHTML(I18n.interpolate(t.modal.warnings.timer, { time }))}</p>
       </div>
 
       <button class="btn-primary" @click=${() => {

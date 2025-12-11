@@ -45,7 +45,8 @@ export class Repository {
     return {
       paymentId: `pay_${Date.now()}`,
       address: `0xAddress_${assetId}_${networkId}_${Date.now().toString().slice(-5)}`,
-      qrCodeUrl: `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${assetId}_${networkId}_${Date.now()}`
+      qrCodeUrl: `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${assetId}_${networkId}_${Date.now()}`,
+      expiresAt: new Date(Date.now() + 60 * 60 * 1000).toISOString()
     }
   }
 }

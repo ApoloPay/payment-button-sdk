@@ -9,6 +9,7 @@ export interface QrResponseData {
   paymentId: string; // ID único para esta transacción (para el WebSocket)
   address: string;   // La dirección a la que enviar los fondos
   qrCodeUrl: string; // URL de la imagen del QR (o los datos para generarla)
+  expiresAt: string; // Fecha exacta de expiración (ISO String o Timestamp)
 }
 
 

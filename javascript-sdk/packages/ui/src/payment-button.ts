@@ -39,6 +39,7 @@ export class PaymentButton extends LitElement {
   @state() private selectedAsset: string | null = null; // ID of the chosen asset
   @state() private selectedNetwork: string | null = null; // ID of the chosen blockchain
   @state() private qrCodeUrl: string | null = null; // URL for the QR code image
+  @state() private qrCodeExpiresAt: string | null = null; // Expiration time for the QR code
   @state() private paymentAddress: string | null = null; // Wallet address for payment
   @state() private assets: any[] = []; // List fetched from API
   @state() private error: PaymentError | null = null; // Stores error details if something fails
@@ -156,6 +157,7 @@ export class PaymentButton extends LitElement {
       const qrData = await this.client.fetchQrCodeDetails(detail);
       this.qrCodeUrl = qrData.qrCodeUrl;
       this.paymentAddress = qrData.address;
+      this.qrCodeExpiresAt = qrData.expiresAt;
       this.status = 'idle'; // QR data loaded, waiting for payment via WebSocket
     } catch (e) {
       console.error("Error fetching QR code details:", e);
@@ -226,6 +228,7 @@ export class PaymentButton extends LitElement {
         .paymentAddress=${this.paymentAddress}
         .amount=${this.amount}
         .email=${this.email}
+        .qrCodeExpiresAt=${this.qrCodeExpiresAt}
         @closeRequest=${this.handleCloseRequest}
         @assetSelect=${this.handleAssetSelect}
         @networkSelect=${this.handleInitiatePayment}
