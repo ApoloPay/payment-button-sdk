@@ -1,8 +1,9 @@
 import { LitElement, html, css } from 'lit';
 import { customElement, property, query } from 'lit/decorators.js';
-import { ModalStep, type Network, type PaymentError } from '@payment-button-sdk/core';
+import { Asset, ModalStep, type Network, type PaymentError } from '@payment-button-sdk/core';
 import { modalBaseStyles } from '../styles/modal-base';
 import { sharedStyles } from '../styles/shared-styles';
+import { textFieldBaseStyles } from '../styles/text-field-base';
 
 @customElement('payment-modal')
 export class PaymentModal extends LitElement {
@@ -12,7 +13,7 @@ export class PaymentModal extends LitElement {
   @property({ type: String }) status: 'idle' | 'loading' | 'success' | 'error' = 'idle';
   @property({ type: Object }) error: PaymentError | null = null;
   @property({ type: Boolean }) isLoadingData = true; // For initial asset/network load
-  @property({ type: Array }) assets: any[] = [];
+  @property({ type: Array }) assets: Asset[] = [];
   @property({ type: String }) selectedAsset: string | null = null;
   @property({ type: String }) selectedNetwork: string | null = null;
   @property({ type: String }) qrCodeUrl: string | null = null;
@@ -103,15 +104,22 @@ export class PaymentModal extends LitElement {
     this.dispatchEvent(new CustomEvent('changeStep', { detail: step }));
   }
 
+  private get currentAsset(): Asset | undefined {
+    return this.assets.find(asset => asset.id === this.selectedAsset)
+  }
+
   // Helper para saber si es Apolo Pay (ajusta el ID según tu backend)
   private get isApoloPayNetwork() {
-    return this.selectedNetwork === 'apolo-pay' || this.selectedNetwork === 'apolo_pay';
+    const network = this.currentAsset?.networks.find(network => network.id === this.selectedNetwork);
+
+    return network?.network === 'apolopay';
   }
 
   // --- Styles ---
   static override styles = [
     sharedStyles,
     modalBaseStyles,
+    textFieldBaseStyles,
     css`
       /* --- HEADER --- */
       .modal-header {
@@ -154,7 +162,7 @@ export class PaymentModal extends LitElement {
       p.subtitle {
         font-size: 0.9rem;
         color: #6b7280;
-        margin: 0 0 1.5rem;
+        margin: 0 0 1rem;
         line-height: 1.4;
       }
 
@@ -197,7 +205,7 @@ export class PaymentModal extends LitElement {
         flex-direction: column;
       }
       .card-title { font-weight: 600; font-size: 1rem; color: #1f2937; }
-      .card-sub { font-size: 0.8rem; color: #9ca3af; text-transform: uppercase;}
+      .card-sub { font-size: 0.8rem; color: #757575; text-transform: uppercase;}
 
       /* --- QR SCREENS --- */
       .timer {
@@ -211,61 +219,32 @@ export class PaymentModal extends LitElement {
       .qr-frame {
         background: white;
         padding: 10px;
+        padding-bottom: 14px;
         border-radius: 12px;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
         display: inline-block;
         margin-bottom: 1rem;
       }
-      .qr-frame img { display: block; border-radius: 8px; width: 160px; height: 160px; }
+      .qr-frame img { display: block; border-radius: 8px; width: 130px; height: 130px; }
       
       .amount-badge {
-        background: #fff7ed; /* Naranja muy claro */
         color: #ea580c;
         font-weight: 700;
-        padding: 0.25rem 1rem;
-        border-radius: 20px;
+        font-size: 1.2rem;
         display: inline-block;
-        margin-top: -10px; /* Superpuesto o pegado al QR */
-        position: relative;
-        z-index: 2;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-      }
-
-      /* Inputs de solo lectura (Diseño Apolo) */
-      .info-field {
-        margin-top: 1rem;
-        text-align: left;
-      }
-      .info-label {
-        font-size: 0.75rem;
-        color: #9ca3af;
-        margin-left: 0.5rem;
-        margin-bottom: 0.25rem;
-        display: block;
-      }
-      .info-input {
-        width: 100%;
-        padding: 0.75rem 1rem;
-        border: 1px solid #e5e7eb;
-        border-radius: 12px;
-        background: #f9fafb;
-        color: #4b5563;
-        font-family: monospace;
-        font-size: 0.9rem;
+        margin-top: 10px;
       }
 
       /* Botón Naranja Grande */
       .btn-primary {
         background-color: #ea580c; /* Naranja Apolo */
         color: white;
-        width: 100%;
-        padding: 1rem;
+        padding: 0.5rem 1.5rem;
         border-radius: 30px; /* Pill shape */
         border: none;
-        font-weight: 700;
-        font-size: 1rem;
+        font-weight: 400;
+        font-size: .9rem;
         cursor: pointer;
-        margin-top: 1.5rem;
         box-shadow: 0 4px 10px rgba(234, 88, 12, 0.3);
         transition: transform 0.1s, box-shadow 0.1s;
       }
@@ -273,7 +252,7 @@ export class PaymentModal extends LitElement {
       
       /* Botón Azul Oscuro (Apolo Pay QR) */
       .btn-dark {
-        background-color: #111827; /* Azul casi negro */
+        background-color: #041c4c;
         color: white;
         width: 100%;
         padding: 1rem;
@@ -281,17 +260,21 @@ export class PaymentModal extends LitElement {
         border: none;
         font-weight: 600;
         cursor: pointer;
-        margin-top: 1.5rem;
+        margin-block: 0.25rem 1.25rem;
       }
 
       .warning-text {
         font-size: 0.75rem;
-        color: #6b7280;
+        color: #1c315c;
         text-align: left;
         margin-top: 1.5rem;
         line-height: 1.5;
       }
       .warning-text strong { color: #ea580c; }
+
+      .warning-text ul {
+        padding-left: 1.5rem;
+      }
     `
   ];
 
@@ -304,14 +287,16 @@ export class PaymentModal extends LitElement {
         
         <div class="qr-frame">
           <img src="${this.qrCodeUrl}" alt="QR Apolo Pay" />
+          <span class="amount-badge">${this.amount} USDT</span>
         </div>
-        <div class="amount-badge">${this.amount} USDT</div>
 
         <div class="warning-text">
           <ul>
             <li>Asegúrate de que la <strong>red de tu wallet coincida</strong> con la red de destino.</li>
-            <li>Solo se aceptan <strong>depósitos en USDT</strong>.</li>
+            <li>No envíes NFTs a esta wallet.</li>
+            <li>Solo se aceptan <strong>depósitos en USDT</strong>. El envío de otro tipo de token podría resultar en su pérdida.</li>
           </ul>
+          <p>Realiza el pago dentro del tiempo indicado. <strong>30:00 min</strong> De lo contrario, el código QR se vencerá y deberás generar uno nuevo.</p>
         </div>
 
         <button class="btn-dark">
@@ -333,23 +318,26 @@ export class PaymentModal extends LitElement {
       
       <div class="qr-frame">
         <img src="${this.qrCodeUrl}" alt="QR Wallet" />
-      </div>
-      <div class="amount-badge">${this.amount} USDT</div>
-
-      <div class="info-field">
-        <span class="info-label">Red</span>
-        <input class="info-input" readonly value="${this.selectedNetwork}" />
+        <span class="amount-badge">${this.amount} USDT</div>
       </div>
 
-      <div class="info-field">
-        <span class="info-label">Dirección de depósito</span>
-        <div style="position: relative">
-           <input class="info-input" readonly value="${this.paymentAddress}" />
-           </div>
+      <div class="text-field">
+        <label class="text-field-label">Red</label>
+        <input class="text-field-input" readonly value="${this.selectedNetwork}" />
+      </div>
+
+      <div class="text-field">
+        <label class="text-field-label">Dirección de depósito</label>
+        <input class="text-field-input" readonly value="${this.paymentAddress}" />
       </div>
 
       <div class="warning-text">
-         Realiza el pago dentro del tiempo indicado.
+        <ul>
+          <li>Asegúrate de que la <strong>red de tu wallet coincida</strong> con la red de destino.</li>
+          <li>No envíes NFTs a esta wallet.</li>
+          <li>Solo se aceptan <strong>depósitos en USDT</strong>. El envío de otro tipo de token podría resultar en su pérdida.</li>
+        </ul>
+        <p>Realiza el pago dentro del tiempo indicado. <strong>30:00 min</strong> De lo contrario, el código QR se vencerá y deberás generar uno nuevo.</p>
       </div>
 
       <button class="btn-primary" @click=${() => {
@@ -364,12 +352,11 @@ export class PaymentModal extends LitElement {
   // --- Render Method ---
   protected override render() {
     let content;
-    const currentAsset = this.assets.find(asset => asset.id === this.selectedAsset);
 
     // Header simple con navegación
     const header = html`
       <div class="modal-header">
-        ${this.currentStep > ModalStep.SELECT_ASSET
+        ${this.currentStep > ModalStep.SELECT_ASSET && this.currentStep < ModalStep.RESULT
         ? html`<button class="back-button" @click=${() => this.changeStep(this.currentStep - 1)} >&larr;</button>`
         : ''}
         <button class="close-button" @click=${this.requestClose}>&times;</button>
@@ -393,7 +380,9 @@ export class PaymentModal extends LitElement {
             </div>
           `)}
         </div>
-        <p class="subtitle" style="margin-top: 1.5rem">Luego podrás seleccionar la red</p>
+        <p class="warning-text" style="font-size: 0.9rem; text-align: center; margin-top: 1.5rem">
+          Luego podrás seleccionar la red de tu preferencia
+        </p>
       `;
     }
     // Selección de Red
@@ -403,7 +392,7 @@ export class PaymentModal extends LitElement {
         <p class="subtitle">Selecciona la red de tu preferencia</p>
 
         <div class="selection-list">
-          ${currentAsset.networks.map((network: Network) => html`
+          ${this.currentAsset?.networks.map((network: Network) => html`
             <div class="selection-card" @click=${() => this.selectNetwork(network.id)}>
               <img src="${network.image}" class="coin-icon" />
               <div class="card-text">

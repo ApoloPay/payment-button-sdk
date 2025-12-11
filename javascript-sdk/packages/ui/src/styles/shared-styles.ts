@@ -7,7 +7,7 @@ export const sharedStyles = css`
     --apolo-primary-hover: var(--payment-button-primary-hover, #4f46e5);
     --apolo-on-primary: var(--payment-button-on-primary, #ffffff);
     
-    --apolo-bg: var(--payment-button-bg, #ffffff);
+    --apolo-bg: var(--payment-button-bg, #f6f2ec);
     --apolo-text: var(--payment-button-text, #1f2937);
     --apolo-text-muted: var(--payment-button-text-muted, #6b7280);
     --apolo-border: var(--payment-button-border, #e5e7eb);
