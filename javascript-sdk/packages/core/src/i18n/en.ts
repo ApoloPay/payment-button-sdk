@@ -12,11 +12,13 @@ export const en: Dictionary = {
       scanQr: 'Deposit <span class="highlight">{symbol}</span>',
       success: 'Thanks for <span class="highlight">your purchase!</span>',
       error: 'Payment Error',
+      idle: 'Unexpected state'
     },
     subtitles: {
       selectAsset: 'Select the stablecoin you want to pay with',
       selectNetwork: 'Select your preferred network',
       scanQr: 'Product or service title',
+      idle: 'An Unexpected error occurred'
     },
     actions: {
       back: 'Back',
@@ -48,5 +50,6 @@ export const en: Dictionary = {
   errors: {
     generic: 'An unexpected error occurred.',
     apiKeyMissing: 'API Key is missing',
+    timeout: 'The payment time has expired. Please generate a new order.',
   }
 };

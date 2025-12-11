@@ -7,6 +7,10 @@ import { sharedStyles } from '../styles/shared-styles';
 import { textFieldBaseStyles } from '../styles/text-field-base';
 import { supportUrl } from '../utils/constants';
 import { unsafeHTML } from 'lit/directives/unsafe-html.js';
+import { logoApolo } from '../assets/logo_apolo'
+import { qrBaseStyles } from '../styles/qr-base';
+import { handleImageError } from '../utils/image_error';
+import { spinnerStyles } from '../styles/spinner-styles';
 
 @customElement('payment-modal')
 export class PaymentModal extends LitElement {
@@ -15,7 +19,7 @@ export class PaymentModal extends LitElement {
   @property({ type: String }) lang: Locale = 'es';
   @property({ type: String }) productTitle = '';
   @property({ type: Number }) currentStep: ModalStep = ModalStep.SELECT_ASSET;
-  @property({ type: String }) status: 'idle' | 'loading' | 'success' | 'error' = 'idle';
+  @property({ type: String }) status: 'idle' | 'success' | 'error' = 'idle';
   @property({ type: Object }) error: PaymentError | null = null;
   @property({ type: Boolean }) isLoadingData = true; // For initial asset/network load
   @property({ type: Array }) assets: Asset[] = [];
@@ -118,8 +122,6 @@ export class PaymentModal extends LitElement {
 
   // Request to close the modal (triggered by X, backdrop, Escape)
   private requestClose() {
-    // Don't allow closing if a critical loading state is happening (e.g., final payment)
-    if (this.status === 'loading' && this.currentStep === ModalStep.RESULT) return;
     this.dispatchEvent(new CustomEvent('closeRequest'));
   }
 
@@ -156,7 +158,7 @@ export class PaymentModal extends LitElement {
 
     // Validamos que sea una fecha válida
     if (isNaN(endTime)) {
-      console.error('Fecha de expiración inválida:', isoDateString);
+      console.error('Invalid date:', isoDateString);
       this.timerString = "00:00";
       return;
     }
@@ -169,8 +171,17 @@ export class PaymentModal extends LitElement {
       if (distance <= 0) {
         this.stopTimer();
         this.timerString = "00 min : 00 seg";
-        // Avisar al padre que expiró
-        this.dispatchEvent(new CustomEvent('expired'));
+
+        this.status = 'error';
+        
+        this.error = {
+          code: 'PAYMENT_TIMEOUT',
+          message: I18n.t.errors.timeout
+        };
+        
+        this.changeStep(ModalStep.RESULT);
+
+        this.dispatchEvent(new CustomEvent('expired', { detail: { error: this.error } }));
         return;
       }
 
@@ -215,11 +226,8 @@ export class PaymentModal extends LitElement {
     return this.assets.find(asset => asset.id === this.selectedAsset)
   }
 
-  // Helper para saber si es Apolo Pay (ajusta el ID según tu backend)
-  private get isApoloPayNetwork() {
-    const network = this.currentAsset?.networks.find(network => network.id === this.selectedNetwork);
-
-    return network?.network === 'apolopay';
+  private get currentNetwork(): Network | undefined {
+    return this.currentAsset?.networks.find(network => network.id === this.selectedNetwork)
   }
 
   private getFormattedTimeWindow(): string {
@@ -242,6 +250,8 @@ export class PaymentModal extends LitElement {
     sharedStyles,
     modalBaseStyles,
     textFieldBaseStyles,
+    qrBaseStyles,
+    spinnerStyles,
     css`
       /* --- HEADER --- */
       .modal-header {
@@ -334,25 +344,6 @@ export class PaymentModal extends LitElement {
         font-size: 0.9rem;
         margin-bottom: 1rem;
         display: block;
-      }
-
-      .qr-frame {
-        background: white;
-        padding: 10px;
-        padding-bottom: 14px;
-        border-radius: var(--apolo-radius);
-        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-        display: inline-block;
-        margin-bottom: 1rem;
-      }
-      .qr-frame img { display: block; border-radius: 8px; width: 130px; height: 130px; }
-      
-      .amount-badge {
-        color: var(--apolo-accent);
-        font-weight: 700;
-        font-size: 1.2rem;
-        display: inline-block;
-        margin-top: 10px;
       }
 
       /* Botón Naranja Grande */
@@ -468,25 +459,40 @@ export class PaymentModal extends LitElement {
 
   // --- RENDERIZADO DEL QR (Lógica bifurcada) ---
   private renderQRStep(t: Dictionary) {
-    const time = this.getFormattedTimeWindow();
+    const timeWindow = this.getFormattedTimeWindow();
+
+    const warningTokenHTML = I18n.interpolate(t.modal.warnings.onlyToken, { 
+      symbol: this.currentAsset?.symbol || '' 
+    });
+
+    const warningTimerHTML = I18n.interpolate(t.modal.warnings.timer, { 
+      time: timeWindow 
+    });
+
+    const network = this.currentNetwork;
 
     // 1. Caso Apolo Pay (Imagen 7cfdc3.png)
-    if (this.isApoloPayNetwork) {
+    if (network?.network === 'apolopay') {
       return html`
         <span class="timer">${this.timerString}</span>
         
         <div class="qr-frame">
-          <img src="${this.qrCodeUrl}" alt="QR Apolo Pay" />
-          <span class="amount-badge">${this.amount} ${this.currentAsset?.symbol}</span>
+          <div class="qr-wrapper">
+            <img src="${this.qrCodeUrl}" class="qr-code-img" alt="QR Apolo Pay" @error=${handleImageError} />
+            
+            <img src="${logoApolo}" class="qr-overlay-icon" alt="Network Icon" style="padding: 4px;" />
+          </div>
+
+          <span class="qr-badge">${this.amount} ${this.currentAsset?.symbol}</span>
         </div>
 
         <div class="warning-text">
           <ul>
             <li>${unsafeHTML(t.modal.warnings.networkMatch)}</li>
             <li>${unsafeHTML(t.modal.warnings.noNFT)}</li>
-            <li>${unsafeHTML(I18n.interpolate(t.modal.warnings.onlyToken, { symbol: this.currentAsset?.symbol || '' }))}</li>
+            <li>${unsafeHTML(warningTokenHTML)}</li>
           </ul>
-          <p>${unsafeHTML(I18n.interpolate(t.modal.warnings.timer, { time }))}</p>
+          <p>${unsafeHTML(warningTimerHTML)}</p>
         </div>
 
         <button class="btn-dark">${unsafeHTML(t.modal.actions.scanApp)}</button>
@@ -505,8 +511,15 @@ export class PaymentModal extends LitElement {
       <span class="timer">${this.timerString}</span>
       
       <div class="qr-frame">
-        <img src="${this.qrCodeUrl}" alt="QR Wallet" />
-        <span class="amount-badge">${this.amount} ${this.currentAsset?.symbol}</span>
+        <div class="qr-wrapper">
+          <img src="${this.qrCodeUrl}" class="qr-code-img" alt="QR Wallet" @error=${handleImageError} />
+          
+          ${network 
+            ? html`<img src="${network.image}" class="qr-overlay-icon" alt="Network Icon" @error=${handleImageError} />` 
+            : ''
+          }
+        </div>
+        <span class="qr-badge">${this.amount} ${this.currentAsset?.symbol}</span>
       </div>
 
       <div class="text-field">
@@ -523,9 +536,9 @@ export class PaymentModal extends LitElement {
         <ul>
           <li>${unsafeHTML(t.modal.warnings.networkMatch)}</li>
           <li>${unsafeHTML(t.modal.warnings.noNFT)}</li>
-          <li>${unsafeHTML(I18n.interpolate(t.modal.warnings.onlyToken, { symbol: this.currentAsset?.symbol || '' }))}</li>
+          <li>${unsafeHTML(warningTokenHTML)}</li>
         </ul>
-        <p>${unsafeHTML(I18n.interpolate(t.modal.warnings.timer, { time }))}</p>
+        <p>${unsafeHTML(warningTimerHTML)}</p>
       </div>
 
       <button class="btn-primary" @click=${() => {
@@ -562,7 +575,7 @@ export class PaymentModal extends LitElement {
         <div class="selection-list">
           ${this.assets.map(asset => html`
             <div class="selection-card" @click=${() => this.selectAsset(asset.id)}>
-              <img src="${asset.image}" class="coin-icon" />
+              <img src="${asset.image}" class="coin-icon" @error=${handleImageError} />
               <div class="card-text">
                 <span class="card-title">${asset.symbol}</span>
                 <span class="card-sub">${asset.name}</span>
@@ -584,7 +597,7 @@ export class PaymentModal extends LitElement {
         <div class="selection-list">
           ${this.currentAsset?.networks.map((network: Network) => html`
             <div class="selection-card" @click=${() => this.selectNetwork(network.id)}>
-              <img src="${network.image}" class="coin-icon" />
+              <img src="${network.network === 'apolopay' ? logoApolo : network.image}" class="coin-icon" @error=${handleImageError} />
               <div class="card-text">
                 <span class="card-title">${network.name}</span>
               </div>
@@ -651,13 +664,30 @@ export class PaymentModal extends LitElement {
           </div>
         `;
       } else {
-        // Intermediate state while waiting for WebSocket confirmation (optional)
-        content = html`<div class="loading-indicator">Verificando pago...<div class="spinner"></div></div>`;
+        content = html`
+          <div class="result-container">
+            <div class="error-icon">⏳</div>
+            <h2 class="result-title">${t.modal.titles.idle}</h2>
+            <p class="result-desc">${t.modal.subtitles.idle}</p>
+            <button class="btn-primary" @click=${this.requestClose}>${t.modal.actions.close}</button>
+          </div>
+        `;
       }
     }
 
+    const showOverlay = 
+      this.isLoadingData ||
+      (this.currentStep === ModalStep.SHOW_QR && !this.qrCodeUrl)
+
     return html`
       <dialog @close=${this.handleDialogNativeClose}>
+        ${showOverlay 
+          ? html`
+              <div class="spinner-overlay">
+                <div class="spinner"></div>
+              </div>` 
+          : ''
+        }
         ${header}
         <div class="modal-body">
           ${content}

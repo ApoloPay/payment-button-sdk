@@ -10,11 +10,13 @@ export interface Dictionary {
       scanQr: string;
       success: string;
       error: string;
+      idle: string;
     };
     subtitles: {
       selectAsset: string;
       selectNetwork: string;
       scanQr: string;
+      idle: string;
     };
     actions: {
       back: string;
@@ -46,5 +48,6 @@ export interface Dictionary {
   errors: {
     generic: string;
     apiKeyMissing: string;
+    timeout: string;
   };
 }

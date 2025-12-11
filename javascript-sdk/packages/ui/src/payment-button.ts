@@ -57,6 +57,18 @@ export class PaymentButton extends LitElement {
       return;
     }
     // Initialize the PaymentClient with necessary options and callbacks
+    this.initClient();
+    this.loadInitialData(); // Fetch assets and blockchains immediately
+  }
+
+  // Called when the component is removed from the DOM
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    // Ensure WebSocket is disconnected if the component is removed
+    this.client?.disconnectWebSocket();
+  }
+
+  private initClient() {
     this.client = new PaymentClient({
       apiKey: this.apiKey,
       amount: this.amount,
@@ -76,15 +88,7 @@ export class PaymentButton extends LitElement {
         this.dispatchEvent(new CustomEvent('error', { detail: error }));
         // WebSocket is disconnected automatically by the client on error
       }
-    });
-    this.loadInitialData(); // Fetch assets and blockchains immediately
-  }
-
-  // Called when the component is removed from the DOM
-  override disconnectedCallback() {
-    super.disconnectedCallback();
-    // Ensure WebSocket is disconnected if the component is removed
-    this.client?.disconnectWebSocket();
+    })
   }
 
   // --- Data Loading ---
@@ -102,18 +106,31 @@ export class PaymentButton extends LitElement {
     }
   }
 
-  // --- Event Handlers (Triggered by Child Components) ---
-  // Triggered by <trigger-button> when clicked
-  private handleOpen() {
-    this.isOpen = true;
-    // Reset state for a fresh flow each time the modal opens
+  private resetState() {
     this.currentStep = ModalStep.SELECT_ASSET;
+    this.status = 'idle';
+    this.error = null;
+
     this.selectedAsset = null;
     this.selectedNetwork = null;
     this.qrCodeUrl = null;
     this.paymentAddress = null;
-    this.status = 'idle';
-    this.error = null;
+    this.qrCodeExpiresAt = null;
+  }
+
+  // --- Event Handlers (Triggered by Child Components) ---
+  // Triggered by <trigger-button> when clicked
+  private handleOpen() {
+    // 1. Limpieza preventiva
+    this.resetState();
+
+    if (!this.apiKey) return console.error('PaymentButton Error: API Key missing');
+
+    if (this.loading) return;
+
+    if (!this.client) this.initClient();
+
+    this.isOpen = true;
   }
 
   // Triggered by <payment-modal> requesting to close (X, backdrop, Escape)
@@ -123,13 +140,19 @@ export class PaymentButton extends LitElement {
     if (this.currentStep === ModalStep.SHOW_QR && this.status !== 'success' && this.status !== 'error') {
       this.client?.disconnectWebSocket();
     }
+
+    setTimeout(() => this.resetState(), 300);
   }
 
   // Triggered by <payment-modal> when an asset is selected
   private handleAssetSelect(event: CustomEvent<{ assetId: string }>) {
     this.selectedAsset = event.detail.assetId;
-    this.currentStep = ModalStep.SELECT_NETWORK; // Move to the next step
-    this.error = null; // Clear previous errors
+    this.currentStep = ModalStep.SELECT_NETWORK;
+    this.error = null;
+  }
+
+  private handleExpired(event: CustomEvent<{ error: { code: string; message: string } }>) {
+    this.dispatchEvent(new CustomEvent('error', { detail: event.detail.error }));
   }
 
   // Triggered by <payment-modal> when a network is selected
@@ -233,6 +256,7 @@ export class PaymentButton extends LitElement {
         @assetSelect=${this.handleAssetSelect}
         @networkSelect=${this.handleInitiatePayment}
         @changeStep=${this.handleChangeStep}
+        @expired=${this.handleExpired}
       ></payment-modal>
     `;
   }

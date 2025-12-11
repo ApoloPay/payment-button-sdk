@@ -12,11 +12,13 @@ export const es: Dictionary = {
       scanQr: 'Depósito <span class="highlight">{symbol}</span>',
       success: '¡Gracias por <span class="highlight">tu compra!</span>',
       error: 'Error en el Pago',
+      idle: 'Estado inesperado'
     },
     subtitles: {
       selectAsset: 'Selecciona la stablecoin con la que deseas pagar',
       selectNetwork: 'Selecciona la red de tu preferencia',
       scanQr: 'Título del producto o servicio a pagar',
+      idle: 'Ocurrio un error inesperado'
     },
     actions: {
       back: 'Volver',
@@ -48,5 +50,6 @@ export const es: Dictionary = {
   errors: {
     generic: 'Ocurrió un error inesperado.',
     apiKeyMissing: 'Falta la API Key',
+    timeout: 'El tiempo para realizar el pago ha expirado. Por favor genera una nueva orden.',
   }
 };

@@ -42,11 +42,13 @@ export class Repository {
     // const data = await response.json()
     // console.log(data, 'data');
 
+    await new Promise(resolve => setTimeout(resolve, 2000));
+
     return {
       paymentId: `pay_${Date.now()}`,
       address: `0xAddress_${assetId}_${networkId}_${Date.now().toString().slice(-5)}`,
-      qrCodeUrl: `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${assetId}_${networkId}_${Date.now()}`,
-      expiresAt: new Date(Date.now() + 60 * 60 * 1000).toISOString()
+      qrCodeUrl: `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${assetId}_${networkId}&ecc=H`,
+      expiresAt: new Date(Date.now() + 30 * 60 * 1000).toISOString()
     }
   }
 }
