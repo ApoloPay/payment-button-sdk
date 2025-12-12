@@ -1,10 +1,14 @@
 ---
-import type { HTMLAttributes } from 'astro/types';
+import type { HTMLAttributes } from "astro/types";
 
-import type { PaymentResponse, PaymentError, Locale } from '@payment-button-sdk/ui';
+import type {
+  PaymentResponse,
+  PaymentError,
+  Locale,
+} from "@payment-button-sdk/ui";
 
-interface Props extends HTMLAttributes<'div'> {
-  apiKey: string;
+interface Props extends HTMLAttributes<"div"> {
+  publicKey: string;
   amount: number;
   email: string;
   productTitle?: string;
@@ -17,14 +21,25 @@ interface Props extends HTMLAttributes<'div'> {
   onError?: (event: CustomEvent<PaymentError>) => void;
 }
 
-const { apiKey, amount, email, productTitle, lang, disabled, loading, label, barrierDismissible, ...restProps } = Astro.props;
-const hasContent = Astro.slots.has('default');
+const {
+  publicKey,
+  amount,
+  email,
+  productTitle,
+  lang,
+  disabled,
+  loading,
+  label,
+  barrierDismissible,
+  ...restProps
+} = Astro.props;
+const hasContent = Astro.slots.has("default");
 ---
 
 {
   hasContent ? (
     <payment-button
-      api-key={apiKey}
+      public-key={publicKey}
       amount={amount}
       email={email}
       product-title={productTitle}
@@ -39,7 +54,7 @@ const hasContent = Astro.slots.has('default');
     </payment-button>
   ) : (
     <payment-button
-      api-key={apiKey}
+      public-key={publicKey}
       amount={amount}
       email={email}
       product-title={productTitle}
@@ -54,5 +69,5 @@ const hasContent = Astro.slots.has('default');
 }
 
 <script>
-  import '@payment-button-sdk/ui';
+  import "@payment-button-sdk/ui";
 </script>

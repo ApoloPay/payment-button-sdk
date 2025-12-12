@@ -26,7 +26,7 @@ export class PaymentClient {
       ...details,
       amount: this.options.amount,
       email: this.options.email,
-      apiKey: this.options.apiKey
+      publicKey: this.options.publicKey
     });
 
     return qrData;

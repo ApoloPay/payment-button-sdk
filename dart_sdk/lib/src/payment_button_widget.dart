@@ -7,7 +7,7 @@ enum ButtonStatus { idle, loading }
 
 class PaymentButtonWidget extends StatefulWidget {
   // 1. Props (Inputs)
-  final String apiKey;
+  final String publicKey;
   final double amount;
   final Widget child; // Para que el usuario ponga su propio texto/icono
 
@@ -17,7 +17,7 @@ class PaymentButtonWidget extends StatefulWidget {
 
   const PaymentButtonWidget({
     Key? key,
-    required this.apiKey,
+    required this.publicKey,
     required this.amount,
     required this.onSuccess,
     required this.onError,
@@ -35,7 +35,7 @@ class _PaymentButtonWidgetState extends State<PaymentButtonWidget> {
   void _pay() {
     // Inicia el cliente
     final client = PaymentClient(
-      apiKey: widget.apiKey,
+      publicKey: widget.publicKey,
       amount: widget.amount,
       onSuccess: (response) {
         if (mounted) {

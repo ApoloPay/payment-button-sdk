@@ -8,9 +8,9 @@ import type { Locale, PaymentResponse } from '@payment-button-sdk/ui';
 //    (Nota: @core es una dependencia de @ui, que es una dependencia nuestra)
 export * from '@payment-button-sdk/ui';
 
-// 3. Define las props "tipo React" (onSuccess, apiKey)
+// 3. Define las props "tipo React" (onSuccess, publicKey)
 type PaymentButtonProps = {
-  apiKey: string;
+  publicKey: string;
   amount: number;
   email: string;
   productTitle?: string;
@@ -26,7 +26,7 @@ type PaymentButtonProps = {
 
 // 4. El componente de React ahora es un "ADAPTADOR"
 export const PaymentButton: React.FC<PaymentButtonProps> = ({
-  apiKey,
+  publicKey,
   amount,
   email,
   productTitle,
@@ -69,7 +69,7 @@ export const PaymentButton: React.FC<PaymentButtonProps> = ({
     'payment-button',
     {
       ref,
-      'api-key': apiKey,
+      'public-key': publicKey,
       amount,
       email,
       'product-title': productTitle,

@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
         body: Center(
           // 2. Usa tu Widget
           child: PaymentButtonWidget(
-            apiKey: 'pk_test_FLUTTER_123',
+            publicKey: 'pk_test_FLUTTER_123',
             amount: 150.50,
 
             // 3. Define los callbacks

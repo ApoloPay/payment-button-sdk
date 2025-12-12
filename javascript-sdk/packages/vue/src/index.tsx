@@ -14,10 +14,10 @@ export * from '@payment-button-sdk/ui';
  */
 export const PaymentButton = defineComponent({
   name: 'PaymentButton',
-  
+
   // 1. Define los props que acepta (camelCase)
   props: {
-    apiKey: { type: String, required: true },
+    publicKey: { type: String, required: true },
     amount: { type: Number, required: true },
     email: { type: String, required: true },
     productTitle: { type: String, required: false },
@@ -50,7 +50,7 @@ export const PaymentButton = defineComponent({
 
       node.addEventListener('success', handleSuccess);
       node.addEventListener('error', handleError);
-      
+
       // (En Vue, los listeners se limpian automáticamente cuando el componente se desmonta)
     });
 
@@ -60,9 +60,9 @@ export const PaymentButton = defineComponent({
       {
         // 6. Asigna la ref
         ref: buttonRef,
-        
+
         // 7. Pasa los props, convirtiéndolos a kebab-case
-        'api-key': props.apiKey,
+        'public-key': props.publicKey,
         'amount': props.amount,
         'email': props.email,
         'product-title': props.productTitle,

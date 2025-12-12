@@ -2,7 +2,7 @@ import { SvelteComponentTyped } from "svelte";
 import '@payment-button-sdk/ui';
 declare const __propDef: {
     props: {
-        apiKey: string;
+        publicKey: string;
         amount: number;
     };
     events: {

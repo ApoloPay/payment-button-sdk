@@ -5,14 +5,20 @@ export class Repository {
   static apiUrl = "https://pb-test-api.apolopay.app"
   static wsUrl = "wss://api.apolopay.com"
 
-  static headers = {
-    'Content-Type': 'application/json'
+  static headers = (publicKey?: string) => {
+    const options: Record<string, string> = {
+      'Content-Type': 'application/json',
+    }
+
+    if (publicKey) options['x-public-key'] = publicKey!
+
+    return options
   }
 
   static async getAssets(): Promise<Asset[]> {
     const response = await fetch(`${this.apiUrl}/payment-button/assets`, {
       method: 'GET',
-      headers: this.headers,
+      headers: this.headers(),
     })
     const data = await response.json()
 
@@ -24,23 +30,23 @@ export class Repository {
     assetId,
     networkId,
     email,
-    apiKey
+    publicKey
   }: (QrRequestDetails & Omit<PaymentOptions, 'onSuccess' | 'onError'>)): Promise<QrResponseData> {
-    // const response = await fetch(`${this.apiUrl}/payment-button/process`, {
-    //   method: 'POST',
-    //   headers: this.headers,
-    //   body: JSON.stringify({
-    //     amount,
-    //     assetId,
-    //     networkId,
-    //     metadata: {
-    //       orderId: "ORD-9821",
-    //       customerEmail: email
-    //     },
-    //   })
-    // })
-    // const data = await response.json()
-    // console.log(data, 'data');
+    const response = await fetch(`${this.apiUrl}/payment-button/process`, {
+      method: 'POST',
+      headers: this.headers(publicKey),
+      body: JSON.stringify({
+        amount,
+        assetId,
+        networkId,
+        metadata: {
+          orderId: "ORD-9821",
+          customerEmail: email
+        },
+      })
+    })
+    const data = await response.json()
+    console.log(data, 'data');
 
     await new Promise(resolve => setTimeout(resolve, 2000));
 

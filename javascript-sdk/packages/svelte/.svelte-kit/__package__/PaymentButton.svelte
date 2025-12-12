@@ -1,13 +1,9 @@
-<script>import "@payment-button-sdk/ui";
-export let apiKey;
-export let amount;
+<script>
+  import "@payment-button-sdk/ui";
+  export let publicKey;
+  export let amount;
 </script>
 
-<payment-button
-  api-key={apiKey}
-  {amount}
-  on:success
-  on:error
->
+<payment-button public-key={publicKey} {amount} on:success on:error>
   <slot />
 </payment-button>

@@ -30,7 +30,7 @@ export interface PaymentError {
 }
 
 export interface PaymentOptions {
-  apiKey: string;
+  publicKey: string;
   amount: number;
   email: string;
   onSuccess: (response: PaymentResponse) => void;

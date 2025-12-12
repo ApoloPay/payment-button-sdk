@@ -21,7 +21,7 @@
   <h1>Mi Playground de Svelte 🧡</h1>
 
   <PaymentButton
-    apiKey="pk_test_SVELTE_789"
+    publicKey="pk_test_SVELTE_789"
     amount={500}
     email="test@apolopay.app"
     barrierDismissible

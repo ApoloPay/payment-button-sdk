@@ -1,10 +1,10 @@
 <script lang="ts">
   // 1. Importa el Web Component para registrarlo
-  import '@payment-button-sdk/ui';
-  import type { Locale } from '@payment-button-sdk/ui';
+  import "@payment-button-sdk/ui";
+  import type { Locale } from "@payment-button-sdk/ui";
 
   // 2. Define los props que el wrapper acepta
-  export let apiKey: string;
+  export let publicKey: string;
   export let amount: number;
   export let email: string;
   export let productTitle: string | undefined = undefined;
@@ -16,14 +16,14 @@
 </script>
 
 <payment-button
-  api-key={apiKey}
-  amount={amount}
-  email={email}
+  public-key={publicKey}
+  {amount}
+  {email}
   product-title={productTitle}
-  lang={lang}
-  disabled={disabled}
-  loading={loading}
-  label={label}
+  {lang}
+  {disabled}
+  {loading}
+  {label}
   barrier-dismissible={barrierDismissible}
   on:success
   on:error

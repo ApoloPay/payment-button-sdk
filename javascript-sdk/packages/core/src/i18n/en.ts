@@ -49,7 +49,7 @@ export const en: Dictionary = {
   },
   errors: {
     generic: 'An unexpected error occurred.',
-    apiKeyMissing: 'API Key is missing',
+    publicKeyMissing: 'Public Key is missing',
     timeout: 'The payment time has expired. Please generate a new order.',
   }
 };

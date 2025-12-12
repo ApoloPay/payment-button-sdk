@@ -17,7 +17,7 @@ import './components/payment-modal.js';
 @customElement('payment-button')
 export class PaymentButton extends LitElement {
   // --- Component Properties (passed as HTML attributes) ---
-  @property({ type: String, attribute: 'api-key' }) apiKey: string = '';
+  @property({ type: String, attribute: 'public-key' }) publicKey: string = '';
   @property({ type: Number }) amount: number = 0; // The amount in the base asset
   @property({ type: String }) email: string = '';
   @property({ type: String, attribute: 'product-title' }) productTitle? = undefined;
@@ -63,8 +63,8 @@ export class PaymentButton extends LitElement {
   // Called when the component is added to the DOM
   override connectedCallback() {
     super.connectedCallback();
-    if (!this.apiKey) {
-      console.error('PaymentButton: "api-key" attribute is required.');
+    if (!this.publicKey) {
+      console.error('PaymentButton: "public-key" attribute is required.');
       return;
     }
     // Initialize the PaymentClient with necessary options and callbacks
@@ -81,7 +81,7 @@ export class PaymentButton extends LitElement {
 
   private initClient() {
     this.client = new PaymentClient({
-      apiKey: this.apiKey,
+      publicKey: this.publicKey,
       amount: this.amount,
       email: this.email,
       // Callback triggered by WebSocket on successful payment confirmation
@@ -135,7 +135,7 @@ export class PaymentButton extends LitElement {
     // 1. Limpieza preventiva
     this.resetState();
 
-    if (!this.apiKey) return console.error('PaymentButton Error: API Key missing');
+    if (!this.publicKey) return console.error('PaymentButton Error: API Key missing');
 
     if (this.loading) return;
 

@@ -7,13 +7,13 @@ typedef OnSuccessCallback = void Function(PaymentResponse response);
 typedef OnErrorCallback = void Function(PaymentError error);
 
 class PaymentClient {
-  final String apiKey;
+  final String publicKey;
   final double amount;
   final OnSuccessCallback onSuccess;
   final OnErrorCallback onError;
 
   PaymentClient({
-    required this.apiKey,
+    required this.publicKey,
     required this.amount,
     required this.onSuccess,
     required this.onError,
@@ -25,7 +25,7 @@ class PaymentClient {
       // const response = await http.post(
       //   Uri.parse('https://api.tuplataforma.com/pay'),
       //   headers: {
-      //     'Authorization': 'Bearer $apiKey',
+      //     'Authorization': 'Bearer $publicKey',
       //     'Content-Type': 'application/json',
       //   },
       //   body: jsonEncode({

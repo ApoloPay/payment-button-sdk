@@ -6,7 +6,7 @@ import type { PaymentResponse, PaymentError, Locale } from '@payment-button-sdk/
   standalone: true,
   template: `
     <payment-button
-      [attr.api-key]="apiKey"
+      [attr.public-key]="publicKey"
       [amount]="amount"
       [label]="label"
       [email]="email"
@@ -33,7 +33,7 @@ import type { PaymentResponse, PaymentError, Locale } from '@payment-button-sdk/
 })
 export class PaymentButtonComponent {
   // 5. Define los Inputs (props)
-  @Input() apiKey!: string;
+  @Input() publicKey!: string;
   @Input() amount!: number;
   @Input() email!: string;
   @Input() productTitle?: string;

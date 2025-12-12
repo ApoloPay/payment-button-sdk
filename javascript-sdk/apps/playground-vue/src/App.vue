@@ -18,7 +18,7 @@ const handleError = (error: any) => {
     <h1>Mi Playground de Vue 💚</h1>
 
     <PaymentButton
-      apiKey="pk_test_VUE_456"
+      publicKey="pk_test_VUE_456"
       :amount="2500"
       email="test@apolopay.app"
       barrierDismissible

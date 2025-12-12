@@ -47,7 +47,7 @@ export interface Dictionary {
   };
   errors: {
     generic: string;
-    apiKeyMissing: string;
+    publicKeyMissing: string;
     timeout: string;
   };
 }

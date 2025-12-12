@@ -14,7 +14,7 @@ function App() {
       
       {/* 4. Lo usa como un componente nativo de React */}
       <PaymentButton
-        apiKey="pk_live_cliente123"
+        publicKey="pk_live_cliente123"
         amount={2500}
         email="test@apolopay.app"
         barrierDismissible
