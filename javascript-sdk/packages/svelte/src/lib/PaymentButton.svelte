@@ -6,7 +6,7 @@
   // 2. Define los props que el wrapper acepta
   export let publicKey: string;
   export let amount: number;
-  export let email: string;
+  export let metadata: Record<string, any> | undefined = undefined;
   export let productTitle: string | undefined = undefined;
   export let lang: Locale | undefined = undefined;
   export let disabled: boolean = false;
@@ -18,7 +18,7 @@
 <payment-button
   public-key={publicKey}
   {amount}
-  {email}
+  {metadata}
   product-title={productTitle}
   {lang}
   {disabled}

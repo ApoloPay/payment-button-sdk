@@ -16,7 +16,6 @@ function App() {
       <PaymentButton
         publicKey="pk_live_cliente123"
         amount={2500}
-        email="test@apolopay.app"
         barrierDismissible
         onSuccess={handleSuccess}
         onError={(error) => { console.error(error); }}

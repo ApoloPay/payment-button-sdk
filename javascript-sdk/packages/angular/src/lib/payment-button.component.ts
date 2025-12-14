@@ -9,7 +9,7 @@ import type { PaymentResponse, PaymentError, Locale } from '@payment-button-sdk/
       [attr.public-key]="publicKey"
       [amount]="amount"
       [label]="label"
-      [email]="email"
+      [metadata]="metadata"
       [lang]="lang"
       [attr.product-title]="productTitle"
       [loading]="loading"
@@ -35,7 +35,7 @@ export class PaymentButtonComponent {
   // 5. Define los Inputs (props)
   @Input() publicKey!: string;
   @Input() amount!: number;
-  @Input() email!: string;
+  @Input() metadata?: Record<string, any>;
   @Input() productTitle?: string;
   @Input() lang?: Locale;
   @Input() label?: string;

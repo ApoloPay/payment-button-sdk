@@ -12,7 +12,7 @@ export * from '@payment-button-sdk/ui';
 type PaymentButtonProps = {
   publicKey: string;
   amount: number;
-  email: string;
+  metadata?: Record<string, any>;
   productTitle?: string;
   lang?: Locale;
   barrierDismissible?: boolean;
@@ -28,7 +28,7 @@ type PaymentButtonProps = {
 export const PaymentButton: React.FC<PaymentButtonProps> = ({
   publicKey,
   amount,
-  email,
+  metadata,
   productTitle,
   lang,
   barrierDismissible,
@@ -71,7 +71,7 @@ export const PaymentButton: React.FC<PaymentButtonProps> = ({
       ref,
       'public-key': publicKey,
       amount,
-      email,
+      metadata,
       'product-title': productTitle,
       lang,
       disabled,

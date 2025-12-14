@@ -3,6 +3,8 @@ import { css } from 'lit';
 export const textFieldBaseStyles = css`
   /* Inputs de solo lectura (Diseño Apolo) */
   .text-field {
+    display: flex;
+    gap: 0.5rem;
     margin-top: 1rem;
     text-align: left;
     position: relative;
@@ -30,5 +32,14 @@ export const textFieldBaseStyles = css`
     color: #4b5563;
     font-size: 0.9rem;
     z-index: 1;
+  }
+  .btn-secondary {
+    background-color: #526282;
+    color: #ffffff;
+    border: none;
+    border-radius: var(--apolo-radius);
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
   }
 `;

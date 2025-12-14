@@ -6,8 +6,11 @@ export interface QrRequestDetails {
 
 // Lo que esperamos recibir para mostrar el QR
 export interface QrResponseData {
-  paymentId: string; // ID único para esta transacción (para el WebSocket)
-  address: string;   // La dirección a la que enviar los fondos
+  network: string,
+  asset: string,
+  amount: number | string,
+  metadata?: Record<string, any>,
+  address: string,
   qrCodeUrl: string; // URL de la imagen del QR (o los datos para generarla)
   expiresAt: string; // Fecha exacta de expiración (ISO String o Timestamp)
 }
@@ -32,7 +35,7 @@ export interface PaymentError {
 export interface PaymentOptions {
   publicKey: string;
   amount: number;
-  email: string;
+  metadata?: Record<string, any>;
   onSuccess: (response: PaymentResponse) => void;
   onError: (error: PaymentError) => void;
 }

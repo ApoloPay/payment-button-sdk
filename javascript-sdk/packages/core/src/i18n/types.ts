@@ -24,6 +24,8 @@ export interface Dictionary {
       paid: string;
       support: string;
       scanApp: string;
+      copy: string;
+      copied: string;
     };
     labels: {
       network: string;

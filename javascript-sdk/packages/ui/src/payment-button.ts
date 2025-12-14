@@ -19,7 +19,7 @@ export class PaymentButton extends LitElement {
   // --- Component Properties (passed as HTML attributes) ---
   @property({ type: String, attribute: 'public-key' }) publicKey: string = '';
   @property({ type: Number }) amount: number = 0; // The amount in the base asset
-  @property({ type: String }) email: string = '';
+  @property({ type: Object }) metadata: Record<string, any> | undefined = undefined;
   @property({ type: String, attribute: 'product-title' }) productTitle? = undefined;
   @property({ type: String }) lang: Locale = 'es';
   @property({ type: String }) label?: string = undefined;
@@ -55,6 +55,7 @@ export class PaymentButton extends LitElement {
   @state() private assets: any[] = []; // List fetched from API
   @state() private error: PaymentError | null = null; // Stores error details if something fails
   @state() private isLoadingData = true; // Tracks initial loading of assets/networks
+  @state() private email: string | null = null; // TODO set email from socket response
 
   // --- API Client Instance ---
   private client!: PaymentClient;
@@ -83,7 +84,7 @@ export class PaymentButton extends LitElement {
     this.client = new PaymentClient({
       publicKey: this.publicKey,
       amount: this.amount,
-      email: this.email,
+      metadata: this.metadata,
       // Callback triggered by WebSocket on successful payment confirmation
       onSuccess: (response) => {
         this.status = 'success';

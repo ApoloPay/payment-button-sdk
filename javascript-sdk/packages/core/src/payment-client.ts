@@ -25,7 +25,7 @@ export class PaymentClient {
     const qrData = await Repository.fetchQrCodeDetails({
       ...details,
       amount: this.options.amount,
-      email: this.options.email,
+      metadata: this.options.metadata,
       publicKey: this.options.publicKey
     });
 

@@ -32,6 +32,7 @@ export class PaymentModal extends LitElement {
   @property({ type: String }) email = '';
   @property({ type: String }) qrCodeExpiresAt: string | null = null;
 
+  @state() private isAddressCopied: boolean = false;
   @state() private timerString: string = '-- : --';
   private _timerInterval: number | null = null;
 
@@ -222,6 +223,16 @@ export class PaymentModal extends LitElement {
   private changeStep(step: ModalStep, e?: Event) {
     e?.stopPropagation(); // Prevent event bubbling if from a button click
     this.dispatchEvent(new CustomEvent('changeStep', { detail: step }));
+  }
+
+  private copyAddress(event: Event) {
+    if (!this.paymentAddress) return
+    event.stopPropagation();
+
+    navigator.clipboard.writeText(this.paymentAddress);
+
+    this.isAddressCopied = true;
+    setTimeout(() => this.isAddressCopied = false, 2000);
   }
 
   private get currentAsset(): Asset | undefined {
@@ -526,12 +537,15 @@ export class PaymentModal extends LitElement {
 
       <div class="text-field">
         <label class="text-field-label">${t.modal.labels.network}</label>
-        <input class="text-field-input" readonly value="${this.selectedNetwork}" />
+        <input class="text-field-input" readonly value="${this.currentNetwork?.name}" />
       </div>
 
       <div class="text-field">
         <label class="text-field-label">${t.modal.labels.address}</label>
-        <input class="text-field-input" readonly value="${this.paymentAddress}" />
+        <input class="text-field-input" readonly value="${this.paymentAddress}" @click=${this.copyAddress} />
+        ${this.paymentAddress ? html`
+          <button class="btn-secondary" @click=${this.copyAddress}>${this.isAddressCopied ? t.modal.actions.copied : t.modal.actions.copy}</button>
+        ` : ''}
       </div>
 
       <div class="warning-text">
@@ -632,7 +646,7 @@ export class PaymentModal extends LitElement {
             <h2 class="result-title">${unsafeHTML(t.modal.titles.success)}</h2>
             
             <p class="result-desc">
-              ${t.modal.success.message} (<span class="highlight">${this.email}</span>) ${t.modal.success.message2}
+              ${t.modal.success.message} ${this.email ? html`<span class="highlight">${this.email}</span>` : ''} ${t.modal.success.message2}
             </p>
 
             <div class="purchase-details">

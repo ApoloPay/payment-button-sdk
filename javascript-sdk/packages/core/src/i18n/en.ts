@@ -25,7 +25,9 @@ export const en: Dictionary = {
       close: 'Close',
       paid: 'I have paid',
       support: 'Support',
-      scanApp: 'Scan with your phone and continue from <br><span style="color: var(--apolo-accent)">Apolo Pay</span> app'
+      scanApp: 'Scan with your phone and continue from <br><span style="color: var(--apolo-accent)">Apolo Pay</span> app',
+      copy: 'Copy',
+      copied: 'Copied!'
     },
     labels: {
       network: 'Network',

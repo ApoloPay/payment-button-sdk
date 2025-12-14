@@ -23,7 +23,6 @@
   <PaymentButton
     publicKey="pk_test_SVELTE_789"
     amount={500}
-    email="test@apolopay.app"
     barrierDismissible
     on:success={handleSuccess}
     on:error={handleError}

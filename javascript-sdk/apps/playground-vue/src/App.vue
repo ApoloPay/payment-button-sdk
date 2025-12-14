@@ -20,7 +20,6 @@ const handleError = (error: any) => {
     <PaymentButton
       publicKey="pk_test_VUE_456"
       :amount="2500"
-      email="test@apolopay.app"
       barrierDismissible
       @success="handleSuccess"
       @error="handleError"

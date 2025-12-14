@@ -29,9 +29,11 @@ export class Repository {
     amount,
     assetId,
     networkId,
-    email,
+    metadata,
     publicKey
   }: (QrRequestDetails & Omit<PaymentOptions, 'onSuccess' | 'onError'>)): Promise<QrResponseData> {
+    const metadataString = metadata ? JSON.stringify(metadata) : undefined
+
     const response = await fetch(`${this.apiUrl}/payment-button/process`, {
       method: 'POST',
       headers: this.headers(publicKey),
@@ -39,22 +41,24 @@ export class Repository {
         amount,
         assetId,
         networkId,
-        metadata: {
-          orderId: "ORD-9821",
-          customerEmail: email
-        },
+        metadata: metadataString,
       })
     })
     const data = await response.json()
-    console.log(data, 'data');
 
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    // TODO review if enable testing environment switch to the address
+    const address = data.network === "apolopay" ?
+      `https://p2p.apolopay.app/payment/${data.wallet}` :
+      data.wallet
 
     return {
-      paymentId: `pay_${Date.now()}`,
-      address: `0xAddress_${assetId}_${networkId}_${Date.now().toString().slice(-5)}`,
-      qrCodeUrl: `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${assetId}_${networkId}&ecc=H`,
-      expiresAt: new Date(Date.now() + 30 * 60 * 1000).toISOString()
+      network: data.network,
+      asset: data.asset,
+      amount: data.amount,
+      metadata: data.metadata,
+      address,
+      qrCodeUrl: `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${address}&ecc=H`,
+      expiresAt: data.expiresAt || new Date(Date.now() + 30 * 60 * 1000).toISOString()
     }
   }
 }
