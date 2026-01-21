@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:payment_button_sdk/payment_button_sdk.dart';
-// 1. Importa tu SDK
 
 void main() {
   runApp(const MyApp());
@@ -12,30 +11,22 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: ThemeData.dark(),
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('Ejemplo de SDK de Pago'),
+          title: const Text('Apolo Pay SDK Example'),
         ),
         body: Center(
-          // 2. Usa tu Widget
-          child: PaymentButtonWidget(
-            publicKey: 'pk_test_FLUTTER_123',
+          child: PaymentButton(
+            publicKey: 'publicKey',
             amount: 150.50,
-
-            // 3. Define los callbacks
-            onSuccess: (PaymentResponse response) {
-              print('Pago exitoso: ${response.transactionId}');
-              // (Muestra un SnackBar, navega a otra pantalla, etc.)
+            productTitle: 'Producto de Ejemplo',
+            onSuccess: (response) {
+              print('Pago exitoso: ${response.message}');
             },
-            onError: (PaymentError error) {
+            onError: (error) {
               print('Error en pago: ${error.message}');
             },
-
-            // 4. Define el contenido del botón
-            child: const Text(
-              'Pagar 150.50 USD',
-              style: TextStyle(fontSize: 16),
-            ),
           ),
         ),
       ),

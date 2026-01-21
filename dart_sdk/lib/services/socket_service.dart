@@ -1,0 +1,94 @@
+import 'package:flutter/material.dart';
+import 'package:socket_io_client/socket_io_client.dart' as io;
+import '../models/client_response.dart';
+import '../models/payment_client_models.dart';
+
+class _SocketResponse<T> {
+  final bool success;
+  final String event;
+  final String message;
+  final T result;
+
+  _SocketResponse({
+    required this.success,
+    required this.event,
+    required this.message,
+    required this.result,
+  });
+
+  Map<String, dynamic> toJson() => {
+        'success': success,
+        'event': event,
+        'message': message,
+        'result': result,
+      };
+
+  factory _SocketResponse.fromJson(Map<String, dynamic> json) {
+    return _SocketResponse(
+      success: json['success'],
+      event: json['event'],
+      message: json['message'],
+      result: json['result'],
+    );
+  }
+}
+
+
+class SocketService {
+  SocketService(this.options);
+  final PaymentOptions options;
+  io.Socket? _socket;
+
+  static const String wsUrl = "https://pb-test-ws.apolopay.app";
+
+  void connect(String processId) {
+    if (_socket != null && _socket!.connected) return;
+
+    _socket = io.io(
+      wsUrl,
+      io.OptionBuilder()
+          .setTransports(['websocket', 'polling']).setExtraHeaders({
+        'x-public-key': options.publicKey
+      }).setAuth({'x-public-key': options.publicKey}).build(),
+    );
+
+    _socket!.onConnect((_) {
+      debugPrint('Socket.io Conectado.');
+      _socket!.emit('process:connect', {'processId': processId});
+    });
+
+    _socket!.on('process:message', (data) {
+      final response = _SocketResponse.fromJson(data);
+
+      if (!response.success) {
+        return options.onError(ClientError.fromError(response.toJson()));
+      }
+
+      final result = response.result as Map<String, dynamic>;
+      if (result['status'] == 'success') {
+        options.onSuccess(ClientResponse.fromJson(response.toJson()));
+      }
+    });
+
+    _socket!.onConnectError((error) {
+      options.onError(ClientError.fromError(
+        error,
+        code: 'SOCKET_CONNECTION_ERROR',
+        message: 'Error de conexión en tiempo real.',
+      ));
+      disconnect();
+    });
+
+    _socket!.onDisconnect((reason) {
+      debugPrint('Socket.io Desconectado: $reason');
+      _socket = null;
+    });
+  }
+
+  void disconnect() {
+    if (_socket != null) {
+      _socket!.disconnect();
+      _socket = null;
+    }
+  }
+}

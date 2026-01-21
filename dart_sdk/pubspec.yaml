@@ -10,7 +10,11 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  http: 1.0.0
+  http: ^1.1.0
+  socket_io_client: ^3.0.0
+  qr_flutter: ^4.1.0
+  intl: ^0.18.1
+  cached_network_image: ^3.3.0
 
 dev_dependencies:
   flutter_test:
