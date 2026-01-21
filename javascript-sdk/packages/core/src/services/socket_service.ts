@@ -12,10 +12,10 @@ export class SocketService {
     this.options = options;
   }
 
-  public connectWebSocket(processId: string): void {
+  public connect(processId: string): void {
     if (typeof window === 'undefined') return;
 
-    if (this.socket && this.socket.connected) return this.disconnectWebSocket()
+    if (this.socket && this.socket.connected) return this.disconnect()
 
     this.socket = io(SocketService.wsUrl, {
       extraHeaders: {
@@ -33,7 +33,7 @@ export class SocketService {
     this.socket.on('connect_error', (error) => {
       console.error('Error en conexión Socket.io:', error);
       this.options.onError({ code: 'connect_error', message: 'Error de conexión en tiempo real.', error });
-      this.disconnectWebSocket();
+      this.disconnect();
     });
 
     this.socket.on('disconnect', (reason) => {
@@ -62,7 +62,7 @@ export class SocketService {
     }
   }
 
-  public disconnectWebSocket(): void {
+  public disconnect(): void {
     if (this.socket) {
       this.socket.disconnect();
       this.socket = null;

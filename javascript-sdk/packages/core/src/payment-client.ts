@@ -30,12 +30,12 @@ export class PaymentClient {
       publicKey: this.options.publicKey
     });
 
-    this.socket.connectWebSocket(qrData.result.id);
+    this.socket.connect(qrData.result.id);
 
     return qrData.result;
   }
 
   public disconnectWebSocket(): void {
-    this.socket.disconnectWebSocket();
+    this.socket.disconnect();
   }
 }
