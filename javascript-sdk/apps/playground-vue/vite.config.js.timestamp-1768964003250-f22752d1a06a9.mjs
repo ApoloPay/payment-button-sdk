@@ -1,0 +1,19 @@
+// vite.config.js
+import { defineConfig } from "file:///D:/Repositories/DV%20Consultores/Apolo%20Pay/payment-button-sdk/javascript-sdk/node_modules/.pnpm/vite@5.2.0_@types+node@24.6.0_less@4.2.0_sass@1.71.1_terser@5.44.1/node_modules/vite/dist/node/index.js";
+import vue from "file:///D:/Repositories/DV%20Consultores/Apolo%20Pay/payment-button-sdk/javascript-sdk/node_modules/.pnpm/@vitejs+plugin-vue@5.0.4_vite@5.2.0_@types+node@24.6.0_less@4.2.0_sass@1.71.1_terser@5.44.1___2nz7edzr7j6r42rv3fwtlhhnoi/node_modules/@vitejs/plugin-vue/dist/index.mjs";
+import path from "path";
+var __vite_injected_original_dirname = "D:\\Repositories\\DV Consultores\\Apolo Pay\\payment-button-sdk\\javascript-sdk\\apps\\playground-vue";
+var vite_config_default = defineConfig({
+  plugins: [vue()],
+  resolve: {
+    alias: {
+      "@payment-button-sdk/vue": path.resolve(__vite_injected_original_dirname, "../../packages/vue/src/index.tsx"),
+      "@payment-button-sdk/ui": path.resolve(__vite_injected_original_dirname, "../../packages/ui/src/index.ts"),
+      "@payment-button-sdk/core": path.resolve(__vite_injected_original_dirname, "../../packages/core/src/index.ts")
+    }
+  }
+});
+export {
+  vite_config_default as default
+};
+//# sourceMappingURL=data:application/json;base64,ewogICJ2ZXJzaW9uIjogMywKICAic291cmNlcyI6IFsidml0ZS5jb25maWcuanMiXSwKICAic291cmNlc0NvbnRlbnQiOiBbImNvbnN0IF9fdml0ZV9pbmplY3RlZF9vcmlnaW5hbF9kaXJuYW1lID0gXCJEOlxcXFxSZXBvc2l0b3JpZXNcXFxcRFYgQ29uc3VsdG9yZXNcXFxcQXBvbG8gUGF5XFxcXHBheW1lbnQtYnV0dG9uLXNka1xcXFxqYXZhc2NyaXB0LXNka1xcXFxhcHBzXFxcXHBsYXlncm91bmQtdnVlXCI7Y29uc3QgX192aXRlX2luamVjdGVkX29yaWdpbmFsX2ZpbGVuYW1lID0gXCJEOlxcXFxSZXBvc2l0b3JpZXNcXFxcRFYgQ29uc3VsdG9yZXNcXFxcQXBvbG8gUGF5XFxcXHBheW1lbnQtYnV0dG9uLXNka1xcXFxqYXZhc2NyaXB0LXNka1xcXFxhcHBzXFxcXHBsYXlncm91bmQtdnVlXFxcXHZpdGUuY29uZmlnLmpzXCI7Y29uc3QgX192aXRlX2luamVjdGVkX29yaWdpbmFsX2ltcG9ydF9tZXRhX3VybCA9IFwiZmlsZTovLy9EOi9SZXBvc2l0b3JpZXMvRFYlMjBDb25zdWx0b3Jlcy9BcG9sbyUyMFBheS9wYXltZW50LWJ1dHRvbi1zZGsvamF2YXNjcmlwdC1zZGsvYXBwcy9wbGF5Z3JvdW5kLXZ1ZS92aXRlLmNvbmZpZy5qc1wiO2ltcG9ydCB7IGRlZmluZUNvbmZpZyB9IGZyb20gJ3ZpdGUnO1xuaW1wb3J0IHZ1ZSBmcm9tICdAdml0ZWpzL3BsdWdpbi12dWUnO1xuaW1wb3J0IHBhdGggZnJvbSAncGF0aCc7XG4vLyBodHRwczovL3ZpdGVqcy5kZXYvY29uZmlnL1xuZXhwb3J0IGRlZmF1bHQgZGVmaW5lQ29uZmlnKHtcbiAgICBwbHVnaW5zOiBbdnVlKCldLFxuICAgIHJlc29sdmU6IHtcbiAgICAgICAgYWxpYXM6IHtcbiAgICAgICAgICAgICdAcGF5bWVudC1idXR0b24tc2RrL3Z1ZSc6IHBhdGgucmVzb2x2ZShfX2Rpcm5hbWUsICcuLi8uLi9wYWNrYWdlcy92dWUvc3JjL2luZGV4LnRzeCcpLFxuICAgICAgICAgICAgJ0BwYXltZW50LWJ1dHRvbi1zZGsvdWknOiBwYXRoLnJlc29sdmUoX19kaXJuYW1lLCAnLi4vLi4vcGFja2FnZXMvdWkvc3JjL2luZGV4LnRzJyksXG4gICAgICAgICAgICAnQHBheW1lbnQtYnV0dG9uLXNkay9jb3JlJzogcGF0aC5yZXNvbHZlKF9fZGlybmFtZSwgJy4uLy4uL3BhY2thZ2VzL2NvcmUvc3JjL2luZGV4LnRzJyksXG4gICAgICAgIH1cbiAgICB9XG59KTtcbiJdLAogICJtYXBwaW5ncyI6ICI7QUFBZ2UsU0FBUyxvQkFBb0I7QUFDN2YsT0FBTyxTQUFTO0FBQ2hCLE9BQU8sVUFBVTtBQUZqQixJQUFNLG1DQUFtQztBQUl6QyxJQUFPLHNCQUFRLGFBQWE7QUFBQSxFQUN4QixTQUFTLENBQUMsSUFBSSxDQUFDO0FBQUEsRUFDZixTQUFTO0FBQUEsSUFDTCxPQUFPO0FBQUEsTUFDSCwyQkFBMkIsS0FBSyxRQUFRLGtDQUFXLGtDQUFrQztBQUFBLE1BQ3JGLDBCQUEwQixLQUFLLFFBQVEsa0NBQVcsZ0NBQWdDO0FBQUEsTUFDbEYsNEJBQTRCLEtBQUssUUFBUSxrQ0FBVyxrQ0FBa0M7QUFBQSxJQUMxRjtBQUFBLEVBQ0o7QUFDSixDQUFDOyIsCiAgIm5hbWVzIjogW10KfQo=

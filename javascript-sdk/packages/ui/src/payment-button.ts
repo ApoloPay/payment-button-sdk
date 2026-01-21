@@ -56,6 +56,10 @@ export class PaymentButton extends LitElement {
   @state() private isLoadingData = true; // Tracks initial loading of assets/networks
   @state() private email: string | null = null; // TODO set email from socket response
 
+  private isValidPublicKey() {
+    return this.publicKey && this.publicKey.startsWith('pk_') && this.publicKey.length === 35;
+  }
+
   // --- API Client Instance ---
   private client!: PaymentClient;
 
@@ -63,8 +67,8 @@ export class PaymentButton extends LitElement {
   // Called when the component is added to the DOM
   override connectedCallback() {
     super.connectedCallback();
-    if (!this.publicKey) {
-      console.error('PaymentButton: "public-key" attribute is required.');
+    if (!this.isValidPublicKey()) {
+      console.error('PaymentButton: "public-key" attribute is required or invalid.');
       return;
     }
     // Initialize the PaymentClient with necessary options and callbacks
@@ -139,7 +143,7 @@ export class PaymentButton extends LitElement {
     // 1. Limpieza preventiva
     this.resetState();
 
-    if (!this.publicKey) return console.error('PaymentButton Error: API Key missing');
+    if (!this.isValidPublicKey()) return console.error('PaymentButton Error: API Key missing or invalid');
 
     if (this.loading) return;
 

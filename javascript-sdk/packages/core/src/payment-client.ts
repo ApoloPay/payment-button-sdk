@@ -1,5 +1,5 @@
 import { Repository } from "./services/repository";
-import { SocketService } from "./services/socket";
+import { SocketService } from "./services/socket_service";
 import { Asset } from "./types/asset";
 import { PaymentOptions, QrRequestDetails, QrResponseData } from "./types/payment-client-types";
 

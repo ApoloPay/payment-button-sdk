@@ -15,12 +15,7 @@ export class SocketService {
   public connectWebSocket(processId: string): void {
     if (typeof window === 'undefined') return;
 
-    if (this.socket && this.socket.connected) {
-      console.log('Socket.io ya conectado.');
-      return;
-    }
-
-    console.log(`Conectando a Socket.io para processId: ${processId}...`);
+    if (this.socket && this.socket.connected) return this.disconnectWebSocket()
 
     this.socket = io(SocketService.wsUrl, {
       extraHeaders: {
@@ -30,6 +25,8 @@ export class SocketService {
     });
 
     this.socket.on('connect', () => this.socket?.emit('process:connect', { processId }));
+
+    console.log(`Conectado a Socket.io para processId: ${processId}`);
 
     this.socket.on('process:message', (response: SocketResponse) => this.handleWebSocketMessage(response));
 
@@ -42,7 +39,6 @@ export class SocketService {
     this.socket.on('disconnect', (reason) => {
       console.info(`Socket.io Desconectado: ${reason}`);
       this.socket = null;
-      this.options.onError({ code: 'disconnect', message: 'Error de desconexión en tiempo real.', error: reason });
     });
   }
 
@@ -68,7 +64,6 @@ export class SocketService {
 
   public disconnectWebSocket(): void {
     if (this.socket) {
-      console.info('Disconnecting Socket.io...');
       this.socket.disconnect();
       this.socket = null;
     }

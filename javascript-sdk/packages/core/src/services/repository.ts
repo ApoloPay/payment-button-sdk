@@ -45,7 +45,7 @@ export class Repository {
       })
     })
     const data = await response.json(),
-      wallet = data.wallet
+      wallet = data.result.wallet
 
     // TODO review if enable testing environment switch to the address
     const address = data.network === "apolopay" ?
