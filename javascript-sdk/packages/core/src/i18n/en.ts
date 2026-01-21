@@ -17,13 +17,11 @@ export const en: Dictionary = {
     subtitles: {
       selectAsset: 'Select the stablecoin you want to pay with',
       selectNetwork: 'Select your preferred network',
-      scanQr: 'Product or service title',
       idle: 'An Unexpected error occurred'
     },
     actions: {
       back: 'Back',
       close: 'Close',
-      paid: 'I have paid',
       support: 'Support',
       scanApp: 'Scan with your phone and continue from <br><span style="color: var(--apolo-accent)">Apolo Pay</span> app',
       copy: 'Copy',

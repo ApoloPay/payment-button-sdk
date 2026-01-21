@@ -59,7 +59,7 @@ export class SocketService {
       });
     }
 
-    if (response.result.status === 'success') {
+    if (response.result.status === 'completed') {
       return this.options.onSuccess({
         code: 'payment_success',
         message: response.message,

@@ -5,7 +5,6 @@ import type { Locale, Asset, Network, Dictionary, ClientError } from '@payment-b
 import { modalBaseStyles } from '../styles/modal-base';
 import { sharedStyles } from '../styles/shared-styles';
 import { textFieldBaseStyles } from '../styles/text-field-base';
-import { supportUrl } from '../utils/constants';
 import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 import { logoApolo } from '../assets/logo_apolo'
 import { qrBaseStyles } from '../styles/qr-base';
@@ -456,11 +455,6 @@ export class PaymentModal extends LitElement {
         text-align: center;
         margin-bottom: 1.5rem;
       }
-
-      .support-text {
-        font-size: 0.85rem;
-        margin-bottom: 1rem;
-      }
       
       /* Estilo Error */
       .error-icon { font-size: 4rem; margin-bottom: 1rem; }
@@ -506,13 +500,6 @@ export class PaymentModal extends LitElement {
         </div>
 
         <button class="btn-dark">${unsafeHTML(t.modal.actions.scanApp)}</button>
-        
-        <button class="btn-primary" @click=${() => {
-          this.status = "success"
-          this.changeStep(ModalStep.RESULT)
-        }}>
-          ${t.modal.actions.paid}
-        </button>
       `;
     }
 
@@ -553,13 +540,6 @@ export class PaymentModal extends LitElement {
         </ul>
         <p>${unsafeHTML(warningTimerHTML)}</p>
       </div>
-
-      <button class="btn-primary" @click=${() => {
-        this.status = "error"
-        this.changeStep(ModalStep.RESULT)
-      }}>
-        ${t.modal.actions.paid}
-      </button>
     `;
   }
 
@@ -623,7 +603,7 @@ export class PaymentModal extends LitElement {
     else if (this.currentStep === ModalStep.SHOW_QR) {
       content = html`
         <h2>${unsafeHTML(I18n.interpolate(t.modal.titles.scanQr, { symbol: this.currentAsset?.symbol || '' }))}</h2>
-        <p class="subtitle">${this.productTitle || t.modal.subtitles.scanQr}</p>
+        ${this.productTitle ? html`<p class="subtitle">${this.productTitle}</p>` : ''}
         ${this.renderQRStep(t)}
       `;
     }
@@ -648,23 +628,19 @@ export class PaymentModal extends LitElement {
 
             <div class="purchase-details">
               <h3 class="details-title">${t.modal.success.details}</h3>
-              
-              <div class="text-field">
-                <label class="text-field-label">${t.modal.labels.product}</label>
-                <input class="text-field-input" readonly value=${this.productTitle || t.modal.subtitles.scanQr} />
-              </div>
+
+              ${this.productTitle ? html`
+                <div class="text-field">
+                  <label class="text-field-label">${t.modal.labels.product}</label>
+                  <input class="text-field-input" readonly value=${this.productTitle} />
+                </div>
+              ` : ''}
 
               <div class="text-field">
                 <label class="text-field-label">${t.modal.labels.amount}</label>
                 <input class="text-field-input" readonly value="${this.amount} ${this.currentAsset?.symbol || ''}" />
               </div>
             </div>
-
-            <p class="support-text">${t.modal.success.support}</p>
-
-            <button class="btn-primary" @click=${() => window.open(supportUrl, '_blank')}>
-              ${t.modal.actions.support}
-            </button>
           </div>
         `;
       } else if (this.status === 'error') {

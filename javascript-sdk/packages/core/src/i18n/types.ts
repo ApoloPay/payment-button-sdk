@@ -15,13 +15,11 @@ export interface Dictionary {
     subtitles: {
       selectAsset: string;
       selectNetwork: string;
-      scanQr: string;
       idle: string;
     };
     actions: {
       back: string;
       close: string;
-      paid: string;
       support: string;
       scanApp: string;
       copy: string;
