@@ -2,7 +2,7 @@ import { io, Socket as SocketIO } from "socket.io-client";
 import { PaymentOptions } from "../types/payment-client-types";
 import { SocketResponse } from "../types/api-response";
 
-export class Socket {
+export class SocketService {
   static wsUrl = "https://pb-test-ws.apolopay.app"
 
   private options: PaymentOptions;
@@ -22,7 +22,7 @@ export class Socket {
 
     console.log(`Conectando a Socket.io para processId: ${processId}...`);
 
-    this.socket = io(Socket.wsUrl, {
+    this.socket = io(SocketService.wsUrl, {
       extraHeaders: {
         "x-public-key": this.options.publicKey
       },

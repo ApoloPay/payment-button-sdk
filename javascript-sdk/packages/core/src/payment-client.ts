@@ -1,5 +1,5 @@
 import { Repository } from "./services/repository";
-import { Socket } from "./services/socket";
+import { SocketService } from "./services/socket";
 import { Asset } from "./types/asset";
 import { PaymentOptions, QrRequestDetails, QrResponseData } from "./types/payment-client-types";
 
@@ -7,11 +7,11 @@ import { PaymentOptions, QrRequestDetails, QrResponseData } from "./types/paymen
 // --- Clase PaymentClient ---
 export class PaymentClient {
   private options: PaymentOptions;
-  private socket: Socket;
+  private socket: SocketService;
 
   constructor(options: PaymentOptions) {
     this.options = options;
-    this.socket = new Socket(this.options);
+    this.socket = new SocketService(this.options);
   }
 
   // --- Métodos para obtener datos ---
