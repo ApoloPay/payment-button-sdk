@@ -16,7 +16,7 @@ export class ClientResponse<T = any> {
   } = {}): ClientResponse<T> {
     const successCode = json.status || code || 'success';
     const successMessage = json.message || message || 'Success';
-    const successResult = result?.(json['result']) || json.result || json;
+    const successResult = result?.(json.result) || json.result || json;
 
     return new ClientResponse<T>({ code: successCode, message: successMessage, result: successResult });
   }
