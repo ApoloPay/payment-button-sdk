@@ -1,6 +1,12 @@
 import { io, Socket as SocketIO } from "socket.io-client";
 import { PaymentOptions } from "../types/payment-client-types";
-import { SocketResponse } from "../types/api-response";
+
+interface _SocketResponse<T = any> {
+  success: boolean,
+  event: string,
+  message: string,
+  result: T
+}
 
 export class SocketService {
   static wsUrl = "https://pb-test-ws.apolopay.app"
@@ -28,7 +34,7 @@ export class SocketService {
 
     console.log(`Conectado a Socket.io para processId: ${processId}`);
 
-    this.socket.on('process:message', (response: SocketResponse) => this.handleWebSocketMessage(response));
+    this.socket.on('process:message', (response: _SocketResponse) => this.handleWebSocketMessage(response));
 
     this.socket.on('connect_error', (error) => {
       console.error('Error en conexión Socket.io:', error);
@@ -42,7 +48,7 @@ export class SocketService {
     });
   }
 
-  private handleWebSocketMessage(response: SocketResponse): void {
+  private handleWebSocketMessage(response: _SocketResponse): void {
     console.log(response);
 
     if (!response.success) {

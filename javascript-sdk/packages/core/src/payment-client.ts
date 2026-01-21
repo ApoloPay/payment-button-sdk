@@ -3,7 +3,6 @@ import { SocketService } from "./services/socket_service";
 import { Asset } from "./types/asset";
 import { PaymentOptions, QrRequestDetails, QrResponseData } from "./types/payment-client-types";
 
-
 // --- Clase PaymentClient ---
 export class PaymentClient {
   private options: PaymentOptions;
@@ -18,7 +17,7 @@ export class PaymentClient {
   public async getAssets(): Promise<Asset[]> {
     const assets = await Repository.getAssets();
 
-    return assets.result;
+    return assets.result!;
   }
 
   // --- Método para obtener datos del QR ---
@@ -30,9 +29,11 @@ export class PaymentClient {
       publicKey: this.options.publicKey
     });
 
-    this.socket.connect(qrData.result.id);
+    console.log('qrData', qrData);
 
-    return qrData.result;
+    this.socket.connect(qrData.result!.id);
+
+    return qrData.result!;
   }
 
   public disconnectWebSocket(): void {

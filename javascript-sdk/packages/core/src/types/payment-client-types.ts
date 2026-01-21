@@ -1,14 +1,4 @@
-export interface ClientResponse<T = any> {
-  code: string,
-  message: string,
-  result?: T
-}
-
-export interface ClientError {
-  code: string,
-  message: string,
-  error?: any
-}
+import { ClientError, ClientResponse } from "./client-response";
 
 // Detalles que necesitamos para obtener el QR
 export interface QrRequestDetails {
