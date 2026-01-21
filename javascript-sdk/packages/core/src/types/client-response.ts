@@ -1,11 +1,18 @@
-export class ClientResponse<T = any> {
+export abstract class ClientResponseBase {
   readonly code: string;
   readonly message: string;
+
+  constructor({ code, message }: { code: string, message: string }) {
+    this.code = code;
+    this.message = message;
+  }
+}
+
+export class ClientResponse<T = any> extends ClientResponseBase {
   readonly result?: T;
 
   constructor({ code, message, result }: { code: string, message: string, result?: T }) {
-    this.code = code;
-    this.message = message;
+    super({ code, message });
     this.result = result;
   }
 
@@ -22,14 +29,11 @@ export class ClientResponse<T = any> {
   }
 }
 
-export class ClientError {
-  readonly code: string;
-  readonly message: string;
+export class ClientError extends ClientResponseBase {
   readonly error?: any;
 
   constructor({ code, message, error }: { code: string, message: string, error?: any }) {
-    this.code = code;
-    this.message = message;
+    super({ code, message });
     this.error = error;
   }
 
