@@ -1,9 +1,9 @@
 import { PaymentOptions, QrRequestDetails, QrResponseData } from "./types/payment-client-types";
 import { Asset } from "./types/asset";
+import { ApiSuccessResponse } from "./types/api-response";
 
 export class Repository {
   static apiUrl = "https://pb-test-api.apolopay.app"
-  static wsUrl = "wss://api.apolopay.com"
 
   static headers = (publicKey?: string) => {
     const options: Record<string, string> = {
@@ -15,7 +15,7 @@ export class Repository {
     return options
   }
 
-  static async getAssets(): Promise<Asset[]> {
+  static async getAssets(): Promise<ApiSuccessResponse<Asset[]>> {
     const response = await fetch(`${this.apiUrl}/payment-button/assets`, {
       method: 'GET',
       headers: this.headers(),
@@ -31,7 +31,7 @@ export class Repository {
     networkId,
     metadata,
     publicKey
-  }: (QrRequestDetails & Omit<PaymentOptions, 'onSuccess' | 'onError'>)): Promise<QrResponseData> {
+  }: (QrRequestDetails & Omit<PaymentOptions, 'onSuccess' | 'onError'>)): Promise<ApiSuccessResponse<QrResponseData>> {
     const metadataString = metadata ? JSON.stringify(metadata) : undefined
 
     const response = await fetch(`${this.apiUrl}/payment-button/process`, {
@@ -44,21 +44,23 @@ export class Repository {
         metadata: metadataString,
       })
     })
-    const data = await response.json()
+    const data = await response.json(),
+      wallet = data.wallet
 
     // TODO review if enable testing environment switch to the address
     const address = data.network === "apolopay" ?
-      `https://p2p.apolopay.app/payment/${data.wallet}` :
-      data.wallet
+      `https://p2p.apolopay.app/payment/${wallet}` :
+      wallet
 
     return {
-      network: data.network,
-      asset: data.asset,
-      amount: data.amount,
-      metadata: data.metadata,
-      address,
-      qrCodeUrl: `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${address}&ecc=H`,
-      expiresAt: data.expiresAt || new Date(Date.now() + 30 * 60 * 1000).toISOString()
+      message: data.message,
+      status: data.status,
+      result: {
+        ...data.result,
+        address,
+        qrCodeUrl: `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${address}&ecc=H`,
+        expiresAt: data.expiresAt || new Date(Date.now() + 30 * 60 * 1000).toISOString()
+      }
     }
   }
 }

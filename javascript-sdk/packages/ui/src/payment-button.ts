@@ -50,7 +50,7 @@ export class PaymentButton extends LitElement {
   @state() private selectedAsset: string | null = null; // ID of the chosen asset
   @state() private selectedNetwork: string | null = null; // ID of the chosen blockchain
   @state() private qrCodeUrl: string | null = null; // URL for the QR code image
-  @state() private qrCodeExpiresAt: string | null = null; // Expiration time for the QR code
+  @state() private qrCodeExpiresAt: number | null = null; // Expiration time for the QR code
   @state() private paymentAddress: string | null = null; // Wallet address for payment
   @state() private assets: any[] = []; // List fetched from API
   @state() private error: PaymentError | null = null; // Stores error details if something fails
@@ -87,6 +87,8 @@ export class PaymentButton extends LitElement {
       metadata: this.metadata,
       // Callback triggered by WebSocket on successful payment confirmation
       onSuccess: (response) => {
+        if (!this.isOpen) return
+
         this.status = 'success';
         this.currentStep = ModalStep.RESULT; // Show the success step in the modal
         this.dispatchEvent(new CustomEvent('success', { detail: response }));
@@ -94,6 +96,8 @@ export class PaymentButton extends LitElement {
       },
       // Callback triggered by WebSocket on payment error/timeout
       onError: (error) => {
+        if (!this.isOpen) return
+
         this.status = 'error';
         this.error = error;
         this.currentStep = ModalStep.RESULT; // Show the error step in the modal
@@ -192,7 +196,7 @@ export class PaymentButton extends LitElement {
       const qrData = await this.client.fetchQrCodeDetails(detail);
       this.qrCodeUrl = qrData.qrCodeUrl;
       this.paymentAddress = qrData.address;
-      this.qrCodeExpiresAt = qrData.expiresAt;
+      this.qrCodeExpiresAt = qrData.expiresAtMs;
       this.status = 'idle'; // QR data loaded, waiting for payment via WebSocket
     } catch (e) {
       console.error("Error fetching QR code details:", e);

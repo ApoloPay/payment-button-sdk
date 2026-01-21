@@ -30,7 +30,7 @@ export class PaymentModal extends LitElement {
   @property({ type: String }) paymentAddress: string | null = null;
   @property({ type: Number }) amount = 0;
   @property({ type: String }) email = '';
-  @property({ type: String }) qrCodeExpiresAt: string | null = null;
+  @property({ type: Number }) qrCodeExpiresAt: number | null = null;
 
   @state() private isAddressCopied: boolean = false;
   @state() private timerString: string = '-- : --';
@@ -153,15 +153,12 @@ export class PaymentModal extends LitElement {
 
 
   // --- LÓGICA DEL TIMER BASADA EN FECHA ---
-  private startTimerFromDate(isoDateString: string) {
+  private startTimerFromDate(isoDateNumber: number) {
     this.stopTimer();
 
-    // Convertimos la fecha del backend a milisegundos locales
-    const endTime = new Date(isoDateString).getTime();
-
     // Validamos que sea una fecha válida
-    if (isNaN(endTime)) {
-      console.error('Invalid date:', isoDateString);
+    if (isNaN(isoDateNumber)) {
+      console.error('Invalid date:', isoDateNumber);
       this.timerString = "00:00";
       return;
     }
@@ -169,7 +166,7 @@ export class PaymentModal extends LitElement {
     // Función de actualización
     const tick = () => {
       const now = Date.now();
-      const distance = endTime - now;
+      const distance = isoDateNumber - now;
 
       if (distance <= 0) {
         this.stopTimer();
