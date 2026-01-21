@@ -2,8 +2,8 @@
 import type { HTMLAttributes } from "astro/types";
 
 import type {
-  PaymentResponse,
-  PaymentError,
+  ClientResponse,
+  ClientError,
   Locale,
 } from "@payment-button-sdk/ui";
 
@@ -17,8 +17,8 @@ interface Props extends HTMLAttributes<"div"> {
   loading?: boolean;
   label?: string;
   barrierDismissible?: boolean;
-  onSuccess?: (event: CustomEvent<PaymentResponse>) => void;
-  onError?: (event: CustomEvent<PaymentError>) => void;
+  onSuccess?: (event: CustomEvent<ClientResponse>) => void;
+  onError?: (event: CustomEvent<ClientError>) => void;
 }
 
 const {

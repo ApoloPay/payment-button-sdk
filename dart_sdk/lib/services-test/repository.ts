@@ -1,6 +1,6 @@
-import { PaymentOptions, QrRequestDetails, QrResponseData } from "./types/payment-client-types";
-import { Asset } from "./types/asset";
-import { ApiSuccessResponse } from "./types/api-response";
+import { PaymentOptions, QrRequestDetails, QrResponseData } from "../types/payment-client-types";
+import { Asset } from "../types/asset";
+import { ApiSuccessResponse } from "../types/api-response";
 
 export class Repository {
   static apiUrl = "https://pb-test-api.apolopay.app"

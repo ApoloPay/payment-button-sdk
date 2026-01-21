@@ -1,6 +1,6 @@
 import { io, Socket as SocketIO } from "socket.io-client";
-import { PaymentOptions } from "./types/payment-client-types";
-import { SocketResponse } from "./types/api-response";
+import { PaymentOptions } from "../types/payment-client-types";
+import { SocketResponse } from "../types/api-response";
 
 export class Socket {
   static wsUrl = "https://pb-test-ws.apolopay.app"
@@ -31,27 +31,39 @@ export class Socket {
 
     this.socket.on('connect', () => this.socket?.emit('process:connect', { processId }));
 
-    this.socket.on('process:message', (message: SocketResponse) => this.handleWebSocketMessage(message));
+    this.socket.on('process:message', (response: SocketResponse) => this.handleWebSocketMessage(response));
 
     this.socket.on('connect_error', (error) => {
       console.error('Error en conexión Socket.io:', error);
-      this.options.onError({ success: false, event: 'connect_error', message: 'Error de conexión en tiempo real.', result: error });
+      this.options.onError({ code: 'connect_error', message: 'Error de conexión en tiempo real.', error });
       this.disconnectWebSocket();
     });
 
     this.socket.on('disconnect', (reason) => {
       console.info(`Socket.io Desconectado: ${reason}`);
       this.socket = null;
-      this.options.onError({ success: false, event: 'disconnect', message: 'Error de desconexión en tiempo real.', result: reason });
+      this.options.onError({ code: 'disconnect', message: 'Error de desconexión en tiempo real.', error: reason });
     });
   }
 
-  private handleWebSocketMessage(message: SocketResponse): void {
-    console.log(message);
+  private handleWebSocketMessage(response: SocketResponse): void {
+    console.log(response);
 
-    if (!message.success) return this.options.onError(message);
+    if (!response.success) {
+      return this.options.onError({
+        code: 'payment_failed',
+        message: response.message,
+        error: response.result
+      });
+    }
 
-    if (message.result.status === 'success') return this.options.onSuccess(message);
+    if (response.result.status === 'success') {
+      return this.options.onSuccess({
+        code: 'payment_success',
+        message: response.message,
+        result: response.result
+      });
+    }
   }
 
   public disconnectWebSocket(): void {

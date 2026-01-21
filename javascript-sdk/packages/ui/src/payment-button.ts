@@ -1,11 +1,10 @@
 import { LitElement, html, css } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
-import { I18n, type Locale } from '@payment-button-sdk/core';
+import { I18n, type ClientError, type Locale } from '@payment-button-sdk/core';
 
 import {
   ModalStep,
   PaymentClient,
-  type PaymentError,
   type QrRequestDetails,
 } from '@payment-button-sdk/core';
 
@@ -53,7 +52,7 @@ export class PaymentButton extends LitElement {
   @state() private qrCodeExpiresAt: number | null = null; // Expiration time for the QR code
   @state() private paymentAddress: string | null = null; // Wallet address for payment
   @state() private assets: any[] = []; // List fetched from API
-  @state() private error: PaymentError | null = null; // Stores error details if something fails
+  @state() private error: ClientError | null = null; // Stores error details if something fails
   @state() private isLoadingData = true; // Tracks initial loading of assets/networks
   @state() private email: string | null = null; // TODO set email from socket response
 

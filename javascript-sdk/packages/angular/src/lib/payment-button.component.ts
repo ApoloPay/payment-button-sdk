@@ -1,5 +1,5 @@
 import { Component, Input, Output, EventEmitter, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import type { PaymentResponse, PaymentError, Locale } from '@payment-button-sdk/ui';
+import type { ClientResponse, ClientError, Locale } from '@payment-button-sdk/ui';
 
 @Component({
   selector: 'apolo-payment-button',
@@ -44,16 +44,16 @@ export class PaymentButtonComponent {
   @Input() barrierDismissible?: boolean;
 
   // 6. Define los Outputs (eventos)
-  @Output() success = new EventEmitter<PaymentResponse>();
-  @Output() error = new EventEmitter<PaymentError>();
+  @Output() success = new EventEmitter<ClientResponse>();
+  @Output() error = new EventEmitter<ClientError>();
 
   // 7. Traduce el CustomEvent ($event) a un EventEmitter de Angular
   onSuccess(event: Event) {
     // $event.detail contiene los datos del evento del Web Component
-    this.success.emit((event as CustomEvent<PaymentResponse>).detail);
+    this.success.emit((event as CustomEvent<ClientResponse>).detail);
   }
 
   onError(event: Event) {
-    this.error.emit((event as CustomEvent<PaymentError>).detail);
+    this.error.emit((event as CustomEvent<ClientError>).detail);
   }
 }

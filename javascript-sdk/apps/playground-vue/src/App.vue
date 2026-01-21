@@ -1,14 +1,14 @@
 <script setup lang="ts">
 // 1. Importa el componente y los tipos
-import { PaymentButton, type PaymentResponse } from '@payment-button-sdk/vue';
+import { PaymentButton, type ClientResponse, type ClientError } from '@payment-button-sdk/vue';
 
 // 2. Define los manejadores de eventos
-const handleSuccess = (response: PaymentResponse) => {
-  console.log('¡Pago recibido (Vue)!', response.transactionId);
+const handleSuccess = (response: ClientResponse) => {
+  console.log('¡Pago recibido (Vue)!', response.message);
   alert('¡Gracias por tu compra!');
 };
 
-const handleError = (error: any) => {
+const handleError = (error: ClientError) => {
   console.error('Error (Vue):', error.message);
 };
 </script>

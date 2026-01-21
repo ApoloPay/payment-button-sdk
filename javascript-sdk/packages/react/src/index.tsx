@@ -2,7 +2,7 @@ import '@payment-button-sdk/ui';
 import React, { useRef, useEffect } from 'react';
 
 // 2. Importa los tipos para las props
-import type { Locale, PaymentResponse } from '@payment-button-sdk/ui';
+import type { Locale, ClientResponse, ClientError } from '@payment-button-sdk/ui';
 
 // 3. Re-exporta los tipos de 'core' para el usuario final
 //    (Nota: @core es una dependencia de @ui, que es una dependencia nuestra)
@@ -20,8 +20,8 @@ type PaymentButtonProps = {
   disabled?: boolean;
   loading?: boolean;
   label?: string;
-  onSuccess?: (response: PaymentResponse) => void;
-  onError?: (error: any) => void;
+  onSuccess?: (response: ClientResponse) => void;
+  onError?: (error: ClientError) => void;
 };
 
 // 4. El componente de React ahora es un "ADAPTADOR"

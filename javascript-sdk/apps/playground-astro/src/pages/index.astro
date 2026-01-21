@@ -35,13 +35,13 @@ import PaymentButton from '@payment-button-sdk/astro/PaymentButton.astro';
 </html>
 
 <script>
-  import type { PaymentResponse, PaymentError } from '@payment-button-sdk/ui';
+  import type { ClientResponse, ClientError } from '@payment-button-sdk/ui';
 
   const btn = document.getElementById('mi-btn');
   btn?.addEventListener('success', (e) => {
-    console.log('¡Éxito (Astro)!', (e as any as CustomEvent<PaymentResponse>).detail.transactionId);
+    console.log('¡Éxito (Astro)!', (e as any as CustomEvent<ClientResponse>).detail.message);
   });
   btn?.addEventListener('error', (e) => {
-    console.error('Error (Astro):', (e as any as CustomEvent<PaymentError>).detail.message);
+    console.error('Error (Astro):', (e as any as CustomEvent<ClientError>).detail.message);
   });
 </script>

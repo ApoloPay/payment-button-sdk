@@ -1,7 +1,7 @@
 import { LitElement, html, css } from 'lit';
 import { customElement, property, query, state } from 'lit/decorators.js';
 import { I18n, ModalStep } from '@payment-button-sdk/core';
-import type { Locale, Asset, Network, PaymentError, Dictionary } from '@payment-button-sdk/core';
+import type { Locale, Asset, Network, Dictionary, ClientError } from '@payment-button-sdk/core';
 import { modalBaseStyles } from '../styles/modal-base';
 import { sharedStyles } from '../styles/shared-styles';
 import { textFieldBaseStyles } from '../styles/text-field-base';
@@ -21,7 +21,7 @@ export class PaymentModal extends LitElement {
   @property({ type: String }) productTitle = '';
   @property({ type: Number }) currentStep: ModalStep = ModalStep.SELECT_ASSET;
   @property({ type: String }) status: 'idle' | 'success' | 'error' = 'idle';
-  @property({ type: Object }) error: PaymentError | null = null;
+  @property({ type: Object }) error: ClientError | null = null;
   @property({ type: Boolean }) isLoadingData = true; // For initial asset/network load
   @property({ type: Array }) assets: Asset[] = [];
   @property({ type: String }) selectedAsset: string | null = null;

@@ -1,10 +1,10 @@
-import { PaymentButton, type PaymentResponse } from '@payment-button-sdk/react';
+import { PaymentButton, type ClientResponse } from '@payment-button-sdk/react';
 
 function App() {
 
   // 3. Usa los props de React (onSuccess)
-  const handleSuccess = (response: PaymentResponse) => {
-    console.log('¡Pago recibido!', response.transactionId);
+  const handleSuccess = (response: ClientResponse) => {
+    console.log('¡Pago recibido!', response.message);
     alert('¡Gracias por tu compra!');
   };
 

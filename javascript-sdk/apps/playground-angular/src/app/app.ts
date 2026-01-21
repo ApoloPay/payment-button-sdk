@@ -1,7 +1,7 @@
 import { Component, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PaymentButtonModule } from '@payment-button-sdk/angular';
-import { type PaymentResponse, type PaymentError } from '@payment-button-sdk/core';
+import type { ClientResponse, ClientError } from '@payment-button-sdk/core';
 
 @Component({
   selector: 'app-root',
@@ -18,12 +18,12 @@ export class App {
   title = 'playground-angular';
 
   // 3. (Opcional) Añade los manejadores de eventos
-  onSuccess(response: PaymentResponse) {
+  onSuccess(response: ClientResponse) {
     console.log('¡Pago exitoso (Angular)!', response);
-    alert('Pago OK: ' + response.transactionId);
+    alert('Pago OK: ' + response.message);
   }
 
-  onError(error: PaymentError) {
+  onError(error: ClientError) {
     console.error('Error en pago (Angular):', error);
     alert('Error: ' + error.message);
   }
