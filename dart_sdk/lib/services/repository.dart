@@ -43,7 +43,6 @@ class Repository {
     required String processId,
     required String assetId,
     required String networkId,
-    Map<String, dynamic>? metadata,
   }) async {
     try {
       final response = await http.post(
@@ -53,7 +52,6 @@ class Repository {
           'processId': processId,
           'assetId': assetId,
           'networkId': networkId,
-          'metadata': metadata != null ? jsonEncode(metadata) : null,
         }),
       );
 

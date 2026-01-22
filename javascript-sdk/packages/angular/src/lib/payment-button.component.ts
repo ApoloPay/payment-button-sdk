@@ -9,7 +9,6 @@ import type { ClientResponse, ClientError, Locale, ApoloPayClient } from '@payme
       [client]="client"
       [attr.process-id]="processId"
       [label]="label"
-      [metadata]="metadata"
       [lang]="lang"
       [attr.product-title]="productTitle"
       [loading]="loading"
@@ -35,7 +34,6 @@ export class PaymentButtonComponent {
   // 5. Define los Inputs (props)
   @Input() client?: ApoloPayClient;
   @Input() processId?: string;
-  @Input() metadata?: Record<string, any>;
   @Input() productTitle?: string;
   @Input() lang?: Locale;
   @Input() label?: string;

@@ -28,7 +28,6 @@ class QrResponseData {
   final String network;
   final String asset;
   final num amount;
-  final Map<String, dynamic>? metadata;
   final String address;
   final String qrCodeUrl;
   final int expiresAtMs;
@@ -38,7 +37,6 @@ class QrResponseData {
     required this.network,
     required this.asset,
     required this.amount,
-    this.metadata,
     required this.address,
     required this.qrCodeUrl,
     required this.expiresAtMs,
@@ -49,7 +47,6 @@ class QrResponseData {
         'network': network,
         'asset': asset,
         'amount': amount,
-        'metadata': metadata,
         'address': address,
         'qrCodeUrl': qrCodeUrl,
         'expiresAtMs': expiresAtMs,
@@ -60,7 +57,6 @@ class QrResponseData {
         network: json['network'],
         asset: json['asset'],
         amount: json['amount'],
-        metadata: json['metadata'],
         address: json['address'],
         qrCodeUrl: json['qrCodeUrl'],
         expiresAtMs: json['expiresAtMs'],
@@ -70,14 +66,12 @@ class QrResponseData {
 class PaymentOptions {
   final ApoloPayClient client;
   final String processId;
-  final Map<String, dynamic>? metadata;
   final Function(ClientResponse<QrResponseData>) onSuccess;
   final Function(ClientError) onError;
 
   PaymentOptions({
     required this.client,
     required this.processId,
-    this.metadata,
     required this.onSuccess,
     required this.onError,
   });

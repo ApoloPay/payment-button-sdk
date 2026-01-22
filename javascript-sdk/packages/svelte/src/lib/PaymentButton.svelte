@@ -6,7 +6,6 @@
   // 2. Define los props que el wrapper acepta
   export let client: ApoloPayClient | undefined = undefined;
   export let processId: string | undefined = undefined;
-  export let metadata: Record<string, any> | undefined = undefined;
   export let productTitle: string | undefined = undefined;
   export let lang: Locale | undefined = undefined;
   export let disabled: boolean = false;
@@ -18,7 +17,6 @@
 <payment-button
   client={client}
   process-id={processId}
-  {metadata}
   product-title={productTitle}
   {lang}
   {disabled}

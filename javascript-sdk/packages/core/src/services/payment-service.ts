@@ -29,7 +29,6 @@ export class PaymentService {
     const qrData = await Repository.fetchQrCodeDetails({
       ...details,
       processId: session.processId,
-      metadata: session.metadata,
       publicKey: this.client.getPublicKey()
     });
 

@@ -26,7 +26,6 @@ class PaymentService {
       processId: options.processId,
       assetId: assetId,
       networkId: networkId,
-      metadata: options.metadata,
     );
 
     _socketService.connect(qrData.result!.id);

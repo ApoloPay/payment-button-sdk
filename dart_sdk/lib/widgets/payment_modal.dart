@@ -56,7 +56,6 @@ class _PaymentModalState extends State<PaymentModal>
     _service = PaymentService(PaymentOptions(
       client: widget.options.client,
       processId: widget.options.processId,
-      metadata: widget.options.metadata,
       onSuccess: (res) {
         setState(() {
           _finalResult = res;

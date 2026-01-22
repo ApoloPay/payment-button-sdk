@@ -36,11 +36,8 @@ export class Repository {
     processId,
     assetId,
     networkId,
-    metadata,
     publicKey
   }: (QrRequestDetails & Omit<PaymentOptions, 'onSuccess' | 'onError'>)): Promise<ClientResponse<QrResponseData>> {
-    const metadataString = metadata ? JSON.stringify(metadata) : undefined
-
     try {
       const response = await fetch(`${this.apiUrl}/payment-button/process/confirm`, {
         method: 'POST',
@@ -48,8 +45,7 @@ export class Repository {
         body: JSON.stringify({
           processId,
           assetId,
-          networkId,
-          metadata: metadataString,
+          networkId
         })
       })
       const data = await response.json(),

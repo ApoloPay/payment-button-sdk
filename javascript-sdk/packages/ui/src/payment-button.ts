@@ -21,7 +21,6 @@ export class PaymentButton extends LitElement {
   // --- Component Properties ---
   @property({ type: Object }) client: ApoloPayClient | undefined = undefined;
   @property({ type: String, attribute: 'process-id' }) processId: string | undefined = undefined;
-  @property({ type: Object }) metadata: Record<string, any> | undefined = undefined;
   @property({ type: String, attribute: 'product-title' }) productTitle? = undefined;
   @property({ type: String }) lang: Locale = 'es';
   @property({ type: String }) label?: string = undefined;
@@ -197,7 +196,6 @@ export class PaymentButton extends LitElement {
     try {
       const qrData = await this._service!.fetchQrCodeDetails(detail, {
         processId: this.processId,
-        metadata: this.metadata,
         onSuccess: (response: ClientResponse) => {
           if (!this.isOpen) return;
           this.status = 'success';

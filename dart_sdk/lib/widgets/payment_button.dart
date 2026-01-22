@@ -10,7 +10,6 @@ import 'payment_modal.dart';
 class PaymentButton extends StatefulWidget {
   final ApoloPayClient? client;
   final String? processId;
-  final Map<String, dynamic>? metadata;
   final String? productTitle;
   final void Function(ClientResponse<QrResponseData> response) onSuccess;
   final void Function(ClientError error) onError;
@@ -25,7 +24,6 @@ class PaymentButton extends StatefulWidget {
     super.key,
     this.client,
     this.processId,
-    this.metadata,
     this.productTitle,
     required this.onSuccess,
     required this.onError,
@@ -90,7 +88,6 @@ class _PaymentButtonState extends State<PaymentButton> {
       PaymentOptions(
         client: widget.client!,
         processId: widget.processId!,
-        metadata: widget.metadata,
         onSuccess: widget.onSuccess,
         onError: widget.onError,
       ),

@@ -12,7 +12,6 @@ export * from '@payment-button-sdk/ui';
 type PaymentButtonProps = {
   client?: ApoloPayClient;
   processId?: string;
-  metadata?: Record<string, any>;
   productTitle?: string;
   lang?: Locale;
   barrierDismissible?: boolean;
@@ -28,7 +27,6 @@ type PaymentButtonProps = {
 export const PaymentButton: React.FC<PaymentButtonProps> = ({
   client,
   processId,
-  metadata,
   productTitle,
   lang,
   barrierDismissible,
@@ -71,7 +69,6 @@ export const PaymentButton: React.FC<PaymentButtonProps> = ({
       ref,
       client,
       'process-id': processId,
-      metadata,
       'product-title': productTitle,
       lang,
       disabled,

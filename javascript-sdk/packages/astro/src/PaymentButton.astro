@@ -11,7 +11,6 @@ import type {
 interface Props extends HTMLAttributes<"div"> {
   client?: ApoloPayClient;
   processId?: string;
-  metadata?: Record<string, any>;
   productTitle?: string;
   lang?: Locale;
   disabled?: boolean;
@@ -25,7 +24,6 @@ interface Props extends HTMLAttributes<"div"> {
 const {
   client,
   processId,
-  metadata,
   productTitle,
   lang,
   disabled,
@@ -42,7 +40,6 @@ const hasContent = Astro.slots.has("default");
     <payment-button
       client={client}
       process-id={processId}
-      metadata={metadata}
       product-title={productTitle}
       lang={lang}
       disabled={disabled}
@@ -57,7 +54,6 @@ const hasContent = Astro.slots.has("default");
     <payment-button
       client={client}
       process-id={processId}
-      metadata={metadata}
       product-title={productTitle}
       lang={lang}
       disabled={disabled}

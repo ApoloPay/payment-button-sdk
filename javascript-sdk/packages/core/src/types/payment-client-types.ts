@@ -12,7 +12,6 @@ export interface QrResponseData {
   network: string,
   asset: string,
   amount: number | string,
-  metadata?: Record<string, any>,
   address: string,
   qrCodeUrl: string; // URL de la imagen del QR (o los datos para generarla)
   expiresAtMs: number; // Fecha exacta de expiración (ISO String o Timestamp)
@@ -24,7 +23,6 @@ export interface ClientOptions {
 
 export interface PaymentSessionOptions {
   processId: string;
-  metadata?: Record<string, any>;
   onSuccess: (response: ClientResponse) => void;
   onError: (error: ClientError) => void;
 }
