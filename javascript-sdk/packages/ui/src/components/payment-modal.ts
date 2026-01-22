@@ -10,6 +10,7 @@ import { logoApolo } from '../assets/logo_apolo'
 import { qrBaseStyles } from '../styles/qr-base';
 import { handleImageError } from '../utils/image_error';
 import { spinnerStyles } from '../styles/spinner-styles';
+import './payment-timer.js';
 
 @customElement('payment-modal')
 export class PaymentModal extends LitElement {
@@ -32,21 +33,18 @@ export class PaymentModal extends LitElement {
   @property({ type: Number }) qrCodeExpiresAt: number | null = null;
 
   @state() private isAddressCopied: boolean = false;
-  @state() private timerString: string = '-- : --';
-  private _timerInterval: number | null = null;
 
   // --- DOM Element Reference ---
   @query('dialog') private dialogElement!: HTMLDialogElement;
 
   override disconnectedCallback() {
-    this.stopTimer();
     super.disconnectedCallback();
     // 🛡️ SEGURIDAD CRÍTICA:
     // Si el componente se desmonta del DOM mientras el diálogo está abierto,
     // forzamos el cierre nativo inmediatamente para eliminar el backdrop.
     const dialog = this.dialogElement;
     if (dialog && dialog.open) {
-      dialog.close(); 
+      dialog.close();
     }
   }
 
@@ -57,20 +55,7 @@ export class PaymentModal extends LitElement {
     // Wait for Lit's rendering cycle to complete
     await this.updateComplete;
 
-    // Si entramos al paso QR y tenemos fecha de expiración
-    if (
-      (changedProperties.has('currentStep') || changedProperties.has('isOpen') || changedProperties.has('qrCodeExpiresAt')) &&
-      this.isOpen && 
-      this.currentStep === ModalStep.SHOW_QR &&
-      this.qrCodeExpiresAt // Solo iniciamos si hay fecha
-    ) {
-      this.startTimerFromDate(this.qrCodeExpiresAt);
-    } 
-    
-    // Limpieza si salimos
-    else if (!this.isOpen || this.currentStep !== ModalStep.SHOW_QR) {
-      this.stopTimer();
-    }
+    // Timer is now managed by <payment-timer> component
 
     if (changedProperties.has('isOpen')) {
       const dialog = this.dialogElement;
@@ -86,7 +71,7 @@ export class PaymentModal extends LitElement {
       } else {
         // --- LÓGICA DE CIERRE MEJORADA ---
         dialog.removeEventListener('click', this.handleBackdropClick);
-        
+
         // Si ya está cerrado, no hacemos nada
         if (!dialog.open) return;
 
@@ -100,7 +85,7 @@ export class PaymentModal extends LitElement {
         };
 
         dialog.addEventListener('animationend', onAnimationEnd);
-        
+
         // 🛡️ TIMEOUT DE SEGURIDAD REDUCIDO:
         // Si la animación falla o el navegador se congela, forzamos cierre en 200ms
         setTimeout(() => {
@@ -150,59 +135,14 @@ export class PaymentModal extends LitElement {
     this.requestClose(); // Trigger our animated close flow
   }
 
-
-  // --- LÓGICA DEL TIMER BASADA EN FECHA ---
-  private startTimerFromDate(isoDateNumber: number) {
-    this.stopTimer();
-
-    // Validamos que sea una fecha válida
-    if (isNaN(isoDateNumber)) {
-      console.error('Invalid date:', isoDateNumber);
-      this.timerString = "00:00";
-      return;
-    }
-
-    // Función de actualización
-    const tick = () => {
-      const now = Date.now();
-      const distance = isoDateNumber - now;
-
-      if (distance <= 0) {
-        this.stopTimer();
-        this.timerString = "00 min : 00 seg";
-
-        this.status = 'error';
-        
-        this.error = {
-          code: 'PAYMENT_TIMEOUT',
-          message: I18n.t.errors.timeout
-        };
-        
-        this.changeStep(ModalStep.RESULT);
-
-        this.dispatchEvent(new CustomEvent('expired', { detail: { error: this.error } }));
-        return;
-      }
-
-      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-      const m = minutes.toString().padStart(2, '0');
-      const s = seconds.toString().padStart(2, '0');
-
-      this.timerString = `${m} min : ${s} seg`;
+  private handleTimerExpired() {
+    this.status = 'error';
+    this.error = {
+      code: 'PAYMENT_TIMEOUT',
+      message: I18n.t.errors.timeout
     };
-
-    // Ejecutar inmediatamente y luego cada segundo
-    tick();
-    this._timerInterval = window.setInterval(tick, 1000);
-  }
-
-  private stopTimer() {
-    if (this._timerInterval) {
-      clearInterval(this._timerInterval);
-      this._timerInterval = null;
-    }
+    this.changeStep(ModalStep.RESULT);
+    this.dispatchEvent(new CustomEvent('expired', { detail: { error: this.error } }));
   }
 
   // Emit event when a asset is selected
@@ -240,9 +180,9 @@ export class PaymentModal extends LitElement {
   }
 
   private getFormattedTimeWindow(): string {
-    if (!this.qrCodeExpiresAt) return '30 min';
+    if (!this.qrCodeExpiresAt || isNaN(this.qrCodeExpiresAt)) return '30 min';
 
-    const endTime = new Date(this.qrCodeExpiresAt).getTime();
+    const endTime = this.qrCodeExpiresAt;
     const now = Date.now();
     const diffMs = endTime - now;
 
@@ -250,7 +190,7 @@ export class PaymentModal extends LitElement {
 
     // Convertimos ms a minutos y redondeamos hacia arriba
     const minutes = Math.ceil(diffMs / (1000 * 60));
-    
+
     return `${minutes} min`;
   }
 
@@ -464,21 +404,20 @@ export class PaymentModal extends LitElement {
   // --- RENDERIZADO DEL QR (Lógica bifurcada) ---
   private renderQRStep(t: Dictionary) {
     const timeWindow = this.getFormattedTimeWindow();
-
-    const warningTokenHTML = I18n.interpolate(t.modal.warnings.onlyToken, { 
-      symbol: this.currentAsset?.symbol || '' 
+    const warningTokenHTML = I18n.interpolate(t.modal.warnings.onlyToken, {
+      symbol: this.currentAsset?.symbol || ''
     });
 
-    const warningTimerHTML = I18n.interpolate(t.modal.warnings.timer, { 
-      time: timeWindow 
+    const warningTimerHTML = I18n.interpolate(t.modal.warnings.timer, {
+      time: timeWindow
     });
 
     const network = this.currentNetwork;
 
-    // 1. Caso Apolo Pay (Imagen 7cfdc3.png)
+    // 1. Caso Apolo Pay
     if (network?.network === 'apolopay') {
       return html`
-        <span class="timer">${this.timerString}</span>
+        <payment-timer class="timer" .expiresAt=${this.qrCodeExpiresAt} @expired=${this.handleTimerExpired}></payment-timer>
         
         <div class="qr-frame">
           <div class="qr-wrapper">
@@ -503,18 +442,18 @@ export class PaymentModal extends LitElement {
       `;
     }
 
-    // 2. Caso Red Externa (Imagen 7cfdbd.png)
+    // 2. Caso Red Externa
     return html`
-      <span class="timer">${this.timerString}</span>
+      <payment-timer class="timer" .expiresAt=${this.qrCodeExpiresAt} @expired=${this.handleTimerExpired}></payment-timer>
       
       <div class="qr-frame">
         <div class="qr-wrapper">
           <img src="${this.qrCodeUrl}" class="qr-code-img" alt="QR Wallet" @error=${handleImageError} />
           
-          ${network 
-            ? html`<img src="${network.image}" class="qr-overlay-icon" alt="Network Icon" @error=${handleImageError} />` 
-            : ''
-          }
+          ${network
+        ? html`<img src="${network.image}" class="qr-overlay-icon" alt="Network Icon" @error=${handleImageError} />`
+        : ''
+      }
         </div>
         <span class="qr-badge">${this.amount} ${this.currentAsset?.symbol}</span>
       </div>
@@ -664,19 +603,19 @@ export class PaymentModal extends LitElement {
       }
     }
 
-    const showOverlay = 
+    const showOverlay =
       this.isLoadingData ||
       (this.currentStep === ModalStep.SHOW_QR && !this.qrCodeUrl)
 
     return html`
       <dialog @close=${this.handleDialogNativeClose}>
-        ${showOverlay 
-          ? html`
+        ${showOverlay
+        ? html`
               <div class="spinner-overlay">
                 <div class="spinner"></div>
-              </div>` 
-          : ''
-        }
+              </div>`
+        : ''
+      }
         ${header}
         <div class="modal-body">
           ${content}

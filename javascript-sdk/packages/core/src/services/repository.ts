@@ -47,22 +47,47 @@ export class Repository {
           assetId,
           networkId
         })
-      })
-      const data = await response.json(),
-        wallet = data.result.wallet
+      }),
+        data = await response.json();
+
+      if (!data.result) {
+        throw new ClientError({
+          code: data.status || 'qr_fetch_error',
+          message: data.message || 'Error al obtener los detalles del código QR'
+        });
+      }
+
+      const wallet = data.result.wallet;
+      const network = data.result.network;
 
       // TODO review if enable testing environment switch to the address
-      const address = data.network === "apolopay" ?
+      const address = network === "apolopay" ?
         `https://p2p.apolopay.app/payment/${wallet}` :
         wallet
 
       return ClientResponse.fromJson<QrResponseData>(data, {
-        result: (json) => ({
-          ...json,
-          address,
-          qrCodeUrl: `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${json.address}&ecc=H`,
-          expiresAt: json.expiresAt || new Date(Date.now() + 30 * 60 * 1000).toISOString()
-        })
+        result: (json) => {
+          // Check both expiresAtMs and expiresAt (ISO string or timestamp)
+          let expiresAtMs = json.expiresAtMs || json.expiresAt || (Date.now() + 30 * 60 * 1000);
+
+          if (typeof expiresAtMs === 'string') {
+            expiresAtMs = new Date(expiresAtMs).getTime();
+          }
+
+          // Normalize nanoseconds/microseconds to milliseconds
+          if (typeof expiresAtMs === 'number' && expiresAtMs > 10000000000000) {
+            while (expiresAtMs > 2000000000000) {
+              expiresAtMs = Math.floor(expiresAtMs / 1000);
+            }
+          }
+
+          return {
+            ...json,
+            address,
+            qrCodeUrl: `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${address}&ecc=H`,
+            expiresAtMs: isNaN(expiresAtMs as number) ? (Date.now() + 30 * 60 * 1000) : expiresAtMs
+          }
+        }
       })
     } catch (error) {
       throw ClientError.fromError(error, {
