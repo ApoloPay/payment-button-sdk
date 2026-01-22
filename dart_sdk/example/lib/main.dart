@@ -18,8 +18,8 @@ class MyApp extends StatelessWidget {
         ),
         body: Center(
           child: PaymentButton(
-            publicKey: 'publicKey',
-            amount: 150.50,
+            client: ApoloPayClient(publicKey: 'publicKey'),
+            processId: 'processId',
             productTitle: 'Producto de Ejemplo',
             onSuccess: (response) {
               print('Pago exitoso: ${response.message}');

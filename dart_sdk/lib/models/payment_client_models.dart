@@ -1,5 +1,5 @@
-// Detalles que necesitamos para obtener el QR
 import 'package:payment_button_sdk/models/client_response.dart';
+import 'package:payment_button_sdk/services/apolo_pay_client.dart';
 
 class QrRequestDetails {
   final String assetId;
@@ -68,15 +68,15 @@ class QrResponseData {
 }
 
 class PaymentOptions {
-  final String publicKey;
-  final double amount;
+  final ApoloPayClient client;
+  final String processId;
   final Map<String, dynamic>? metadata;
   final Function(ClientResponse<QrResponseData>) onSuccess;
   final Function(ClientError) onError;
 
   PaymentOptions({
-    required this.publicKey,
-    required this.amount,
+    required this.client,
+    required this.processId,
     this.metadata,
     required this.onSuccess,
     required this.onError,

@@ -33,7 +33,6 @@ class _SocketResponse<T> {
   }
 }
 
-
 class SocketService {
   SocketService(this.options);
   final PaymentOptions options;
@@ -48,8 +47,8 @@ class SocketService {
       wsUrl,
       io.OptionBuilder()
           .setTransports(['websocket', 'polling']).setExtraHeaders({
-        'x-public-key': options.publicKey
-      }).setAuth({'x-public-key': options.publicKey}).build(),
+        'x-public-key': options.client.getPublicKey()
+      }).setAuth({'x-public-key': options.client.getPublicKey()}).build(),
     );
 
     _socket!.onConnect((_) {

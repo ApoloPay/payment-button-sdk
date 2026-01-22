@@ -40,17 +40,17 @@ class Repository {
 
   static Future<ClientResponse<QrResponseData>> fetchQrCodeDetails({
     required String publicKey,
-    required double amount,
+    required String processId,
     required String assetId,
     required String networkId,
     Map<String, dynamic>? metadata,
   }) async {
     try {
       final response = await http.post(
-        Uri.parse('$apiUrl/payment-button/process'),
+        Uri.parse('$apiUrl/payment-button/process/confirm'),
         headers: getHeaders(publicKey),
         body: jsonEncode({
-          'amount': amount,
+          'processId': processId,
           'assetId': assetId,
           'networkId': networkId,
           'metadata': metadata != null ? jsonEncode(metadata) : null,

@@ -4,11 +4,11 @@ import 'package:payment_button_sdk/models/payment_client_models.dart';
 import 'repository.dart';
 import 'socket_service.dart';
 
-class PaymentClient {
+class PaymentService {
   final PaymentOptions options;
   late final SocketService _socketService;
 
-  PaymentClient(this.options) {
+  PaymentService(this.options) {
     _socketService = SocketService(options);
   }
 
@@ -22,8 +22,8 @@ class PaymentClient {
     required String networkId,
   }) async {
     final qrData = await Repository.fetchQrCodeDetails(
-      publicKey: options.publicKey,
-      amount: options.amount,
+      publicKey: options.client.getPublicKey(),
+      processId: options.processId,
       assetId: assetId,
       networkId: networkId,
       metadata: options.metadata,

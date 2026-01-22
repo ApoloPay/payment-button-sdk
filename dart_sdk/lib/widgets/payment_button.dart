@@ -4,11 +4,12 @@ import 'package:payment_button_sdk/assets/logo_apolo.dart';
 import 'package:payment_button_sdk/i18n/i18n.dart';
 import 'package:payment_button_sdk/models/client_response.dart';
 import 'package:payment_button_sdk/models/payment_client_models.dart';
+import 'package:payment_button_sdk/services/apolo_pay_client.dart';
 import 'payment_modal.dart';
 
 class PaymentButton extends StatefulWidget {
-  final String publicKey;
-  final double amount;
+  final ApoloPayClient? client;
+  final String? processId;
   final Map<String, dynamic>? metadata;
   final String? productTitle;
   final void Function(ClientResponse<QrResponseData> response) onSuccess;
@@ -22,8 +23,8 @@ class PaymentButton extends StatefulWidget {
 
   const PaymentButton({
     super.key,
-    required this.publicKey,
-    required this.amount,
+    this.client,
+    this.processId,
     this.metadata,
     this.productTitle,
     required this.onSuccess,
@@ -40,34 +41,75 @@ class PaymentButton extends StatefulWidget {
 }
 
 class _PaymentButtonState extends State<PaymentButton> {
+  bool _hasConfigError = false;
+
   @override
   void initState() {
     super.initState();
     if (widget.locale != null) I18n.setLocale(widget.locale!);
+    _validateConfig();
   }
 
-  void handlePress(BuildContext context) => PaymentModal.show(
-        context,
-        PaymentOptions(
-          publicKey: widget.publicKey,
-          amount: widget.amount,
-          metadata: widget.metadata,
-          onSuccess: widget.onSuccess,
-          onError: widget.onError,
-        ),
-        productTitle: widget.productTitle,
-      );
+  @override
+  void didUpdateWidget(covariant PaymentButton oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _validateConfig();
+  }
+
+  void _validateConfig() {
+    if (widget.client == null) {
+      _hasConfigError = true;
+      return;
+    }
+
+    final key = widget.client!.getPublicKey();
+    final isValid = key.startsWith('pk_') && key.length == 35;
+
+    setState(() {
+      _hasConfigError = !isValid;
+    });
+
+    if (!isValid) {
+      debugPrint(
+          'PaymentButton Error: Invalid publicKey "$key". Must start with "pk_" and be 35 characters long.');
+    }
+  }
+
+  void handlePress(BuildContext context) {
+    print('widget.processId: ${widget.processId}');
+
+    if (_hasConfigError ||
+        widget.processId == null ||
+        widget.processId!.isEmpty ||
+        widget.client == null) {
+      return;
+    }
+
+    PaymentModal.show(
+      context,
+      PaymentOptions(
+        client: widget.client!,
+        processId: widget.processId!,
+        metadata: widget.metadata,
+        onSuccess: widget.onSuccess,
+        onError: widget.onError,
+      ),
+      productTitle: widget.productTitle,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
+    final bool isLoading =
+        widget.loading || widget.processId == null || widget.processId!.isEmpty;
+    final bool isDisabled = widget.disabled || _hasConfigError || isLoading;
+
     if (widget.builder != null) {
       return widget.builder!(context, () => handlePress(context));
     }
 
     return InkWell(
-      onTap: (widget.disabled || widget.loading)
-          ? null
-          : () => handlePress(context),
+      onTap: isDisabled ? null : () => handlePress(context),
       borderRadius: BorderRadius.circular(9999),
       child: AnimatedOpacity(
         duration: const Duration(milliseconds: 200),
@@ -75,24 +117,28 @@ class _PaymentButtonState extends State<PaymentButton> {
         child: CustomPaint(
           painter: _GradientBorderPainter(
             strokeWidth: 2,
-            gradient: const LinearGradient(
-              colors: [Color(0xFF0388C0), Colors.white],
+            gradient: LinearGradient(
+              colors: _hasConfigError
+                  ? [Colors.red, Colors.redAccent]
+                  : [const Color(0xFF0388C0), Colors.white],
               begin: Alignment.centerLeft,
               end: Alignment.centerRight,
             ),
           ),
           child: Container(
             height: 48,
-            decoration: const ShapeDecoration(
-              color: Color(0x25747272),
-              shape: StadiumBorder(),
+            decoration: ShapeDecoration(
+              color: _hasConfigError
+                  ? Colors.red.withOpacity(0.1)
+                  : const Color(0x25747272),
+              shape: const StadiumBorder(),
             ),
             child: Stack(
               alignment: Alignment.center,
               children: [
                 Positioned(
                   left: 16,
-                  child: widget.loading
+                  child: isLoading
                       ? const SizedBox(
                           width: 24,
                           height: 24,
@@ -101,22 +147,27 @@ class _PaymentButtonState extends State<PaymentButton> {
                             color: Colors.white,
                           ),
                         )
-                      : Image.memory(
-                          base64Decode(logoApolo),
-                          width: 24,
-                          height: 24,
-                          filterQuality: FilterQuality.high,
-                        ),
+                      : (_hasConfigError
+                          ? const Icon(Icons.error_outline,
+                              color: Colors.red, size: 24)
+                          : Image.memory(
+                              base64Decode(logoApolo),
+                              width: 24,
+                              height: 24,
+                              filterQuality: FilterQuality.high,
+                            )),
                 ),
                 Padding(
                   padding: const EdgeInsets.only(left: 48, right: 32),
                   child: Text(
-                    widget.loading
-                        ? I18n.t['trigger']['loading']
-                        : widget.label,
+                    _hasConfigError
+                        ? 'Config Error'
+                        : (isLoading
+                            ? I18n.t['trigger']['loading']
+                            : widget.label),
                     textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      color: Colors.white,
+                    style: TextStyle(
+                      color: _hasConfigError ? Colors.red : Colors.white,
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
                       letterSpacing: 0.5,

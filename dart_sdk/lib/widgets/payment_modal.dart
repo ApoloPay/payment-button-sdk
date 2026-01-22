@@ -8,7 +8,7 @@ import 'package:payment_button_sdk/models/payment_client_models.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'dart:convert';
 import 'package:payment_button_sdk/assets/logo_apolo.dart';
-import '../services/payment_client.dart';
+import '../services/payment_service.dart';
 
 enum ModalStep { selectAsset, selectNetwork, showQr, result }
 
@@ -39,7 +39,7 @@ class PaymentModal extends StatefulWidget {
 
 class _PaymentModalState extends State<PaymentModal>
     with SingleTickerProviderStateMixin {
-  late PaymentClient _client;
+  late PaymentService _service;
   ModalStep _currentStep = ModalStep.selectAsset;
   bool _isLoading = true;
   List<Asset> _assets = [];
@@ -53,9 +53,9 @@ class _PaymentModalState extends State<PaymentModal>
   @override
   void initState() {
     super.initState();
-    _client = PaymentClient(PaymentOptions(
-      publicKey: widget.options.publicKey,
-      amount: widget.options.amount,
+    _service = PaymentService(PaymentOptions(
+      client: widget.options.client,
+      processId: widget.options.processId,
       metadata: widget.options.metadata,
       onSuccess: (res) {
         setState(() {
@@ -77,7 +77,7 @@ class _PaymentModalState extends State<PaymentModal>
 
   Future<void> _loadAssets() async {
     try {
-      final assets = await _client.getAssets();
+      final assets = await _service.getAssets();
       setState(() {
         _assets = assets;
         _isLoading = false;
@@ -109,7 +109,7 @@ class _PaymentModalState extends State<PaymentModal>
   @override
   void dispose() {
     _timer?.cancel();
-    _client.disconnectWebSocket();
+    _service.disconnectWebSocket();
     super.dispose();
   }
 
@@ -385,7 +385,7 @@ class _PaymentModalState extends State<PaymentModal>
           onTap: () async {
             setState(() => _isLoading = true);
             try {
-              final qrData = await _client.fetchQrCodeDetails(
+              final qrData = await _service.fetchQrCodeDetails(
                 assetId: _selectedAsset!.id,
                 networkId: network.id,
               );
@@ -487,7 +487,7 @@ class _PaymentModalState extends State<PaymentModal>
                     ],
                   ),
                   child: Text(
-                    '${widget.options.amount} $symbol',
+                    '${_qrData?.amount ?? ''} $symbol',
                     style: const TextStyle(
                         color: Color(0xFFEA580C),
                         fontSize: 16,
@@ -605,7 +605,7 @@ class _PaymentModalState extends State<PaymentModal>
           _buildInfoField(
               label: I18n.t['modal']['labels']['amount'],
               value:
-                  '${widget.options.amount} ${_selectedAsset?.symbol ?? ""}'),
+                  '${_qrData?.amount ?? ""} ${_selectedAsset?.symbol ?? ""}'),
         ],
         const SizedBox(height: 32),
         if (!isSuccess)
