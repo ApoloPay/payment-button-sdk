@@ -99,12 +99,16 @@ class _PaymentModalState extends State<PaymentModal>
         return;
       }
 
-      final duration = Duration(milliseconds: distance);
-      final minutes = duration.inMinutes.toString().padLeft(2, '0');
-      final seconds = (duration.inSeconds % 60).toString().padLeft(2, '0');
-      final timerText = '$minutes min : $seconds seg';
+      final minLabel = I18n.t['modal']['labels']['minutes'];
+      final secLabel = I18n.t['modal']['labels']['seconds'];
 
-      _timerController.add(timerText);
+      final minutes = (distance / (1000 * 60)).floor();
+      final seconds = ((distance / 1000) % 60).floor();
+
+      final m = minutes.toString().padLeft(2, '0');
+      final s = seconds.toString().padLeft(2, '0');
+
+      _timerController.add('$m $minLabel : $s $secLabel');
     });
   }
 
@@ -117,8 +121,11 @@ class _PaymentModalState extends State<PaymentModal>
   }
 
   void _handleTimerExpired() {
+    final minLabel = I18n.t['modal']['labels']['minutes'];
+    final secLabel = I18n.t['modal']['labels']['seconds'];
+
     _timer?.cancel();
-    _timerController.add('00 min : 00 seg');
+    _timerController.add('00 $minLabel : 00 $secLabel');
 
     setState(() {
       _currentStep = ModalStep.result;
@@ -462,10 +469,12 @@ class _PaymentModalState extends State<PaymentModal>
         children: [
           StreamBuilder<String>(
             stream: _timerController.stream,
-            initialData: '-- min : -- seg',
+            initialData:
+                '-- ${I18n.t["modal"]["labels"]["minutes"]} : -- ${I18n.t["modal"]["labels"]["seconds"]}',
             builder: (context, snapshot) {
               return Text(
-                snapshot.data ?? '-- min : -- seg',
+                snapshot.data ??
+                    '-- ${I18n.t["modal"]["labels"]["minutes"]} : -- ${I18n.t["modal"]["labels"]["seconds"]}',
                 style: const TextStyle(
                   color: Color(0xFFEA580C),
                   fontWeight: FontWeight.bold,

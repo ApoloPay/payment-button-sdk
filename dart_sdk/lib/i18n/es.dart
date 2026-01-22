@@ -30,6 +30,8 @@ final Map<String, dynamic> es = {
       'address': 'Dirección de depósito',
       'amount': 'Monto',
       'product': 'Producto o Servicio',
+      'minutes': 'min',
+      'seconds': 'seg',
     },
     'warnings': {
       'networkMatch':
@@ -51,6 +53,7 @@ final Map<String, dynamic> es = {
   'errors': {
     'generic': 'Ocurrió un error inesperado.',
     'publicKeyMissing': 'Falta la Public Key',
+    'config': 'Error de Configuración',
     'timeout':
         'El tiempo para realizar el pago ha expirado. Por favor genera una nueva orden.',
   }

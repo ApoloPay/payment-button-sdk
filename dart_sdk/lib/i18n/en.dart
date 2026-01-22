@@ -21,7 +21,7 @@ final Map<String, dynamic> en = {
       'close': 'Close',
       'support': 'Support',
       'scanApp':
-          'Scan with your phone and continue from <span class="highlight">Apolo Pay</span> app',
+          'Scan with your phone and continue from <br><span class="highlight">Apolo Pay</span> app',
       'copy': 'Copy',
       'copied': 'Copied!'
     },
@@ -30,6 +30,8 @@ final Map<String, dynamic> en = {
       'address': 'Deposit Address',
       'amount': 'Amount',
       'product': 'Product or Service',
+      'minutes': 'min',
+      'seconds': 'sec',
     },
     'warnings': {
       'networkMatch':
@@ -52,6 +54,7 @@ final Map<String, dynamic> en = {
   'errors': {
     'generic': 'An unexpected error occurred.',
     'publicKeyMissing': 'Public Key is missing',
+    'config': 'Config Error',
     'timeout': 'The payment time has expired. Please generate a new order.',
   }
 };

@@ -1,5 +1,6 @@
 import { LitElement, html, css } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
+import { I18n } from '@payment-button-sdk/core';
 
 @customElement('payment-timer')
 export class PaymentTimer extends LitElement {
@@ -35,7 +36,9 @@ export class PaymentTimer extends LitElement {
 
       if (distance <= 0) {
         this.stopTimer();
-        this.timerString = "00 min : 00 seg";
+        const minLabel = I18n.t.modal.labels.minutes;
+        const secLabel = I18n.t.modal.labels.seconds;
+        this.timerString = `00 ${minLabel} : 00 ${secLabel}`;
         this.dispatchEvent(new CustomEvent('expired'));
         return;
       }
@@ -46,7 +49,10 @@ export class PaymentTimer extends LitElement {
       const m = minutes.toString().padStart(2, '0');
       const s = seconds.toString().padStart(2, '0');
 
-      this.timerString = `${m} min : ${s} seg`;
+      const minLabel = I18n.t.modal.labels.minutes;
+      const secLabel = I18n.t.modal.labels.seconds;
+
+      this.timerString = `${m} ${minLabel} : ${s} ${secLabel}`;
     };
 
     tick();

@@ -2,7 +2,6 @@ import { Dictionary } from './types';
 
 export const es: Dictionary = {
   trigger: {
-    pay: 'Pagar {amount}',
     loading: 'Cargando...',
   },
   modal: {
@@ -32,6 +31,8 @@ export const es: Dictionary = {
       address: 'Dirección de depósito',
       amount: 'Monto',
       product: 'Producto o Servicio',
+      minutes: 'min',
+      seconds: 'seg',
     },
     warnings: {
       networkMatch: 'Asegúrate de que la <strong>red de tu wallet coincida</strong> con la red de destino.',

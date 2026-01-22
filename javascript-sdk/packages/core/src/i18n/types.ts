@@ -1,6 +1,5 @@
 export interface Dictionary {
   trigger: {
-    pay: string;
     loading: string;
   };
   modal: {
@@ -30,6 +29,8 @@ export interface Dictionary {
       address: string;
       amount: string;
       product: string;
+      minutes: string;
+      seconds: string;
     };
     warnings: {
       networkMatch: string;
