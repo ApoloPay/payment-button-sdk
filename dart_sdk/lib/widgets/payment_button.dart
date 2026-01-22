@@ -74,8 +74,6 @@ class _PaymentButtonState extends State<PaymentButton> {
   }
 
   void handlePress(BuildContext context) {
-    print('widget.processId: ${widget.processId}');
-
     if (_hasConfigError ||
         widget.processId == null ||
         widget.processId!.isEmpty ||

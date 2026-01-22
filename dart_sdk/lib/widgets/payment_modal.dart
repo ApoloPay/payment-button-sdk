@@ -188,10 +188,12 @@ class _PaymentModalState extends State<PaymentModal>
                   icon: const Icon(Icons.arrow_back, color: Color(0xFF9CA3AF)),
                   onPressed: () {
                     setState(() {
-                      if (_currentStep == ModalStep.selectNetwork)
+                      if (_currentStep == ModalStep.selectNetwork) {
                         _currentStep = ModalStep.selectAsset;
-                      if (_currentStep == ModalStep.showQr)
+                      }
+                      if (_currentStep == ModalStep.showQr) {
                         _currentStep = ModalStep.selectNetwork;
+                      }
                     });
                   },
                 )
