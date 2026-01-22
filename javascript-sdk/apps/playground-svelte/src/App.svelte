@@ -1,19 +1,25 @@
 <script lang="ts">
-  // 1. Importa el componente y los tipos
-  import { 
-    PaymentButton,
-  } from '@payment-button-sdk/svelte';
+  // 1. Importa el componente, el cliente y los tipos
+  import { PaymentButton, ApoloPayClient } from "@payment-button-sdk/svelte";
 
-  // 2. Define los manejadores de eventos
+  // 2. Instancia el cliente de Apolo Pay
+  const client = new ApoloPayClient({
+    publicKey: "pk_test_SVELTE_789",
+  });
+
+  // 3. Define el proceso de pago
+  const processId = "process_id_demo";
+
+  // 4. Define los manejadores de eventos
   //    (Nota: 'event' es un CustomEvent, 'event.detail' tiene los datos)
   function handleSuccess(event: any) {
-    console.log('¡Pago exitoso (Svelte)!', event.detail.transactionId);
-    alert('Pago exitoso: ' + event.detail.transactionId);
+    console.log("¡Pago exitoso (Svelte)!", event.detail.transactionId);
+    alert("Pago exitoso: " + event.detail.transactionId);
   }
 
   function handleError(event: any) {
-    console.error('Error en el pago (Svelte):', event.detail.message);
-    alert('Error: ' + event.detail.message);
+    console.error("Error en el pago (Svelte):", event.detail.message);
+    alert("Error: " + event.detail.message);
   }
 </script>
 
@@ -21,8 +27,8 @@
   <h1>Mi Playground de Svelte 🧡</h1>
 
   <PaymentButton
-    publicKey="pk_test_SVELTE_789"
-    amount={500}
+    {client}
+    {processId}
     barrierDismissible
     on:success={handleSuccess}
     on:error={handleError}

@@ -3,16 +3,26 @@
 // en el navegador.
 import '@payment-button-sdk/ui';
 
-// 2. Importa los tipos (opcional, pero buena práctica)
-import type { ClientResponse, ClientError } from '@payment-button-sdk/ui';
+// 2. Importa el cliente y los tipos
+import { ApoloPayClient, type ClientResponse, type ClientError } from '@payment-button-sdk/ui';
 
-// 3. Usa APIs nativas del DOM
-const miBoton = document.getElementById('btn-pago');
+// 3. Instancia el cliente de Apolo Pay
+const apolo = new ApoloPayClient({
+  publicKey: 'pk_test_VANILLA_123',
+});
+
+// 4. Usa APIs nativas del DOM
+const miBoton = document.getElementById('btn-pago') as any;
 
 if (miBoton) {
-  console.log('Botón de pago encontrado, añadiendo listeners...');
+  console.log('Botón de pago encontrado, configurando...');
 
-  // 4. Escucha el evento 'success' nativo
+  // Asigna el cliente
+  miBoton.client = apolo;
+  // Asigna el proceso de pago
+  miBoton.setAttribute('process-id', 'process_id_demo');
+
+  // 5. Escucha el evento 'success' nativo
   miBoton.addEventListener('success', (event: Event) => {
     // Hacemos un cast a CustomEvent para obtener los datos
     const response = (event as CustomEvent<ClientResponse>).detail;
@@ -21,7 +31,7 @@ if (miBoton) {
     alert('Pago OK: ' + response.message);
   });
 
-  // 5. Escucha el evento 'error' nativo
+  // 6. Escucha el evento 'error' nativo
   miBoton.addEventListener('error', (event: Event) => {
     const error = (event as CustomEvent<ClientError>).detail;
 

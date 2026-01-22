@@ -42,7 +42,7 @@ export class Repository {
     const metadataString = metadata ? JSON.stringify(metadata) : undefined
 
     try {
-      const response = await fetch(`${this.apiUrl}/payment-button/process`, {
+      const response = await fetch(`${this.apiUrl}/payment-button/process/confirm`, {
         method: 'POST',
         headers: this.headers(publicKey),
         body: JSON.stringify({

@@ -1,10 +1,7 @@
 <div style="text-align: center; padding: 50px;">
   <h1>Mi Playground de Angular (v17) ❤️</h1>
-  
-  <apolo-payment-button
-    [barrierDismissible]
-    (success)="onSuccess($event)"
-    (error)="onError($event)"
-  ></apolo-payment-button>
+
+  <apolo-payment-button [client]="client" [processId]="processId" [barrierDismissible]="true"
+    (success)="onSuccess($event)" (error)="onError($event)"></apolo-payment-button>
 
 </div>
