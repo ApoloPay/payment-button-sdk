@@ -1,6 +1,7 @@
 ---
-import PaymentButton from '@payment-button-sdk/astro/PaymentButton.astro';
+import PaymentButton from "@payment-button-sdk/astro/PaymentButton.astro";
 ---
+
 <html lang="es">
   <head>
     <meta charset="utf-8" />
@@ -12,18 +13,17 @@ import PaymentButton from '@payment-button-sdk/astro/PaymentButton.astro';
 
       <PaymentButton
         id="mi-btn"
-        publicKey="publicKey"
-        amount={100}
+        processId="PI_748591ded4dbec3c0cba2ae863c29f1c"
         barrierDismissible
-      ></PaymentButton>
+      />
     </main>
     <style is:global>
       body {
-        font-family: system-ui; 
-        background-color: #151515; 
-        color: white; 
+        font-family: system-ui;
+        background-color: #151515;
+        color: white;
       }
-      main { 
+      main {
         display: grid;
         place-content: center;
         text-align: center;
@@ -35,13 +35,28 @@ import PaymentButton from '@payment-button-sdk/astro/PaymentButton.astro';
 </html>
 
 <script>
-  import type { ClientResponse, ClientError } from '@payment-button-sdk/ui';
+  import { ApoloPayClient } from "@payment-button-sdk/core";
+  import type { ClientResponse, ClientError } from "@payment-button-sdk/ui";
 
-  const btn = document.getElementById('mi-btn');
-  btn?.addEventListener('success', (e) => {
-    console.log('¡Éxito (Astro)!', (e as any as CustomEvent<ClientResponse>).detail.message);
+  const apolo = new ApoloPayClient({
+    publicKey: "publicKey",
   });
-  btn?.addEventListener('error', (e) => {
-    console.error('Error (Astro):', (e as any as CustomEvent<ClientError>).detail.message);
+
+  const btn = document.getElementById("mi-btn") as any;
+  if (btn) {
+    btn.client = apolo;
+  }
+
+  btn?.addEventListener("success", (e) => {
+    console.log(
+      "¡Éxito (Astro)!",
+      (e as any as CustomEvent<ClientResponse>).detail.message,
+    );
+  });
+  btn?.addEventListener("error", (e) => {
+    console.error(
+      "Error (Astro):",
+      (e as any as CustomEvent<ClientError>).detail.message,
+    );
   });
 </script>

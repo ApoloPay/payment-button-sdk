@@ -1,13 +1,13 @@
 import { Component, Input, Output, EventEmitter, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import type { ClientResponse, ClientError, Locale } from '@payment-button-sdk/ui';
+import type { ClientResponse, ClientError, Locale, ApoloPayClient } from '@payment-button-sdk/ui';
 
 @Component({
   selector: 'apolo-payment-button',
   standalone: true,
   template: `
     <payment-button
-      [attr.public-key]="publicKey"
-      [amount]="amount"
+      [client]="client"
+      [attr.process-id]="processId"
       [label]="label"
       [metadata]="metadata"
       [lang]="lang"
@@ -33,8 +33,8 @@ import type { ClientResponse, ClientError, Locale } from '@payment-button-sdk/ui
 })
 export class PaymentButtonComponent {
   // 5. Define los Inputs (props)
-  @Input() publicKey!: string;
-  @Input() amount!: number;
+  @Input() client?: ApoloPayClient;
+  @Input() processId?: string;
   @Input() metadata?: Record<string, any>;
   @Input() productTitle?: string;
   @Input() lang?: Locale;

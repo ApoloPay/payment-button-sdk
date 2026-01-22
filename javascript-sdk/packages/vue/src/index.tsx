@@ -17,8 +17,8 @@ export const PaymentButton = defineComponent({
 
   // 1. Define los props que acepta (camelCase)
   props: {
-    publicKey: { type: String, required: true },
-    amount: { type: Number, required: true },
+    client: { type: Object, required: false },
+    processId: { type: String, required: false },
     metadata: { type: Object, required: false },
     productTitle: { type: String, required: false },
     lang: { type: String, required: false },
@@ -62,8 +62,8 @@ export const PaymentButton = defineComponent({
         ref: buttonRef,
 
         // 7. Pasa los props, convirtiéndolos a kebab-case
-        'public-key': props.publicKey,
-        'amount': props.amount,
+        client: props.client,
+        'process-id': props.processId,
         'metadata': props.metadata,
         'product-title': props.productTitle,
         'lang': props.lang,

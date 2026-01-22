@@ -48,6 +48,7 @@ export interface Dictionary {
   errors: {
     generic: string;
     publicKeyMissing: string;
+    config: string;
     timeout: string;
   };
 }

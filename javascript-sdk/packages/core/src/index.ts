@@ -1,5 +1,5 @@
-export * from "./payment-client";
-export * from "./services/repository";
+export * from "./apolo-pay-client";
+export * from "./services/payment-service";
 export * from "./types/asset";
 export * from "./types/client-response";
 export * from "./types/network";

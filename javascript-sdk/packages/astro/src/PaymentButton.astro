@@ -5,11 +5,12 @@ import type {
   ClientResponse,
   ClientError,
   Locale,
+  ApoloPayClient,
 } from "@payment-button-sdk/ui";
 
 interface Props extends HTMLAttributes<"div"> {
-  publicKey: string;
-  amount: number;
+  client?: ApoloPayClient;
+  processId?: string;
   metadata?: Record<string, any>;
   productTitle?: string;
   lang?: Locale;
@@ -22,8 +23,8 @@ interface Props extends HTMLAttributes<"div"> {
 }
 
 const {
-  publicKey,
-  amount,
+  client,
+  processId,
   metadata,
   productTitle,
   lang,
@@ -39,8 +40,8 @@ const hasContent = Astro.slots.has("default");
 {
   hasContent ? (
     <payment-button
-      public-key={publicKey}
-      amount={amount}
+      client={client}
+      process-id={processId}
       metadata={metadata}
       product-title={productTitle}
       lang={lang}
@@ -54,8 +55,8 @@ const hasContent = Astro.slots.has("default");
     </payment-button>
   ) : (
     <payment-button
-      public-key={publicKey}
-      amount={amount}
+      client={client}
+      process-id={processId}
       metadata={metadata}
       product-title={productTitle}
       lang={lang}

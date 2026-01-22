@@ -33,7 +33,7 @@ export class Repository {
   }
 
   static async fetchQrCodeDetails({
-    amount,
+    processId,
     assetId,
     networkId,
     metadata,
@@ -46,7 +46,7 @@ export class Repository {
         method: 'POST',
         headers: this.headers(publicKey),
         body: JSON.stringify({
-          amount,
+          processId,
           assetId,
           networkId,
           metadata: metadataString,

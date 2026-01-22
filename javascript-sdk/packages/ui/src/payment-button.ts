@@ -1,11 +1,14 @@
 import { LitElement, html, css } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
-import { I18n, type ClientError, type Locale } from '@payment-button-sdk/core';
-
 import {
+  I18n,
   ModalStep,
-  PaymentClient,
+  ApoloPayClient,
+  PaymentService,
+  type Locale,
   type QrRequestDetails,
+  type ClientResponse,
+  type ClientError,
 } from '@payment-button-sdk/core';
 
 // Import child components
@@ -15,9 +18,9 @@ import './components/payment-modal.js';
 
 @customElement('payment-button')
 export class PaymentButton extends LitElement {
-  // --- Component Properties (passed as HTML attributes) ---
-  @property({ type: String, attribute: 'public-key' }) publicKey: string = '';
-  @property({ type: Number }) amount: number = 0; // The amount in the base asset
+  // --- Component Properties ---
+  @property({ type: Object }) client: ApoloPayClient | undefined = undefined;
+  @property({ type: String, attribute: 'process-id' }) processId: string | undefined = undefined;
   @property({ type: Object }) metadata: Record<string, any> | undefined = undefined;
   @property({ type: String, attribute: 'product-title' }) productTitle? = undefined;
   @property({ type: String }) lang: Locale = 'es';
@@ -39,6 +42,11 @@ export class PaymentButton extends LitElement {
   // Detectar cambios en propiedades
   override willUpdate(changedProperties: Map<string, any>) {
     if (changedProperties.has('lang')) I18n.setLocale(this.lang);
+    if (changedProperties.has('client') && this.client) {
+      this.validateClient();
+      this.initService();
+      this.loadInitialData();
+    }
     super.willUpdate(changedProperties);
   }
 
@@ -54,72 +62,65 @@ export class PaymentButton extends LitElement {
   @state() private assets: any[] = []; // List fetched from API
   @state() private error: ClientError | null = null; // Stores error details if something fails
   @state() private isLoadingData = true; // Tracks initial loading of assets/networks
+  @state() private amount: number = 0; // Fetched from processId
+  @state() private hasConfigError = false; // Invalid publicKey or missing client
   @state() private email: string | null = null; // TODO set email from socket response
-
-  private isValidPublicKey() {
-    return this.publicKey && this.publicKey.startsWith('pk_') && this.publicKey.length === 35;
-  }
+  @state() private _service: PaymentService | null = null; // Internal business logic manager
 
   // --- API Client Instance ---
-  private client!: PaymentClient;
+  // If the 'client' property is not provided, the component might fail.
+  // We no longer manage the client instance internally.
 
   // --- Lifecycle Methods ---
   // Called when the component is added to the DOM
   override connectedCallback() {
     super.connectedCallback();
-    if (!this.isValidPublicKey()) {
-      console.error('PaymentButton: "public-key" attribute is required or invalid.');
-      return;
+    if (this.client) {
+      this.validateClient();
+      this.initService();
+      this.loadInitialData(); // Fetch assets and blockchains immediately
+    } else {
+      this.hasConfigError = true;
     }
-    // Initialize the PaymentClient with necessary options and callbacks
-    this.initClient();
-    this.loadInitialData(); // Fetch assets and blockchains immediately
+  }
+
+  private initService() {
+    if (!this.client || this.hasConfigError) return;
+    this._service = new PaymentService(this.client);
+  }
+
+  private validateClient() {
+    const key = this.client?.getPublicKey();
+    const isValid = key && key.startsWith('pk_') && key.length === 35;
+
+    if (!isValid) {
+      console.error(`PaymentButton Error: Invalid publicKey "${key}". Must start with "pk_" and be 35 characters long.`);
+      this.hasConfigError = true;
+    } else {
+      this.hasConfigError = false;
+    }
   }
 
   // Called when the component is removed from the DOM
   override disconnectedCallback() {
     super.disconnectedCallback();
     // Ensure WebSocket is disconnected if the component is removed
-    this.client?.disconnectWebSocket();
+    this._service?.disconnectWebSocket();
   }
 
-  private initClient() {
-    this.client = new PaymentClient({
-      publicKey: this.publicKey,
-      amount: this.amount,
-      metadata: this.metadata,
-      // Callback triggered by WebSocket on successful payment confirmation
-      onSuccess: (response) => {
-        if (!this.isOpen) return
-
-        this.status = 'success';
-        this.currentStep = ModalStep.RESULT; // Show the success step in the modal
-        this.dispatchEvent(new CustomEvent('success', { detail: response }));
-        // WebSocket is disconnected automatically by the client on success
-      },
-      // Callback triggered by WebSocket on payment error/timeout
-      onError: (error) => {
-        if (!this.isOpen) return
-
-        this.status = 'error';
-        this.error = error;
-        this.currentStep = ModalStep.RESULT; // Show the error step in the modal
-        this.dispatchEvent(new CustomEvent('error', { detail: error }));
-        // WebSocket is disconnected automatically by the client on error
-      }
-    })
-  }
+  // Replaced by external client initialization
 
   // --- Data Loading ---
   async loadInitialData() {
+    if (!this._service) return;
     this.isLoadingData = true;
     this.error = null;
+    if (!this.processId) return;
     try {
-      this.assets = await this.client.getAssets();
+      this.assets = await this._service.getAssets();
     } catch (e) {
       console.error('Error loading initial payment options:', e);
       this.error = { code: 'DATA_LOAD_ERROR', message: 'Could not load payment options.' };
-      // Keep loading as false, but error state will indicate failure
     } finally {
       this.isLoadingData = false;
     }
@@ -140,14 +141,14 @@ export class PaymentButton extends LitElement {
   // --- Event Handlers (Triggered by Child Components) ---
   // Triggered by <trigger-button> when clicked
   private handleOpen() {
-    // 1. Limpieza preventiva
     this.resetState();
 
-    if (!this.isValidPublicKey()) return console.error('PaymentButton Error: API Key missing or invalid');
+    if (!this.client || !this.processId) {
+      console.error('PaymentButton Error: client and process-id are required');
+      return;
+    }
 
     if (this.loading) return;
-
-    if (!this.client) this.initClient();
 
     this.isOpen = true;
   }
@@ -157,7 +158,7 @@ export class PaymentButton extends LitElement {
     this.isOpen = false;
     // Disconnect WebSocket if the user cancels before payment completion
     if (this.currentStep === ModalStep.SHOW_QR && this.status !== 'success' && this.status !== 'error') {
-      this.client?.disconnectWebSocket();
+      this._service?.disconnectWebSocket();
     }
 
     setTimeout(() => this.resetState(), 300);
@@ -176,36 +177,50 @@ export class PaymentButton extends LitElement {
 
   // Triggered by <payment-modal> when a network is selected
   private async handleInitiatePayment(event: CustomEvent<{ networkId: string }>) {
+    if (!this.client || !this.processId) return;
     this.selectedNetwork = event.detail.networkId;
-    if (!this.selectedAsset || !this.selectedNetwork) return; // Should not happen
+    if (!this.selectedAsset || !this.selectedNetwork) return;
 
     const detail: QrRequestDetails = {
       assetId: this.selectedAsset,
       networkId: this.selectedNetwork
     };
 
-    // 1. Dispatch custom event before fetching QR data
     this.dispatchEvent(new CustomEvent('generateQr', { detail }));
 
-    // 2. Update UI state to show loading for QR
-    this.status = 'loading'; // Indicate QR generation is in progress
-    this.currentStep = ModalStep.SHOW_QR; // Move to QR step (will show loading initially)
-    this.qrCodeUrl = null; // Clear previous QR data
+    this.status = 'loading';
+    this.currentStep = ModalStep.SHOW_QR;
+    this.qrCodeUrl = null;
     this.paymentAddress = null;
     this.error = null;
 
-    // 3. Call the core client to fetch QR details (this also connects WebSocket)
     try {
-      const qrData = await this.client.fetchQrCodeDetails(detail);
+      const qrData = await this._service!.fetchQrCodeDetails(detail, {
+        processId: this.processId,
+        metadata: this.metadata,
+        onSuccess: (response: ClientResponse) => {
+          if (!this.isOpen) return;
+          this.status = 'success';
+          this.currentStep = ModalStep.RESULT;
+          this.dispatchEvent(new CustomEvent('success', { detail: response }));
+        },
+        onError: (error: ClientError) => {
+          if (!this.isOpen) return;
+          this.status = 'error';
+          this.error = error;
+          this.currentStep = ModalStep.RESULT;
+          this.dispatchEvent(new CustomEvent('error', { detail: error }));
+        }
+      });
       this.qrCodeUrl = qrData.qrCodeUrl;
       this.paymentAddress = qrData.address;
       this.qrCodeExpiresAt = qrData.expiresAtMs;
-      this.status = 'idle'; // QR data loaded, waiting for payment via WebSocket
+      this.amount = typeof qrData.amount === 'string' ? parseFloat(qrData.amount) : qrData.amount;
+      this.status = 'idle';
     } catch (e) {
       console.error("Error fetching QR code details:", e);
       this.error = { code: 'QR_FETCH_ERROR', message: (e instanceof Error ? e.message : 'Failed to get payment details.') };
-      this.status = 'error'; // Set error status
-      // Revert to network selection on QR fetch error to allow retry
+      this.status = 'error';
       this.currentStep = ModalStep.SELECT_NETWORK;
     }
   }
@@ -214,7 +229,7 @@ export class PaymentButton extends LitElement {
   private handleChangeStep(event: CustomEvent<ModalStep>) {
     // Disconnect WebSocket if going back from QR step before completion
     if (this.currentStep === ModalStep.SHOW_QR && event.detail !== ModalStep.RESULT) {
-      this.client?.disconnectWebSocket();
+      this._service?.disconnectWebSocket();
     }
     this.currentStep = event.detail;
     this.status = 'idle'; // Reset status when moving back
@@ -248,8 +263,8 @@ export class PaymentButton extends LitElement {
           <trigger-button 
             .lang=${this.lang}
             .label=${this.label}
-            .amount=${this.amount}
             .loading=${this.loading || this.isLoadingData}
+            .hasError=${this.hasConfigError}
             ?disabled=${this.disabled}
           ></trigger-button>
         </slot>

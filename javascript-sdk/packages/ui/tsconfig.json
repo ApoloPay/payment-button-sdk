@@ -2,10 +2,10 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "outDir": "dist",
+    "rootDir": "src",
     "declaration": true
   },
   "include": [
-    "src",
-    "../core/src/types/modal-step.ts"
+    "src"
   ]
 }

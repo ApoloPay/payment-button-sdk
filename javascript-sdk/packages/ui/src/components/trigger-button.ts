@@ -9,8 +9,8 @@ export class TriggerButton extends LitElement {
   @property({ type: String }) lang: Locale = 'es';
   @property({ type: Boolean }) loading = false;
   @property({ type: Boolean }) disabled = false;
-  @property({ type: Number }) amount = 0;
   @property({ type: String }) label?: string = undefined;
+  @property({ type: Boolean }) hasError = false;
 
   static override styles = [
     sharedStyles,
@@ -81,6 +81,16 @@ export class TriggerButton extends LitElement {
         transform: none;
       }
 
+      button.error {
+        background-color: rgba(239, 68, 68, 0.1);
+        color: #ef4444;
+        text-indent: 0;
+      }
+
+      button.error::before {
+        background: linear-gradient(90deg, #ef4444, #fca5a5);
+      }
+
       .logo-apolo {
         position: absolute;
         top: 50%;
@@ -97,12 +107,20 @@ export class TriggerButton extends LitElement {
   protected override render() {
     const t = I18n.t;
 
-    const defaultLabel = this.loading ? t.trigger.loading : (this.label || 'Apolo Pay');
+    const defaultLabel = this.hasError
+      ? ((t.errors as any).config || 'Config Error')
+      : (this.loading ? t.trigger.loading : (this.label || 'Apolo Pay'));
 
     return html`
       <div class="button-wrapper">
-        <img class="logo-apolo" src="${logoApolo}" alt="Icon" />
-        <button ?disabled=${this.disabled || this.loading} type="button">
+        ${this.hasError ? '' : html`
+          <img class="logo-apolo" src="${logoApolo}" alt="Icon" />
+        `}
+        <button 
+          ?disabled=${this.disabled || this.loading || this.hasError} 
+          class="${this.hasError ? 'error' : ''}"
+          type="button"
+        >
           ${defaultLabel}
         </button>
       </div>

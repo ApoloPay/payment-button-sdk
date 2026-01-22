@@ -50,6 +50,7 @@ export const en: Dictionary = {
   errors: {
     generic: 'An unexpected error occurred.',
     publicKeyMissing: 'Public Key is missing',
+    config: 'Config Error',
     timeout: 'The payment time has expired. Please generate a new order.',
   }
 };

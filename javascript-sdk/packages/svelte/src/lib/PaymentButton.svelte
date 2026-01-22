@@ -1,11 +1,11 @@
 <script lang="ts">
   // 1. Importa el Web Component para registrarlo
   import "@payment-button-sdk/ui";
-  import type { Locale } from "@payment-button-sdk/ui";
+  import type { Locale, ApoloPayClient } from "@payment-button-sdk/ui";
 
   // 2. Define los props que el wrapper acepta
-  export let publicKey: string;
-  export let amount: number;
+  export let client: ApoloPayClient | undefined = undefined;
+  export let processId: string | undefined = undefined;
   export let metadata: Record<string, any> | undefined = undefined;
   export let productTitle: string | undefined = undefined;
   export let lang: Locale | undefined = undefined;
@@ -16,8 +16,8 @@
 </script>
 
 <payment-button
-  public-key={publicKey}
-  {amount}
+  client={client}
+  process-id={processId}
   {metadata}
   product-title={productTitle}
   {lang}

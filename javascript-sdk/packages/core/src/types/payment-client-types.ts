@@ -18,10 +18,15 @@ export interface QrResponseData {
   expiresAtMs: number; // Fecha exacta de expiración (ISO String o Timestamp)
 }
 
-export interface PaymentOptions {
+export interface ClientOptions {
   publicKey: string;
-  amount: number;
+}
+
+export interface PaymentSessionOptions {
+  processId: string;
   metadata?: Record<string, any>;
   onSuccess: (response: ClientResponse) => void;
   onError: (error: ClientError) => void;
 }
+
+export interface PaymentOptions extends ClientOptions, PaymentSessionOptions { }
