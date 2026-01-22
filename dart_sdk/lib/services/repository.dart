@@ -54,24 +54,37 @@ class Repository {
           'networkId': networkId,
         }),
       );
+      final data = jsonDecode(response.body);
 
-      final data = jsonDecode(response.body),
-          result = data['result'],
-          wallet = result['wallet'],
-          network = result['network'];
+      if (data['result'] == null) {
+        throw ClientError.fromError(
+          data,
+          code: data['status'] ?? 'qr_fetch_error',
+          message: data['message'] ?? 'Error al obtener el código QR',
+        );
+      }
 
-      final String address = network == "apolopay"
+      final Map<String, dynamic> result =
+          Map<String, dynamic>.from(data['result']);
+      final wallet = result['wallet'];
+      final networkName = result['network'];
+
+      final String address = networkName == "apolopay"
           ? "https://p2p.apolopay.app/payment/$wallet"
           : wallet;
 
-      return ClientResponse.fromJson({
-        ...result,
-        'address': address,
-        'qrCodeUrl':
-            'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=$address&ecc=H',
-        'expiresAtMs': result['expiresAtMs'] ??
-            (DateTime.now().millisecondsSinceEpoch + 30 * 60 * 1000),
-      }, result: (json) => QrResponseData.fromJson(json));
+      return ClientResponse.fromJson(
+        data,
+        result: (val) {
+          final Map<String, dynamic> map = Map<String, dynamic>.from(val);
+          return QrResponseData.fromJson({
+            ...map,
+            'address': address,
+            'qrCodeUrl':
+                'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=$address&ecc=H',
+          });
+        },
+      );
     } catch (error) {
       throw ClientError.fromError(
         error,

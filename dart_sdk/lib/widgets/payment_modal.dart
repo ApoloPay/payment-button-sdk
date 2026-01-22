@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:payment_button_sdk/i18n/i18n.dart';
 import 'package:payment_button_sdk/models/client_response.dart';
 import 'package:payment_button_sdk/models/asset.dart';
@@ -14,12 +15,10 @@ enum ModalStep { selectAsset, selectNetwork, showQr, result }
 
 class PaymentModal extends StatefulWidget {
   final PaymentOptions options;
-  final String? productTitle;
 
   const PaymentModal({
     super.key,
     required this.options,
-    this.productTitle,
   });
 
   static Future<void> show(BuildContext context, PaymentOptions options,
@@ -28,8 +27,7 @@ class PaymentModal extends StatefulWidget {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) =>
-          PaymentModal(options: options, productTitle: productTitle),
+      builder: (context) => PaymentModal(options: options),
     );
   }
 
@@ -47,8 +45,10 @@ class _PaymentModalState extends State<PaymentModal>
   Network? _selectedNetwork;
   QrResponseData? _qrData;
   ClientResponseBase? _finalResult;
-  String _timerString = '00:00';
   Timer? _timer;
+  bool _isCopied = false;
+  final StreamController<String> _timerController =
+      StreamController<String>.broadcast();
 
   @override
   void initState() {
@@ -82,6 +82,7 @@ class _PaymentModalState extends State<PaymentModal>
         _isLoading = false;
       });
     } catch (e) {
+      debugPrint('Error loading assets: $e');
       setState(() => _isLoading = false);
       // Handle error
     }
@@ -94,50 +95,74 @@ class _PaymentModalState extends State<PaymentModal>
       final distance = expiresAtMs - now;
 
       if (distance <= 0) {
-        timer.cancel();
-        setState(() => _timerString = '00:00');
+        _handleTimerExpired();
         return;
       }
 
-      final minutes = (distance ~/ 60000).toString().padLeft(2, '0');
-      final seconds = ((distance % 60000) ~/ 1000).toString().padLeft(2, '0');
-      setState(() => _timerString = '$minutes:$seconds');
+      final duration = Duration(milliseconds: distance);
+      final minutes = duration.inMinutes.toString().padLeft(2, '0');
+      final seconds = (duration.inSeconds % 60).toString().padLeft(2, '0');
+      final timerText = '$minutes min : $seconds seg';
+
+      _timerController.add(timerText);
     });
   }
 
   @override
   void dispose() {
     _timer?.cancel();
+    _timerController.close();
     _service.disconnectWebSocket();
     super.dispose();
+  }
+
+  void _handleTimerExpired() {
+    _timer?.cancel();
+    _timerController.add('00 min : 00 seg');
+
+    setState(() {
+      _currentStep = ModalStep.result;
+      _finalResult = ClientError(
+        code: 'PAYMENT_TIMEOUT',
+        message: I18n.t['errors']['timeout'],
+      );
+    });
+
+    widget.options.onError(_finalResult as ClientError);
   }
 
   Widget _buildRichText(String text,
       {TextStyle? baseStyle, TextAlign textAlign = TextAlign.start}) {
     final List<TextSpan> spans = [];
-    final RegExp regExp = RegExp(
-        r'(<span class="highlight">.*?</span>|<strong>.*?</strong>|<br>|[^<]+)');
+    final RegExp regExp = RegExp(r'(<[^>]+>|[^<]+)');
     final Iterable<Match> matches = regExp.allMatches(text);
+
+    bool isHighlight = false;
+    bool isBold = false;
 
     for (final match in matches) {
       final String part = match.group(0)!;
-      if (part.startsWith('<span class="highlight">')) {
-        spans.add(TextSpan(
-          text: part
-              .replaceAll('<span class="highlight">', '')
-              .replaceAll('</span>', ''),
-          style: const TextStyle(
-              color: Color(0xFFEA580C), fontWeight: FontWeight.bold),
-        ));
-      } else if (part.startsWith('<strong>')) {
-        spans.add(TextSpan(
-          text: part.replaceAll('<strong>', '').replaceAll('</strong>', ''),
-          style: const TextStyle(fontWeight: FontWeight.bold),
-        ));
-      } else if (part == '<br>') {
-        spans.add(const TextSpan(text: '\n'));
+      if (part.startsWith('<')) {
+        final tag = part.toLowerCase();
+        if (tag.contains('highlight')) {
+          isHighlight = true;
+        } else if (tag == '</span>') {
+          isHighlight = false;
+        } else if (tag == '<strong>') {
+          isBold = true;
+        } else if (tag == '</strong>') {
+          isBold = false;
+        } else if (tag.startsWith('<br')) {
+          spans.add(const TextSpan(text: '\n'));
+        }
       } else {
-        spans.add(TextSpan(text: part));
+        spans.add(TextSpan(
+          text: part,
+          style: TextStyle(
+            color: isHighlight || isBold ? const Color(0xFFEA580C) : null,
+            fontWeight: isBold || isHighlight ? FontWeight.bold : null,
+          ),
+        ));
       }
     }
 
@@ -266,6 +291,9 @@ class _PaymentModalState extends State<PaymentModal>
                 I18n.t['modal']['titles']['scanQr'],
                 {'symbol': _selectedAsset?.symbol ?? ''},
               ),
+              subtitle: widget.options.productTitle.isNotEmpty
+                  ? widget.options.productTitle
+                  : null,
             ),
             Expanded(child: _buildQrView()),
           ],
@@ -398,6 +426,8 @@ class _PaymentModalState extends State<PaymentModal>
               });
               _startTimer(qrData.expiresAtMs);
             } catch (e) {
+              debugPrint(
+                  'Error fetching QR details: ${e is ClientError ? e.message : e}');
               setState(() => _isLoading = false);
             }
           },
@@ -416,18 +446,34 @@ class _PaymentModalState extends State<PaymentModal>
     final String symbol = _selectedAsset?.symbol ?? '';
     final warningToken = I18n.interpolate(
         I18n.t['modal']['warnings']['onlyToken'], {'symbol': symbol});
+
+    final int diffMs =
+        _qrData!.expiresAtMs - DateTime.now().millisecondsSinceEpoch;
+    final int minutesLeft = (diffMs / (1000 * 60)).ceil();
+    final String timeWindow = '${minutesLeft > 0 ? minutesLeft : 0} min';
+
     final warningTimer = I18n.interpolate(
-        I18n.t['modal']['warnings']['timer'], {'time': '30 min'});
+        I18n.t['modal']['warnings']['timer'], {'time': timeWindow});
+
+    final bool isApoloPay = _selectedNetwork?.network == 'apolopay';
 
     return SingleChildScrollView(
       child: Column(
         children: [
-          Text(
-            _timerString,
-            style: const TextStyle(
-                color: Color(0xFFEA580C),
-                fontWeight: FontWeight.w600,
-                fontSize: 14),
+          StreamBuilder<String>(
+            stream: _timerController.stream,
+            initialData: '-- min : -- seg',
+            builder: (context, snapshot) {
+              return Text(
+                snapshot.data ?? '-- min : -- seg',
+                style: const TextStyle(
+                  color: Color(0xFFEA580C),
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                  letterSpacing: 1.0,
+                ),
+              );
+            },
           ),
           const SizedBox(height: 16),
           Stack(
@@ -459,7 +505,7 @@ class _PaymentModalState extends State<PaymentModal>
                         borderRadius: BorderRadius.circular(8),
                       ),
                       padding: const EdgeInsets.all(4),
-                      child: _selectedNetwork?.network == 'apolopay'
+                      child: isApoloPay
                           ? Image.memory(base64Decode(logoApolo),
                               filterQuality: FilterQuality.high)
                           : (_selectedNetwork?.image != null
@@ -499,14 +545,16 @@ class _PaymentModalState extends State<PaymentModal>
             ],
           ),
           const SizedBox(height: 32),
-          _buildInfoField(
-              label: I18n.t['modal']['labels']['network'],
-              value: _selectedNetwork?.name ?? ''),
-          _buildInfoField(
-              label: I18n.t['modal']['labels']['address'],
-              value: _qrData!.address,
-              hasCopy: true),
-          const SizedBox(height: 24),
+          if (!isApoloPay) ...[
+            _buildInfoField(
+                label: I18n.t['modal']['labels']['network'],
+                value: _selectedNetwork?.name ?? ''),
+            _buildInfoField(
+                label: I18n.t['modal']['labels']['address'],
+                value: _qrData!.address,
+                hasCopy: true),
+            const SizedBox(height: 12),
+          ],
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -520,7 +568,7 @@ class _PaymentModalState extends State<PaymentModal>
             ],
           ),
           const SizedBox(height: 24),
-          if (_selectedNetwork?.network == 'apolopay')
+          if (isApoloPay)
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(16),
@@ -603,6 +651,10 @@ class _PaymentModalState extends State<PaymentModal>
             ),
           ),
           const SizedBox(height: 24),
+          if (widget.options.productTitle.isNotEmpty)
+            _buildInfoField(
+                label: I18n.t['modal']['labels']['product'],
+                value: widget.options.productTitle),
           _buildInfoField(
               label: I18n.t['modal']['labels']['amount'],
               value:
@@ -653,21 +705,35 @@ class _PaymentModalState extends State<PaymentModal>
                   ),
                 ),
                 if (hasCopy)
-                  GestureDetector(
-                    onTap: () {
-                      // Copy logic
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF526282),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Text(
-                        I18n.t['modal']['actions']['copy'],
-                        style:
-                            const TextStyle(color: Colors.white, fontSize: 12),
+                  Material(
+                    color: const Color(0xFF526282),
+                    borderRadius: BorderRadius.circular(8),
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(8),
+                      onTap: () async {
+                        if (_isCopied) return;
+                        await Clipboard.setData(ClipboardData(text: value));
+                        if (mounted) {
+                          setState(() => _isCopied = true);
+                        }
+                        Future.delayed(const Duration(seconds: 2), () {
+                          if (mounted) setState(() => _isCopied = false);
+                        });
+                      },
+                      child: Container(
+                        constraints: const BoxConstraints(minWidth: 70),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 6),
+                        alignment: Alignment.center,
+                        child: Text(
+                          _isCopied
+                              ? I18n.t['modal']['actions']['copied']
+                              : I18n.t['modal']['actions']['copy'],
+                          style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold),
+                        ),
                       ),
                     ),
                   ),

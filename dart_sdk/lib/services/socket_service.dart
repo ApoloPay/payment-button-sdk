@@ -45,10 +45,8 @@ class SocketService {
 
     _socket = io.io(
       wsUrl,
-      io.OptionBuilder()
-          .setTransports(['websocket', 'polling']).setExtraHeaders({
-        'x-public-key': options.client.getPublicKey()
-      }).setAuth({'x-public-key': options.client.getPublicKey()}).build(),
+      io.OptionBuilder().setTransports(['polling']).setExtraHeaders(
+          {'x-public-key': options.client.getPublicKey()}).build(),
     );
 
     _socket!.onConnect((_) {
@@ -64,8 +62,12 @@ class SocketService {
       }
 
       final result = response.result as Map<String, dynamic>;
-      if (result['status'] == 'success') {
-        options.onSuccess(ClientResponse.fromJson(response.toJson()));
+      if (result['status'] == 'completed') {
+        options.onSuccess(ClientResponse(
+          code: 'payment_success',
+          message: response.message,
+          result: QrResponseData.fromJson(result),
+        ));
       }
     });
 

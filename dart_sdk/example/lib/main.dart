@@ -20,7 +20,6 @@ class MyApp extends StatelessWidget {
           child: PaymentButton(
             client: ApoloPayClient(publicKey: 'publicKey'),
             processId: 'processId',
-            productTitle: 'Producto de Ejemplo',
             onSuccess: (response) {
               print('Pago exitoso: ${response.message}');
             },

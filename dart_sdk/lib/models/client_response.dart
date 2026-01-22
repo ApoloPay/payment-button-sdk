@@ -40,10 +40,21 @@ class ClientError extends ClientResponseBase {
     dynamic error, {
     String? code,
     String? message,
-  }) =>
-      ClientError(
-        code: error['statusCode'] ?? code ?? 'unknown_error',
-        message: error['message'] ?? message ?? 'Error desconocido',
+  }) {
+    if (error is Map) {
+      return ClientError(
+        code:
+            (error['statusCode'] ?? error['status'] ?? code ?? 'unknown_error')
+                .toString(),
+        message:
+            (error['message'] ?? message ?? 'Error desconocido').toString(),
         error: error['error'] ?? error,
       );
+    }
+    return ClientError(
+      code: code ?? 'unknown_error',
+      message: error?.toString() ?? message ?? 'Error desconocido',
+      error: error,
+    );
+  }
 }

@@ -86,6 +86,7 @@ class _PaymentButtonState extends State<PaymentButton> {
       PaymentOptions(
         client: widget.client!,
         processId: widget.processId!,
+        productTitle: widget.productTitle ?? '',
         onSuccess: widget.onSuccess,
         onError: widget.onError,
       ),
