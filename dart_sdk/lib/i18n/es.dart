@@ -4,10 +4,10 @@ final Map<String, dynamic> es = {
   },
   'modal': {
     'titles': {
-      'selectAsset': 'Selecciona el stablecoin',
-      'selectNetwork': 'Selecciona la red',
-      'scanQr': 'Depósito {symbol}',
-      'success': '¡Gracias por tu compra!',
+      'selectAsset': 'Selecciona el <span class="highlight">stablecoin</span>',
+      'selectNetwork': 'Selecciona la <span class="highlight">red</span>',
+      'scanQr': 'Depósito <span class="highlight">{symbol}</span>',
+      'success': '¡Gracias por <span class="highlight">tu compra!</span>',
       'error': 'Error en el Pago',
       'idle': 'Estado inesperado'
     },
@@ -20,7 +20,8 @@ final Map<String, dynamic> es = {
       'back': 'Volver',
       'close': 'Cerrar',
       'support': 'Soporte',
-      'scanApp': 'Escanea con tu celular y continua desde la app de Apolo Pay',
+      'scanApp':
+          'Escanea con tu celular y continua desde la app de <span class="highlight">Apolo Pay</span>',
       'copy': 'Copiar',
       'copied': '¡Copiado!'
     },
@@ -32,12 +33,12 @@ final Map<String, dynamic> es = {
     },
     'warnings': {
       'networkMatch':
-          'Asegúrate de que la red de tu wallet coincida con la red de destino.',
+          'Asegúrate de que la <strong>red de tu wallet coincida</strong> con la red de destino.',
       'noNFT': 'No envíes NFTs a esta wallet.',
       'onlyToken':
-          'Solo se aceptan depósitos en {symbol}. El envío de otro tipo de token podría resultar en su pérdida.',
+          'Solo se aceptan <strong>depósitos en {symbol}</strong>. El envío de otro tipo de token podría resultar en su pérdida.',
       'timer':
-          'Realiza el pago dentro del tiempo indicado. {time} De lo contrario, el código QR se vencerá.',
+          'Realiza el pago dentro del tiempo indicado. <strong>{time}</strong> De lo contrario, el código QR se vencerá.',
       'selectNetworkLater': 'Luego podrás seleccionar la red de tu preferencia',
     },
     'success': {

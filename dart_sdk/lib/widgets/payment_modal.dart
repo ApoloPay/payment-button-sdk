@@ -6,6 +6,8 @@ import 'package:payment_button_sdk/models/asset.dart';
 import 'package:payment_button_sdk/models/network.dart';
 import 'package:payment_button_sdk/models/payment_client_models.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'dart:convert';
+import 'package:payment_button_sdk/assets/logo_apolo.dart';
 import '../services/payment_client.dart';
 
 enum ModalStep { selectAsset, selectNetwork, showQr, result }
@@ -111,12 +113,51 @@ class _PaymentModalState extends State<PaymentModal>
     super.dispose();
   }
 
+  Widget _buildRichText(String text,
+      {TextStyle? baseStyle, TextAlign textAlign = TextAlign.start}) {
+    final List<TextSpan> spans = [];
+    final RegExp regExp = RegExp(
+        r'(<span class="highlight">.*?</span>|<strong>.*?</strong>|<br>|[^<]+)');
+    final Iterable<Match> matches = regExp.allMatches(text);
+
+    for (final match in matches) {
+      final String part = match.group(0)!;
+      if (part.startsWith('<span class="highlight">')) {
+        spans.add(TextSpan(
+          text: part
+              .replaceAll('<span class="highlight">', '')
+              .replaceAll('</span>', ''),
+          style: const TextStyle(
+              color: Color(0xFFEA580C), fontWeight: FontWeight.bold),
+        ));
+      } else if (part.startsWith('<strong>')) {
+        spans.add(TextSpan(
+          text: part.replaceAll('<strong>', '').replaceAll('</strong>', ''),
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ));
+      } else if (part == '<br>') {
+        spans.add(const TextSpan(text: '\n'));
+      } else {
+        spans.add(TextSpan(text: part));
+      }
+    }
+
+    return RichText(
+      textAlign: textAlign,
+      text: TextSpan(
+        style: baseStyle ??
+            const TextStyle(color: Color(0xFF1C315C), fontSize: 14),
+        children: spans,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: MediaQuery.of(context).size.height * 0.85,
+      height: MediaQuery.of(context).size.height * 0.9,
       decoration: const BoxDecoration(
-        color: Color(0xFF1E1E1E),
+        color: Color(0xFFF6F2EC),
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       child: Column(
@@ -125,7 +166,10 @@ class _PaymentModalState extends State<PaymentModal>
           Expanded(
             child: AnimatedSwitcher(
               duration: const Duration(milliseconds: 300),
-              child: _buildCurrentStep(),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: _buildCurrentStep(),
+              ),
             ),
           ),
         ],
@@ -135,49 +179,26 @@ class _PaymentModalState extends State<PaymentModal>
 
   Widget _buildHeader() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-      decoration: const BoxDecoration(
-        border: Border(bottom: BorderSide(color: Colors.white12)),
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          if (_currentStep != ModalStep.selectAsset &&
-              _currentStep != ModalStep.result)
-            IconButton(
-              icon: const Icon(Icons.arrow_back, color: Colors.white),
-              onPressed: () {
-                setState(() {
-                  if (_currentStep == ModalStep.selectNetwork)
-                    _currentStep = ModalStep.selectAsset;
-                  if (_currentStep == ModalStep.showQr)
-                    _currentStep = ModalStep.selectNetwork;
-                });
-              },
-            ),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  widget.productTitle ?? 'Apolo Pay',
-                  style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold),
-                ),
-                Text(
-                  I18n.interpolate(
-                    '${I18n.t['modal']['labels']['amount']}: {amount}',
-                    {'amount': widget.options.amount.toStringAsFixed(2)},
-                  ),
-                  style: const TextStyle(color: Colors.white70, fontSize: 14),
-                ),
-              ],
-            ),
-          ),
+          _currentStep != ModalStep.selectAsset &&
+                  _currentStep != ModalStep.result
+              ? IconButton(
+                  icon: const Icon(Icons.arrow_back, color: Color(0xFF9CA3AF)),
+                  onPressed: () {
+                    setState(() {
+                      if (_currentStep == ModalStep.selectNetwork)
+                        _currentStep = ModalStep.selectAsset;
+                      if (_currentStep == ModalStep.showQr)
+                        _currentStep = ModalStep.selectNetwork;
+                    });
+                  },
+                )
+              : const SizedBox(width: 48),
           IconButton(
-            tooltip: I18n.t['modal']['actions']['close'],
-            icon: const Icon(Icons.close, color: Colors.white),
+            icon: const Icon(Icons.close, color: Color(0xFF9CA3AF)),
             onPressed: () => Navigator.pop(context),
           ),
         ],
@@ -186,28 +207,29 @@ class _PaymentModalState extends State<PaymentModal>
   }
 
   Widget _buildStepTitleAndSubtitle({required String title, String? subtitle}) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        const SizedBox(height: 8),
+        _buildRichText(
+          title,
+          baseStyle: const TextStyle(
+            color: Color(0xFF1C315C),
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
           ),
-          if (subtitle != null) ...[
-            const SizedBox(height: 8),
-            Text(
-              subtitle,
-              style: const TextStyle(color: Colors.white70, fontSize: 14),
-            ),
-          ],
+          textAlign: TextAlign.center,
+        ),
+        if (subtitle != null) ...[
+          const SizedBox(height: 8),
+          Text(
+            subtitle,
+            textAlign: TextAlign.center,
+            style: const TextStyle(color: Color(0xFF6B7280), fontSize: 14),
+          ),
         ],
-      ),
+        const SizedBox(height: 24),
+      ],
     );
   }
 
@@ -254,17 +276,14 @@ class _PaymentModalState extends State<PaymentModal>
 
   Widget _buildAssetList() {
     return ListView.builder(
+      padding: const EdgeInsets.only(bottom: 24),
       itemCount: _assets.length,
       itemBuilder: (context, index) {
         final asset = _assets[index];
-        return ListTile(
-          // leading: asset.iconUrl != null
-          //     ? CachedNetworkImage(
-          //         imageUrl: asset.iconUrl!, width: 40, height: 40)
-          //     : const Icon(Icons.currency_bitcoin, color: Colors.white),
-          title: Text(asset.name, style: const TextStyle(color: Colors.white)),
-          subtitle:
-              Text(asset.symbol, style: const TextStyle(color: Colors.white70)),
+        return _buildSelectionCard(
+          title: asset.symbol,
+          subtitle: asset.name,
+          imageUrl: asset.image,
           onTap: () {
             setState(() {
               _selectedAsset = asset;
@@ -276,16 +295,93 @@ class _PaymentModalState extends State<PaymentModal>
     );
   }
 
+  Widget _buildSelectionCard({
+    required String title,
+    required String subtitle,
+    required String imageUrl,
+    required VoidCallback onTap,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16),
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: const Color(0xFFF3F4F6)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Row(
+            children: [
+              imageUrl.isNotEmpty
+                  ? Image.network(
+                      imageUrl,
+                      width: 40,
+                      height: 40,
+                      filterQuality: FilterQuality.high,
+                      errorBuilder: (ctx, _, __) => const Icon(
+                          Icons.monetization_on,
+                          size: 40,
+                          color: Color(0xFF1C315C)),
+                    )
+                  : Image.memory(
+                      base64Decode(logoApolo),
+                      width: 40,
+                      height: 40,
+                      filterQuality: FilterQuality.high,
+                    ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        color: Color(0xFF1C315C),
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    Text(
+                      subtitle,
+                      style: const TextStyle(
+                        color: Color(0xFF6B7280),
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildNetworkList() {
     final networks = _selectedAsset?.networks ?? [];
     return ListView.builder(
+      padding: const EdgeInsets.only(bottom: 24),
       itemCount: networks.length,
       itemBuilder: (context, index) {
         final network = networks[index];
-        return ListTile(
-          leading: const Icon(Icons.lan, color: Colors.white),
-          title:
-              Text(network.name, style: const TextStyle(color: Colors.white)),
+        return _buildSelectionCard(
+          title: network.name,
+          subtitle: '',
+          imageUrl: network.network == 'apolopay'
+              ? ''
+              : network.image, // Temporary, will handle apolopay logo
           onTap: () async {
             setState(() => _isLoading = true);
             try {
@@ -310,37 +406,156 @@ class _PaymentModalState extends State<PaymentModal>
   }
 
   Widget _buildQrView() {
-    if (_qrData == null)
+    if (_qrData == null) {
       return Center(
           child: Text(I18n.t['modal']['titles']['error'],
-              style: const TextStyle(color: Colors.white)));
+              style: const TextStyle(color: Color(0xFF1C315C))));
+    }
+
+    final String symbol = _selectedAsset?.symbol ?? '';
+    final warningToken = I18n.interpolate(
+        I18n.t['modal']['warnings']['onlyToken'], {'symbol': symbol});
+    final warningTimer = I18n.interpolate(
+        I18n.t['modal']['warnings']['timer'], {'time': '30 min'});
 
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(24),
       child: Column(
         children: [
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-                color: Colors.white, borderRadius: BorderRadius.circular(16)),
-            child: QrImageView(data: _qrData!.address, size: 200),
-          ),
-          const SizedBox(height: 24),
           Text(
             _timerString,
             style: const TextStyle(
-                color: Colors.orange,
-                fontSize: 32,
-                fontWeight: FontWeight.bold),
+                color: Color(0xFFEA580C),
+                fontWeight: FontWeight.w600,
+                fontSize: 14),
           ),
           const SizedBox(height: 16),
-          Text(
-              I18n.interpolate(
-                I18n.t['modal']['warnings']['timer'],
-                {'time': _timerString},
+          Stack(
+            clipBehavior: Clip.none,
+            alignment: Alignment.center,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(24),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.05),
+                      blurRadius: 15,
+                      offset: const Offset(0, 5),
+                    ),
+                  ],
+                ),
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    QrImageView(data: _qrData!.address, size: 180),
+                    Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      padding: const EdgeInsets.all(4),
+                      child: _selectedNetwork?.network == 'apolopay'
+                          ? Image.memory(base64Decode(logoApolo),
+                              filterQuality: FilterQuality.high)
+                          : (_selectedNetwork?.image != null
+                              ? Image.network(_selectedNetwork!.image,
+                                  filterQuality: FilterQuality.high)
+                              : const Icon(Icons.qr_code,
+                                  color: Color(0xFF1C315C))),
+                    ),
+                  ],
+                ),
               ),
-              textAlign: TextAlign.center,
-              style: const TextStyle(color: Colors.white70, fontSize: 14)),
+              Positioned(
+                bottom: -12,
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 4,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Text(
+                    '${widget.options.amount} $symbol',
+                    style: const TextStyle(
+                        color: Color(0xFFEA580C),
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 32),
+          _buildInfoField(
+              label: I18n.t['modal']['labels']['network'],
+              value: _selectedNetwork?.name ?? ''),
+          _buildInfoField(
+              label: I18n.t['modal']['labels']['address'],
+              value: _qrData!.address,
+              hasCopy: true),
+          const SizedBox(height: 24),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildWarningItem(I18n.t['modal']['warnings']['networkMatch']),
+              _buildWarningItem(I18n.t['modal']['warnings']['noNFT']),
+              _buildWarningItem(warningToken),
+              const SizedBox(height: 12),
+              _buildRichText(warningTimer,
+                  baseStyle:
+                      const TextStyle(color: Color(0xFF1C315C), fontSize: 12)),
+            ],
+          ),
+          const SizedBox(height: 24),
+          if (_selectedNetwork?.network == 'apolopay')
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: const Color(0xFF041C4C),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: _buildRichText(
+                I18n.t['modal']['actions']['scanApp'],
+                textAlign: TextAlign.center,
+                baseStyle: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildWarningItem(String text) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Padding(
+            padding: EdgeInsets.only(top: 6),
+            child: CircleAvatar(radius: 2, backgroundColor: Color(0xFF1C315C)),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+              child: _buildRichText(text,
+                  baseStyle:
+                      const TextStyle(color: Color(0xFF1C315C), fontSize: 12))),
         ],
       ),
     );
@@ -351,28 +566,127 @@ class _PaymentModalState extends State<PaymentModal>
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Icon(
-          isSuccess ? Icons.check_circle : Icons.error,
-          color: isSuccess ? Colors.green : Colors.red,
-          size: 80,
-        ),
-        const SizedBox(height: 16),
-        Text(
+        if (isSuccess)
+          const Icon(Icons.check_circle_outline,
+              color: Color(0xFF22C55E), size: 80)
+        else
+          const Icon(Icons.error_outline, color: Colors.red, size: 80),
+        const SizedBox(height: 24),
+        _buildRichText(
           isSuccess
               ? I18n.t['modal']['titles']['success']
               : I18n.t['modal']['titles']['error'],
-          style: const TextStyle(
-              color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
+          baseStyle: const TextStyle(
+              color: Color(0xFF1C315C),
+              fontSize: 24,
+              fontWeight: FontWeight.bold),
+          textAlign: TextAlign.center,
         ),
-        const SizedBox(height: 8),
-        Text(_finalResult?.message ?? '',
-            style: const TextStyle(color: Colors.white70)),
+        const SizedBox(height: 16),
+        _buildRichText(
+          isSuccess
+              ? '${I18n.t['modal']['success']['message']} ${I18n.t['modal']['success']['message2']}'
+              : (_finalResult?.message ?? I18n.t['errors']['generic']),
+          textAlign: TextAlign.center,
+          baseStyle: const TextStyle(color: Color(0xFF1C315C), fontSize: 15),
+        ),
+        if (isSuccess) ...[
+          const SizedBox(height: 32),
+          Text(
+            I18n.t['modal']['success']['details'],
+            style: const TextStyle(
+              color: Color(0xFF1C315C),
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              decoration: TextDecoration.underline,
+            ),
+          ),
+          const SizedBox(height: 24),
+          _buildInfoField(
+              label: I18n.t['modal']['labels']['amount'],
+              value:
+                  '${widget.options.amount} ${_selectedAsset?.symbol ?? ""}'),
+        ],
         const SizedBox(height: 32),
-        ElevatedButton(
-          onPressed: () => Navigator.pop(context),
-          child: Text(I18n.t['modal']['actions']['close']),
-        ),
+        if (!isSuccess)
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: () => Navigator.pop(context),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFEA580C),
+                foregroundColor: Colors.white,
+                shape: const StadiumBorder(),
+                padding: const EdgeInsets.symmetric(vertical: 16),
+              ),
+              child: Text(I18n.t['modal']['actions']['close']),
+            ),
+          ),
       ],
+    );
+  }
+
+  Widget _buildInfoField(
+      {required String label, required String value, bool hasCopy = false}) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: const Color(0xFF526282)),
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    value,
+                    style:
+                        const TextStyle(color: Color(0xFF4B5563), fontSize: 14),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                if (hasCopy)
+                  GestureDetector(
+                    onTap: () {
+                      // Copy logic
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF526282),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        I18n.t['modal']['actions']['copy'],
+                        style:
+                            const TextStyle(color: Colors.white, fontSize: 12),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          Positioned(
+            top: -10,
+            left: 12,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 4),
+              color: Colors.white,
+              child: Text(
+                label,
+                style: const TextStyle(color: Color(0xFF9CA3AF), fontSize: 12),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

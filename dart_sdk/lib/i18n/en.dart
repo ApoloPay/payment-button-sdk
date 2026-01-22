@@ -4,10 +4,10 @@ final Map<String, dynamic> en = {
   },
   'modal': {
     'titles': {
-      'selectAsset': 'Select stablecoin',
-      'selectNetwork': 'Select network',
-      'scanQr': 'Deposit {symbol}',
-      'success': 'Thanks for your purchase!',
+      'selectAsset': 'Select <span class="highlight">stablecoin</span>',
+      'selectNetwork': 'Select <span class="highlight">network</span>',
+      'scanQr': 'Deposit <span class="highlight">{symbol}</span>',
+      'success': 'Thanks for <span class="highlight">your purchase!</span>',
       'error': 'Payment Error',
       'idle': 'Unexpected state'
     },
@@ -20,7 +20,8 @@ final Map<String, dynamic> en = {
       'back': 'Back',
       'close': 'Close',
       'support': 'Support',
-      'scanApp': 'Scan with your phone and continue from Apolo Pay app',
+      'scanApp':
+          'Scan with your phone and continue from <span class="highlight">Apolo Pay</span> app',
       'copy': 'Copy',
       'copied': 'Copied!'
     },
@@ -32,12 +33,12 @@ final Map<String, dynamic> en = {
     },
     'warnings': {
       'networkMatch':
-          'Ensure your wallet network matches the destination network.',
+          'Ensure your wallet <strong>network matches</strong> the destination network.',
       'noNFT': 'Do not send NFTs to this wallet.',
       'onlyToken':
-          'Only {symbol} deposits are accepted. Sending other tokens may result in loss.',
+          'Only <strong>{symbol} deposits</strong> are accepted. Sending other tokens may result in loss.',
       'timer':
-          'Complete payment within {time}. Otherwise, the QR code will expire.',
+          'Complete payment within <strong>{time}</strong>. Otherwise, the QR code will expire.',
       'selectNetworkLater':
           'You will be able to select your preferred network later',
     },
