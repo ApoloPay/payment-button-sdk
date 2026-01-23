@@ -23,6 +23,23 @@ class PaymentModal extends StatefulWidget {
 
   static Future<void> show(BuildContext context, PaymentOptions options,
       {String? productTitle}) {
+    final bool isDesktop = MediaQuery.of(context).size.width > 880;
+
+    if (isDesktop) {
+      return showDialog(
+        context: context,
+        builder: (context) => Dialog(
+          backgroundColor: Colors.transparent,
+          insetPadding:
+              const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 480, maxHeight: 800),
+            child: PaymentModal(options: options),
+          ),
+        ),
+      );
+    }
+
     return showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -185,11 +202,15 @@ class _PaymentModalState extends State<PaymentModal>
 
   @override
   Widget build(BuildContext context) {
+    final bool isDesktop = MediaQuery.of(context).size.width > 880;
+
     return Container(
-      height: MediaQuery.of(context).size.height * 0.9,
-      decoration: const BoxDecoration(
-        color: Color(0xFFF6F2EC),
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      height: isDesktop ? null : MediaQuery.of(context).size.height * 0.9,
+      decoration: BoxDecoration(
+        color: const Color(0xFFF6F2EC),
+        borderRadius: isDesktop
+            ? BorderRadius.circular(24)
+            : const BorderRadius.vertical(top: Radius.circular(24)),
       ),
       child: Column(
         children: [
