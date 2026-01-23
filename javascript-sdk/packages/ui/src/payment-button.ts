@@ -41,10 +41,17 @@ export class PaymentButton extends LitElement {
   // Detectar cambios en propiedades
   override willUpdate(changedProperties: Map<string, any>) {
     if (changedProperties.has('lang')) I18n.setLocale(this.lang);
-    if (changedProperties.has('client') && this.client) {
-      this.validateClient();
-      this.initService();
-      this.loadInitialData();
+    if (
+      changedProperties.has('client') ||
+      changedProperties.has('processId')
+    ) {
+      this.validateConfig();
+      if (this.client && this._service === null) {
+        this.initService();
+      }
+      if (this.client && this.processId) {
+        this.loadInitialData();
+      }
     }
     super.willUpdate(changedProperties);
   }
@@ -74,12 +81,12 @@ export class PaymentButton extends LitElement {
   // Called when the component is added to the DOM
   override connectedCallback() {
     super.connectedCallback();
+    this.validateConfig();
     if (this.client) {
-      this.validateClient();
       this.initService();
-      this.loadInitialData(); // Fetch assets and blockchains immediately
-    } else {
-      this.hasConfigError = true;
+      if (this.processId) {
+        this.loadInitialData(); // Fetch assets and blockchains immediately
+      }
     }
   }
 
@@ -88,16 +95,24 @@ export class PaymentButton extends LitElement {
     this._service = new PaymentService(this.client);
   }
 
-  private validateClient() {
-    const key = this.client?.getPublicKey();
-    const isValid = key && key.startsWith('pk_') && key.length === 35;
+  get isValidProcessId() {
+    if (!this.processId) return false;
+    const uuidRegex =
+      /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
+    return uuidRegex.test(this.processId);
+  }
 
-    if (!isValid) {
-      console.error(`PaymentButton Error: Invalid publicKey "${key}". Must start with "pk_" and be 35 characters long.`);
-      this.hasConfigError = true;
-    } else {
-      this.hasConfigError = false;
+  private validateConfig() {
+    const key = this.client?.getPublicKey();
+    const isKeyValid = !!(key && key.startsWith('pk_') && key.length === 35);
+
+    if (this.client && !isKeyValid) {
+      console.error(
+        `PaymentButton Error: Invalid publicKey "${key}". Must start with "pk_" and be 35 characters long.`
+      );
     }
+
+    this.hasConfigError = !this.client || !isKeyValid;
   }
 
   // Called when the component is removed from the DOM
@@ -142,8 +157,8 @@ export class PaymentButton extends LitElement {
   private handleOpen() {
     this.resetState();
 
-    if (!this.client || !this.processId) {
-      console.error('PaymentButton Error: client and process-id are required');
+    if (this.hasConfigError || !this.client || !this.processId) {
+      console.error('PaymentButton Error: client and process-id are required and must be valid');
       return;
     }
 
@@ -261,9 +276,13 @@ export class PaymentButton extends LitElement {
           <trigger-button 
             .lang=${this.lang}
             .label=${this.label}
-            .loading=${this.loading || this.isLoadingData}
+            .loading=${this.loading ||
+      (this.isLoadingData && !this.hasConfigError) ||
+      !this.isValidProcessId}
             .hasError=${this.hasConfigError}
-            ?disabled=${this.disabled}
+            ?disabled=${this.disabled ||
+      this.hasConfigError ||
+      !this.isValidProcessId}
           ></trigger-button>
         </slot>
       </div>
