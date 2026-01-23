@@ -6,9 +6,9 @@ export default defineConfig({
     plugins: [vue()],
     resolve: {
         alias: {
-            '@payment-button-sdk/vue': path.resolve(__dirname, '../../packages/vue/src/index.tsx'),
-            '@payment-button-sdk/ui': path.resolve(__dirname, '../../packages/ui/src/index.ts'),
-            '@payment-button-sdk/core': path.resolve(__dirname, '../../packages/core/src/index.ts'),
+            '@apolopay-sdk/vue': path.resolve(__dirname, '../../packages/vue/src/index.tsx'),
+            '@apolopay-sdk/ui': path.resolve(__dirname, '../../packages/ui/src/index.ts'),
+            '@apolopay-sdk/core': path.resolve(__dirname, '../../packages/core/src/index.ts'),
         }
     }
 });

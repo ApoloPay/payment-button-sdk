@@ -7,9 +7,9 @@ export default defineConfig({
   plugins: [svelte()],
   resolve: {
     alias: {
-      '@payment-button-sdk/svelte': path.resolve(__dirname, '../../packages/svelte/src/lib/index.ts'),
-      '@payment-button-sdk/ui': path.resolve(__dirname, '../../packages/ui/src/index.ts'),
-      '@payment-button-sdk/core': path.resolve(__dirname, '../../packages/core/src/index.ts'),
+      '@apolopay-sdk/svelte': path.resolve(__dirname, '../../packages/svelte/src/lib/index.ts'),
+      '@apolopay-sdk/ui': path.resolve(__dirname, '../../packages/ui/src/index.ts'),
+      '@apolopay-sdk/core': path.resolve(__dirname, '../../packages/core/src/index.ts'),
     }
   }
 })

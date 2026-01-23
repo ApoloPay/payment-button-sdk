@@ -1,5 +1,5 @@
 {
-  "name": "@payment-button-sdk/astro",
+  "name": "@apolopay-sdk/astro",
   "version": "0.1.0",
   "description": "Adaptador de Apolo Pay para Astro",
   "type": "module",
@@ -14,7 +14,7 @@
     "dev": "tsc --watch"
   },
   "dependencies": {
-    "@payment-button-sdk/ui": "workspace:*"
+    "@apolopay-sdk/ui": "workspace:*"
   },
   "devDependencies": {
     "typescript": "5.4.5"
@@ -27,6 +27,6 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
     },
-    "./PaymentButton.astro": "./src/PaymentButton.astro"
+    "./ApoloPayButton.astro": "./src/ApoloPayButton.astro"
   }
 }

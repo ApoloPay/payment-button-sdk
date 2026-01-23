@@ -8,7 +8,7 @@
     "build": "vite build"
   },
   "dependencies": {
-    "@payment-button-sdk/ui": "workspace:*"
+    "@apolopay-sdk/ui": "workspace:*"
   },
   "devDependencies": {
     "typescript": "5.4.5",

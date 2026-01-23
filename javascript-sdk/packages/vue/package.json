@@ -1,5 +1,5 @@
 {
-  "name": "@payment-button-sdk/vue",
+  "name": "@apolopay-sdk/vue",
   "version": "0.1.0",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -16,7 +16,7 @@
     "provenance": true
   },
   "dependencies": {
-    "@payment-button-sdk/ui": "workspace:*"
+    "@apolopay-sdk/ui": "workspace:*"
   },
   "devDependencies": {
     "tsup": "8.0.0",

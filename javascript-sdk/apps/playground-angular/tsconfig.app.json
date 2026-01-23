@@ -7,9 +7,15 @@
     "useDefineForClassFields": false,
     "preserveSymlinks": true,
     "paths": {
-      "@payment-button-sdk/angular": ["../../packages/angular/dist/index.d.ts"],
-      "@payment-button-sdk/ui": ["../../packages/ui/dist/index.d.ts"],
-      "@payment-button-sdk/core": ["../../packages/core/dist/index.d.ts"]
+      "@apolopay-sdk/angular": [
+        "../../packages/angular/dist/index.d.ts"
+      ],
+      "@apolopay-sdk/ui": [
+        "../../packages/ui/dist/index.d.ts"
+      ],
+      "@apolopay-sdk/core": [
+        "../../packages/core/dist/index.d.ts"
+      ]
     }
   },
   "files": [

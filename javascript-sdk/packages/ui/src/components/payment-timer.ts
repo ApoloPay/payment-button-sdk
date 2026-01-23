@@ -1,6 +1,6 @@
 import { LitElement, html, css } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
-import { I18n } from '@payment-button-sdk/core';
+import { I18n } from '@apolopay-sdk/core';
 
 @customElement('payment-timer')
 export class PaymentTimer extends LitElement {
@@ -76,7 +76,7 @@ export class PaymentTimer extends LitElement {
     }
   `;
 
-  render() {
+  override render() {
     return html`${this.timerString}`;
   }
 }

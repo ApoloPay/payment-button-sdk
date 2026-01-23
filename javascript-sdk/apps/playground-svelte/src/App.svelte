@@ -1,6 +1,6 @@
 <script lang="ts">
   // 1. Importa el componente, el cliente y los tipos
-  import { PaymentButton, ApoloPayClient } from "@payment-button-sdk/svelte";
+  import { ApoloPayButton, ApoloPayClient } from "@apolopay-sdk/svelte";
 
   // 2. Instancia el cliente de Apolo Pay
   const client = new ApoloPayClient({
@@ -26,13 +26,13 @@
 <main>
   <h1>Mi Playground de Svelte 🧡</h1>
 
-  <PaymentButton
+  <ApoloPayButton
     {client}
     {processId}
     barrierDismissible
     on:success={handleSuccess}
     on:error={handleError}
-  ></PaymentButton>
+  ></ApoloPayButton>
 </main>
 
 <style>

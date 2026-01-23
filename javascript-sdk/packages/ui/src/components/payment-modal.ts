@@ -1,7 +1,7 @@
 import { LitElement, html, css } from 'lit';
 import { customElement, property, query, state } from 'lit/decorators.js';
-import { I18n, ModalStep } from '@payment-button-sdk/core';
-import type { Locale, Asset, Network, Dictionary, ClientError } from '@payment-button-sdk/core';
+import { I18n, ModalStep } from '@apolopay-sdk/core';
+import type { Locale, Asset, Network, Dictionary, ClientError } from '@apolopay-sdk/core';
 import { modalBaseStyles } from '../styles/modal-base';
 import { sharedStyles } from '../styles/shared-styles';
 import { textFieldBaseStyles } from '../styles/text-field-base';
@@ -17,7 +17,7 @@ export class PaymentModal extends LitElement {
   // --- Props Received from Parent ---
   @property({ type: Boolean }) isOpen = false;
   @property({ type: Boolean }) barrierDismissible: boolean = false;
-  @property({ type: String }) lang: Locale = 'es';
+  @property({ type: String }) override lang: Locale = 'es';
   @property({ type: String }) productTitle = '';
   @property({ type: Number }) currentStep: ModalStep = ModalStep.SELECT_ASSET;
   @property({ type: String }) status: 'idle' | 'success' | 'error' = 'idle';

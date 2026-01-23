@@ -1,15 +1,15 @@
-import '@payment-button-sdk/ui';
+import '@apolopay-sdk/ui';
 import React, { useRef, useEffect } from 'react';
 
 // 2. Importa los tipos para las props
-import type { Locale, ClientResponse, ClientError, ApoloPayClient } from '@payment-button-sdk/ui';
+import type { Locale, ClientResponse, ClientError, ApoloPayClient } from '@apolopay-sdk/ui';
 
 // 3. Re-exporta los tipos de 'core' para el usuario final
 //    (Nota: @core es una dependencia de @ui, que es una dependencia nuestra)
-export * from '@payment-button-sdk/ui';
+export * from '@apolopay-sdk/ui';
 
 // 3. Define las props "tipo React" (onSuccess, publicKey)
-type PaymentButtonProps = {
+type ApoloPayButtonProps = {
   client?: ApoloPayClient;
   processId?: string;
   productTitle?: string;
@@ -24,7 +24,7 @@ type PaymentButtonProps = {
 };
 
 // 4. El componente de React ahora es un "ADAPTADOR"
-export const PaymentButton: React.FC<PaymentButtonProps> = ({
+export const ApoloPayButton: React.FC<ApoloPayButtonProps> = ({
   client,
   processId,
   productTitle,
@@ -64,7 +64,7 @@ export const PaymentButton: React.FC<PaymentButtonProps> = ({
   // 6. Renderiza el Web Component, pasando props de React (camelCase)
   //    a atributos HTML (kebab-case)
   return React.createElement(
-    'payment-button',
+    'apolopay-button',
     {
       ref,
       client,

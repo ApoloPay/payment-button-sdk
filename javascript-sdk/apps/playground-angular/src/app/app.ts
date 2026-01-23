@@ -1,14 +1,14 @@
 import { Component, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { PaymentButtonModule, ApoloPayClient } from '@payment-button-sdk/angular';
-import type { ClientResponse, ClientError } from '@payment-button-sdk/core';
+import { ApoloPayButtonModule, ApoloPayClient } from '@apolopay-sdk/angular';
+import type { ClientResponse, ClientError } from '@apolopay-sdk/core';
 
 @Component({
   selector: 'app-root',
   standalone: true,
   imports: [
     CommonModule,
-    PaymentButtonModule
+    ApoloPayButtonModule
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './app.html',

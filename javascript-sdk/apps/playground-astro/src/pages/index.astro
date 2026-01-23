@@ -1,5 +1,5 @@
 ---
-import PaymentButton from "@payment-button-sdk/astro/PaymentButton.astro";
+import ApoloPayButton from "@apolopay-sdk/astro/ApoloPayButton.astro";
 ---
 
 <html lang="es">
@@ -11,7 +11,7 @@ import PaymentButton from "@payment-button-sdk/astro/PaymentButton.astro";
     <main>
       <h1>Mi Playground de Astro 🚀</h1>
 
-      <PaymentButton id="mi-btn" processId="processId" barrierDismissible />
+      <ApoloPayButton id="mi-btn" processId="processId" barrierDismissible />
     </main>
     <style is:global>
       body {
@@ -31,8 +31,8 @@ import PaymentButton from "@payment-button-sdk/astro/PaymentButton.astro";
 </html>
 
 <script>
-  import { ApoloPayClient } from "@payment-button-sdk/core";
-  import type { ClientResponse, ClientError } from "@payment-button-sdk/ui";
+  import { ApoloPayClient } from "@apolopay-sdk/core";
+  import type { ClientResponse, ClientError } from "@apolopay-sdk/ui";
 
   const apolo = new ApoloPayClient({
     publicKey: "publicKey",

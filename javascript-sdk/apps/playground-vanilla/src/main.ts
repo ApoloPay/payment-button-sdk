@@ -1,10 +1,10 @@
 // 1. ¡IMPORTANTE! Importa el paquete de UI.
 // Esto ejecuta el código que registra la etiqueta <payment-button>
 // en el navegador.
-import '@payment-button-sdk/ui';
+import '@apolopay-sdk/ui';
 
 // 2. Importa el cliente y los tipos
-import { ApoloPayClient, type ClientResponse, type ClientError } from '@payment-button-sdk/ui';
+import { ApoloPayClient, type ClientResponse, type ClientError } from '@apolopay-sdk/ui';
 
 // 3. Instancia el cliente de Apolo Pay
 const apolo = new ApoloPayClient({

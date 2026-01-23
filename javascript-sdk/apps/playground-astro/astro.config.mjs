@@ -8,21 +8,21 @@ export default defineConfig({
     resolve: {
       alias: [
         {
-          find: '@payment-button-sdk/astro',
+          find: '@apolopay-sdk/astro',
           replacement: fileURLToPath(new URL(
             '../../packages/astro/src',
             import.meta.url
           )),
         },
         {
-          find: '@payment-button-sdk/ui',
+          find: '@apolopay-sdk/ui',
           replacement: fileURLToPath(new URL(
             '../../packages/ui/src/index.ts',
             import.meta.url
           )),
         },
         {
-          find: '@payment-button-sdk/core',
+          find: '@apolopay-sdk/core',
           replacement: fileURLToPath(new URL(
             '../../packages/core/src/index.ts',
             import.meta.url

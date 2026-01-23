@@ -3,17 +3,22 @@
     "astro/tsconfigs/strict",
     "../../tsconfig.base.json"
   ],
-  "include": [".astro/types.d.ts", "**/*"],
-  "exclude": ["dist"],
+  "include": [
+    ".astro/types.d.ts",
+    "**/*"
+  ],
+  "exclude": [
+    "dist"
+  ],
   "compilerOptions": {
     "paths": {
-      "@payment-button-sdk/astro/*": [
+      "@apolopay-sdk/astro/*": [
         "../../packages/astro/src/*"
       ],
-      "@payment-button-sdk/astro": [
+      "@apolopay-sdk/astro": [
         "../../packages/astro/src/index.ts"
       ],
-      "@payment-button-sdk/ui": [
+      "@apolopay-sdk/ui": [
         "../../packages/ui/src/index.ts"
       ]
     }

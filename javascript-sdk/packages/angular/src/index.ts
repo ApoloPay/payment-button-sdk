@@ -1,9 +1,9 @@
 /*
- * API Pública de @payment-button-sdk/angular
+ * API Pública de @apolopay-sdk/angular
  */
 
-export * from './lib/payment-button.module';
-export * from './lib/payment-button.component';
+export * from './lib/apolopay-button.module';
+export * from './lib/apolopay-button.component';
 
 // Re-exporta los tipos
-export * from '@payment-button-sdk/ui';
+export * from '@apolopay-sdk/ui';

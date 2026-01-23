@@ -1,11 +1,11 @@
 import { Component, Input, Output, EventEmitter, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import type { ClientResponse, ClientError, Locale, ApoloPayClient } from '@payment-button-sdk/ui';
+import type { ClientResponse, ClientError, Locale, ApoloPayClient } from '@apolopay-sdk/ui';
 
 @Component({
-  selector: 'apolo-payment-button',
+  selector: 'apolopay-button-component',
   standalone: true,
   template: `
-    <payment-button
+    <apolopay-button
       [client]="client"
       [attr.process-id]="processId"
       [label]="label"
@@ -18,19 +18,19 @@ import type { ClientResponse, ClientError, Locale, ApoloPayClient } from '@payme
       (error)="onError($event)"
     >
       <ng-content></ng-content>
-    </payment-button>
+    </apolopay-button>
   `,
   // 4. Asegura que el wrapper se comporte como un bloque
   styles: [`
     :host { display: inline-block; }
 
-    payment-button { display: block; }
+    apolopay-button { display: block; }
   `],
   schemas: [
     CUSTOM_ELEMENTS_SCHEMA
   ]
 })
-export class PaymentButtonComponent {
+export class ApoloPayButtonComponent {
   // 5. Define los Inputs (props)
   @Input() client?: ApoloPayClient;
   @Input() processId?: string;

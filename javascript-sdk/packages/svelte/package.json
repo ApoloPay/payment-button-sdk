@@ -1,5 +1,5 @@
 {
-  "name": "@payment-button-sdk/svelte",
+  "name": "@apolopay-sdk/svelte",
   "version": "0.1.0",
   "description": "Botón de pago de Tu Plataforma para Svelte",
   "type": "module",
@@ -14,7 +14,7 @@
     "check:watch": "svelte-check --tsconfig ./tsconfig.json --watch"
   },
   "dependencies": {
-    "@payment-button-sdk/ui": "workspace:*"
+    "@apolopay-sdk/ui": "workspace:*"
   },
   "devDependencies": {
     "@sveltejs/package": "2.0.0",

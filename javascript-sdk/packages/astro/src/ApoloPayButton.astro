@@ -6,7 +6,7 @@ import type {
   ClientError,
   Locale,
   ApoloPayClient,
-} from "@payment-button-sdk/ui";
+} from "@apolopay-sdk/ui";
 
 interface Props extends HTMLAttributes<"div"> {
   client?: ApoloPayClient;
@@ -37,7 +37,7 @@ const hasContent = Astro.slots.has("default");
 
 {
   hasContent ? (
-    <payment-button
+    <apolopay-button
       client={client}
       process-id={processId}
       product-title={productTitle}
@@ -49,9 +49,9 @@ const hasContent = Astro.slots.has("default");
       {...restProps}
     >
       <slot />
-    </payment-button>
+    </apolopay-button>
   ) : (
-    <payment-button
+    <apolopay-button
       client={client}
       process-id={processId}
       product-title={productTitle}
@@ -66,5 +66,5 @@ const hasContent = Astro.slots.has("default");
 }
 
 <script>
-  import "@payment-button-sdk/ui";
+  import "@apolopay-sdk/ui";
 </script>

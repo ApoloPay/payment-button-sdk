@@ -1,5 +1,5 @@
 {
-  "name": "@payment-button-sdk/angular",
+  "name": "@apolopay-sdk/angular",
   "version": "0.1.0",
   "description": "Botón de pago de Tu Plataforma para Angular",
   "main": "./dist/index.js",
@@ -10,7 +10,7 @@
     "dev": "ngc -p tsconfig.lib.json --watch"
   },
   "dependencies": {
-    "@payment-button-sdk/ui": "workspace:*"
+    "@apolopay-sdk/ui": "workspace:*"
   },
   "peerDependencies": {
     "@angular/common": ">=16.0.0",

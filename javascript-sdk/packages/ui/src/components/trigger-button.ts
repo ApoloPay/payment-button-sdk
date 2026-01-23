@@ -2,11 +2,11 @@ import { LitElement, html, css } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { sharedStyles } from '../styles/shared-styles.js';
 import { logoApolo } from '../assets/logo_apolo.js'
-import { I18n, type Locale } from '@payment-button-sdk/core';
+import { I18n, type Locale } from '@apolopay-sdk/core';
 
 @customElement('trigger-button')
 export class TriggerButton extends LitElement {
-  @property({ type: String }) lang: Locale = 'es';
+  @property({ type: String }) override lang: Locale = 'es';
   @property({ type: Boolean }) loading = false;
   @property({ type: Boolean }) disabled = false;
   @property({ type: String }) label?: string = undefined;

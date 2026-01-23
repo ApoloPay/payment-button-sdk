@@ -1,15 +1,15 @@
 {
-  "name": "@payment-button-sdk/react",
+  "name": "@apolopay-sdk/react",
   "version": "0.1.0",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "scripts": {
-    "build": "tsup src/index.tsx --format esm,cjs --dts --clean --external react @payment-button-sdk/ui",
-    "dev": "tsup src/index.tsx --format esm,cjs --dts --watch --external react @payment-button-sdk/ui"
+    "build": "tsup src/index.tsx --format esm,cjs --dts --clean --external react @apolopay-sdk/ui",
+    "dev": "tsup src/index.tsx --format esm,cjs --dts --watch --external react @apolopay-sdk/ui"
   },
   "dependencies": {
-    "@payment-button-sdk/ui": "workspace:*"
+    "@apolopay-sdk/ui": "workspace:*"
   },
   "devDependencies": {
     "@types/react": "18.3.3",

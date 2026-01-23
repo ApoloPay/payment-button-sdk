@@ -1,4 +1,4 @@
-import { ApoloPayClient, PaymentButton, type ClientResponse } from '@payment-button-sdk/react';
+import { ApoloPayClient, ApoloPayButton, type ClientResponse } from '@apolopay-sdk/react';
 import { useEffect, useState } from 'react';
 
 function App() {
@@ -20,15 +20,15 @@ function App() {
   return (
     <div>
       <h1>Playground de React 🚀</h1>
-      
+
       {/* 4. Lo usa como un componente nativo de React */}
-      <PaymentButton
+      <ApoloPayButton
         client={client}
         processId="processId"
         barrierDismissible
         onSuccess={handleSuccess}
         onError={(error) => { console.error(error); }}
-      ></PaymentButton>
+      ></ApoloPayButton>
     </div>
   );
 }

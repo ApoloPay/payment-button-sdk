@@ -19,6 +19,6 @@
     "vite": "7.1.7"
   },
   "dependencies": {
-    "@payment-button-sdk/svelte": "workspace:*"
+    "@apolopay-sdk/svelte": "workspace:*"
   }
 }

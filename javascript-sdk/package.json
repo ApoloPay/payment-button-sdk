@@ -1,5 +1,5 @@
 {
-  "name": "payment-button-sdk",
+  "name": "apolopay-sdk",
   "private": true,
   "scripts": {
     "build": "turbo run build",

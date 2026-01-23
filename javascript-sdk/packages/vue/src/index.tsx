@@ -1,19 +1,19 @@
 // 1. Importa el Web Component para registrarlo
-import '@payment-button-sdk/ui';
+import '@apolopay-sdk/ui';
 
 // 2. Importa las herramientas de Vue
 import { defineComponent, h, onMounted, ref } from 'vue';
 
 // 3. Re-exporta los tipos de 'core' para el usuario final
 //    (Nota: @core es una dependencia de @ui, que es una dependencia nuestra)
-export * from '@payment-button-sdk/ui';
+export * from '@apolopay-sdk/ui';
 
 /**
  * El componente adaptador de Vue.
  * Traduce los eventos nativos del DOM a eventos de Vue.
  */
-export const PaymentButton = defineComponent({
-  name: 'PaymentButton',
+export const ApoloPayButton = defineComponent({
+  name: 'ApoloPayButton',
 
   // 1. Define los props que acepta (camelCase)
   props: {
@@ -55,7 +55,7 @@ export const PaymentButton = defineComponent({
 
     // 5. Renderiza el Web Component
     return () => h(
-      'payment-button',
+      'apolopay-button',
       {
         // 6. Asigna la ref
         ref: buttonRef,

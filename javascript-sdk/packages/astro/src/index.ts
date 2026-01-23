@@ -1,3 +1,3 @@
-export { default as PaymentButton } from './PaymentButton.astro';
+export { default as ApoloPayButton } from './ApoloPayButton.astro';
 
-export * from '@payment-button-sdk/ui';
+export * from '@apolopay-sdk/ui';

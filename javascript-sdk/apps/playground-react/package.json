@@ -10,7 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@payment-button-sdk/react": "workspace:*",
+    "@apolopay-sdk/react": "workspace:*",
     "react": "18.3.1",
     "react-dom": "18.3.1"
   },

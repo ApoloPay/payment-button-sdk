@@ -1,5 +1,5 @@
 {
-  "name": "@payment-button-sdk/ui",
+  "name": "@apolopay-sdk/ui",
   "version": "0.1.0",
   "description": "Componente de UI (Web Component) para el botón de pago",
   "type": "module",
@@ -14,7 +14,7 @@
     "dev": "tsc --watch"
   },
   "dependencies": {
-    "@payment-button-sdk/core": "workspace:*",
+    "@apolopay-sdk/core": "workspace:*",
     "lit": "3.0.0",
     "tslib": "2.8.1"
   },

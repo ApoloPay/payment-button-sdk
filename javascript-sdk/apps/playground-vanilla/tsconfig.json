@@ -3,14 +3,19 @@
   "compilerOptions": {
     "target": "ESNext",
     "module": "ESNext",
-    "lib": ["ESNext", "DOM"],
+    "lib": [
+      "ESNext",
+      "DOM"
+    ],
     "isolatedModules": true,
     "noEmit": true,
     "paths": {
-      "@payment-button-sdk/ui": [
+      "@apolopay-sdk/ui": [
         "../../packages/ui/src/index.ts"
       ],
     }
   },
-  "include": ["src"]
+  "include": [
+    "src"
+  ]
 }

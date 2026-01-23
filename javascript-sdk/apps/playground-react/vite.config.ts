@@ -7,9 +7,9 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      '@payment-button-sdk/react': path.resolve(__dirname, '../../packages/react/src/index.tsx'),
-      '@payment-button-sdk/ui': path.resolve(__dirname, '../../packages/ui/src/index.ts'),
-      '@payment-button-sdk/core': path.resolve(__dirname, '../../packages/core/src/index.ts'),
+      '@apolopay-sdk/react': path.resolve(__dirname, '../../packages/react/src/index.tsx'),
+      '@apolopay-sdk/ui': path.resolve(__dirname, '../../packages/ui/src/index.ts'),
+      '@apolopay-sdk/core': path.resolve(__dirname, '../../packages/core/src/index.ts'),
     }
   }
 })

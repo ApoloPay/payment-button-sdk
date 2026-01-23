@@ -1,19 +1,19 @@
 import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { PaymentButtonComponent } from './payment-button.component';
-import '@payment-button-sdk/ui';
+import { ApoloPayButtonComponent } from './apolopay-button.component';
+import '@apolopay-sdk/ui';
 
 @NgModule({
   declarations: [],
   imports: [
     CommonModule,
-    PaymentButtonComponent
+    ApoloPayButtonComponent
   ],
   exports: [
-    PaymentButtonComponent
+    ApoloPayButtonComponent
   ],
   schemas: [
     CUSTOM_ELEMENTS_SCHEMA
   ]
 })
-export class PaymentButtonModule { }
+export class ApoloPayButtonModule { }

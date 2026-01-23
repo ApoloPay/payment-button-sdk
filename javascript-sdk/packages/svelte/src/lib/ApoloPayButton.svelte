@@ -1,7 +1,7 @@
 <script lang="ts">
   // 1. Importa el Web Component para registrarlo
-  import "@payment-button-sdk/ui";
-  import type { Locale, ApoloPayClient } from "@payment-button-sdk/ui";
+  import "@apolopay-sdk/ui";
+  import type { Locale, ApoloPayClient } from "@apolopay-sdk/ui";
 
   // 2. Define los props que el wrapper acepta
   export let client: ApoloPayClient | undefined = undefined;
@@ -14,7 +14,7 @@
   export let barrierDismissible: boolean = false;
 </script>
 
-<payment-button
+<apolopay-button
   client={client}
   process-id={processId}
   product-title={productTitle}
@@ -27,4 +27,4 @@
   on:error
 >
   <slot />
-</payment-button>
+</apolopay-button>

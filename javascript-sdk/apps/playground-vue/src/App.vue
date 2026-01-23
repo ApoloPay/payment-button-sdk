@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // 1. Importa el componente y los tipos
-import { PaymentButton, ApoloPayClient, type ClientResponse, type ClientError } from '@payment-button-sdk/vue';
+import { ApoloPayButton, ApoloPayClient, type ClientResponse, type ClientError } from '@apolopay-sdk/vue';
 
 // 2. Instancia el cliente de Apolo Pay
 const client = new ApoloPayClient({
@@ -25,13 +25,13 @@ const handleError = (error: ClientError) => {
   <div>
     <h1>Mi Playground de Vue 💚</h1>
 
-    <PaymentButton
+    <ApoloPayButton
       :client="client"
       :processId="processId"
       barrierDismissible
       @success="handleSuccess"
       @error="handleError"
-    ></PaymentButton>
+    ></ApoloPayButton>
   </div>
 </template>
 

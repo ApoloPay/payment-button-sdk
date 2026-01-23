@@ -9,20 +9,20 @@ import {
   type QrRequestDetails,
   type ClientResponse,
   type ClientError,
-} from '@payment-button-sdk/core';
+} from '@apolopay-sdk/core';
 
 // Import child components
 import './components/trigger-button.js';
 import './components/payment-modal.js';
 
 
-@customElement('payment-button')
-export class PaymentButton extends LitElement {
+@customElement('apolopay-button')
+export class ApoloPayButton extends LitElement {
   // --- Component Properties ---
   @property({ type: Object }) client: ApoloPayClient | undefined = undefined;
   @property({ type: String, attribute: 'process-id' }) processId: string | undefined = undefined;
   @property({ type: String, attribute: 'product-title' }) productTitle? = undefined;
-  @property({ type: String }) lang: Locale = 'es';
+  @property({ type: String }) override lang: Locale = 'es';
   @property({ type: String }) label?: string = undefined;
   @property({ type: Boolean }) loading: boolean = false;
   @property({ type: Boolean }) disabled: boolean = false;
@@ -317,6 +317,6 @@ export class PaymentButton extends LitElement {
 // Global type declaration for TypeScript
 declare global {
   interface HTMLElementTagNameMap {
-    'payment-button': PaymentButton;
+    'apolopay-button': ApoloPayButton;
   }
 }
