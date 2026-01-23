@@ -65,6 +65,7 @@ export class ApoloPayButton extends LitElement {
   @state() private qrCodeUrl: string | null = null; // URL for the QR code image
   @state() private qrCodeExpiresAt: number | null = null; // Expiration time for the QR code
   @state() private paymentAddress: string | null = null; // Wallet address for payment
+  @state() private paymentUrl: string | null = null; // Direct link for single-device payment
   @state() private assets: any[] = []; // List fetched from API
   @state() private error: ClientError | null = null; // Stores error details if something fails
   @state() private isLoadingData = true; // Tracks initial loading of assets/networks
@@ -149,6 +150,7 @@ export class ApoloPayButton extends LitElement {
     this.selectedNetwork = null;
     this.qrCodeUrl = null;
     this.paymentAddress = null;
+    this.paymentUrl = null;
     this.qrCodeExpiresAt = null;
   }
 
@@ -227,6 +229,7 @@ export class ApoloPayButton extends LitElement {
       });
       this.qrCodeUrl = qrData.qrCodeUrl;
       this.paymentAddress = qrData.address;
+      this.paymentUrl = qrData.paymentUrl || null;
       this.qrCodeExpiresAt = qrData.expiresAtMs;
       this.amount = typeof qrData.amount === 'string' ? parseFloat(qrData.amount) : qrData.amount;
       this.status = 'idle';
@@ -251,6 +254,7 @@ export class ApoloPayButton extends LitElement {
     if (this.currentStep !== ModalStep.SHOW_QR) {
       this.qrCodeUrl = null;
       this.paymentAddress = null;
+      this.paymentUrl = null;
     }
   }
 
@@ -304,6 +308,7 @@ export class ApoloPayButton extends LitElement {
         .amount=${this.amount}
         .email=${this.email}
         .qrCodeExpiresAt=${this.qrCodeExpiresAt}
+        .paymentUrl=${this.paymentUrl}
         @closeRequest=${this.handleCloseRequest}
         @assetSelect=${this.handleAssetSelect}
         @networkSelect=${this.handleInitiatePayment}

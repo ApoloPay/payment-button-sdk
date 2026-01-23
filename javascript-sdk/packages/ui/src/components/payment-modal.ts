@@ -31,6 +31,7 @@ export class PaymentModal extends LitElement {
   @property({ type: Number }) amount = 0;
   @property({ type: String }) email = '';
   @property({ type: Number }) qrCodeExpiresAt: number | null = null;
+  @property({ type: String }) paymentUrl: string | null = null;
 
   @state() private isAddressCopied: boolean = false;
 
@@ -169,6 +170,12 @@ export class PaymentModal extends LitElement {
 
     this.isAddressCopied = true;
     setTimeout(() => this.isAddressCopied = false, 2000);
+  }
+
+  private handlePayFromDevice() {
+    if (this.paymentUrl) {
+      window.open(this.paymentUrl, '_blank');
+    }
   }
 
   private get currentAsset(): Asset | undefined {
@@ -439,6 +446,11 @@ export class PaymentModal extends LitElement {
         </div>
 
         <button class="btn-dark">${unsafeHTML(t.modal.actions.scanApp)}</button>
+        ${this.paymentUrl ? html`
+          <button class="btn-primary" style="width: 100%; margin-top: 0.5rem;" @click=${this.handlePayFromDevice}>
+            ${t.modal.actions.payFromDevice}
+          </button>
+        ` : ''}
       `;
     }
 
@@ -479,6 +491,11 @@ export class PaymentModal extends LitElement {
         </ul>
         <p>${unsafeHTML(warningTimerHTML)}</p>
       </div>
+      ${this.paymentUrl ? html`
+        <button class="btn-primary" style="width: 100%; margin-top: 1rem;" @click=${this.handlePayFromDevice}>
+          ${t.modal.actions.payFromDevice}
+        </button>
+      ` : ''}
     `;
   }
 

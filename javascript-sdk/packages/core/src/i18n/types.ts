@@ -23,6 +23,7 @@ export interface Dictionary {
       scanApp: string;
       copy: string;
       copied: string;
+      payFromDevice: string;
     };
     labels: {
       network: string;

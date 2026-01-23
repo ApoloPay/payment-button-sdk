@@ -24,7 +24,8 @@ export const es: Dictionary = {
       support: 'Soporte',
       scanApp: 'Escanea con tu celular y continua desde la app de <span style="color: var(--apolo-accent)">Apolo Pay</span>',
       copy: 'Copiar',
-      copied: '¡Copiado!'
+      copied: '¡Copiado!',
+      payFromDevice: 'Pagar desde este dispositivo',
     },
     labels: {
       network: 'Red',

@@ -15,6 +15,7 @@ export interface QrResponseData {
   address: string,
   qrCodeUrl: string; // URL de la imagen del QR (o los datos para generarla)
   expiresAtMs: number; // Fecha exacta de expiración (ISO String o Timestamp)
+  paymentUrl?: string; // URL opcional para pagar directamente desde el dispositivo
 }
 
 export interface ClientOptions {
