@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:payment_button_sdk/models/client_response.dart';
-import 'package:payment_button_sdk/models/asset.dart';
-import 'package:payment_button_sdk/models/payment_client_models.dart';
+import 'package:apolopay_sdk/models/client_response.dart';
+import 'package:apolopay_sdk/models/asset.dart';
+import 'package:apolopay_sdk/models/apolopay_models.dart';
 
 class Repository {
   static const String apiUrl = "https://pb-test-api.apolopay.app";

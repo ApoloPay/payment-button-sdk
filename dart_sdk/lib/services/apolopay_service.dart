@@ -1,14 +1,14 @@
-import 'package:payment_button_sdk/models/asset.dart';
-import 'package:payment_button_sdk/models/payment_client_models.dart';
+import 'package:apolopay_sdk/models/asset.dart';
+import 'package:apolopay_sdk/models/apolopay_models.dart';
 
 import 'repository.dart';
 import 'socket_service.dart';
 
-class PaymentService {
-  final PaymentOptions options;
+class ApoloPayService {
+  final ApoloPayOptions options;
   late final SocketService _socketService;
 
-  PaymentService(this.options) {
+  ApoloPayService(this.options) {
     _socketService = SocketService(options);
   }
 

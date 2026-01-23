@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 import '../models/client_response.dart';
-import '../models/payment_client_models.dart';
+import '../models/apolopay_models.dart';
 
 class _SocketResponse<T> {
   final bool success;
@@ -35,7 +35,7 @@ class _SocketResponse<T> {
 
 class SocketService {
   SocketService(this.options);
-  final PaymentOptions options;
+  final ApoloPayOptions options;
   io.Socket? _socket;
 
   static const String wsUrl = "https://pb-test-ws.apolopay.app";

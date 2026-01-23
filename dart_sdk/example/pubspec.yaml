@@ -1,5 +1,5 @@
 name: example
-description: "Demuestra cómo usar el paquete tu_plataforma_sdk."
+description: "Demuestra cómo usar el paquete apolopay_sdk."
 publish_to: 'none' 
 
 environment:
@@ -9,7 +9,7 @@ dependencies:
   flutter:
     sdk: flutter
 
-  payment_button_sdk:
+  apolopay_sdk:
     path: ../
 
 dev_dependencies:

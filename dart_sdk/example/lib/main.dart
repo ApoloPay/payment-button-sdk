@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:payment_button_sdk/payment_button_sdk.dart';
+import 'package:apolopay_sdk/apolopay_sdk.dart';
 
 void main() {
   runApp(const MyApp());
@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
           title: const Text('Apolo Pay SDK Example'),
         ),
         body: Center(
-          child: PaymentButton(
+          child: ApoloPayButton(
             client: ApoloPayClient(publicKey: 'publicKey'),
             processId: 'processId',
             onSuccess: (response) {

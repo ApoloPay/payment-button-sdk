@@ -1,27 +1,27 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:payment_button_sdk/i18n/i18n.dart';
-import 'package:payment_button_sdk/models/client_response.dart';
-import 'package:payment_button_sdk/models/asset.dart';
-import 'package:payment_button_sdk/models/network.dart';
-import 'package:payment_button_sdk/models/payment_client_models.dart';
+import 'package:apolopay_sdk/i18n/i18n.dart';
+import 'package:apolopay_sdk/models/client_response.dart';
+import 'package:apolopay_sdk/models/asset.dart';
+import 'package:apolopay_sdk/models/network.dart';
+import 'package:apolopay_sdk/models/apolopay_models.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'dart:convert';
-import 'package:payment_button_sdk/assets/logo_apolo.dart';
-import '../services/payment_service.dart';
+import 'package:apolopay_sdk/assets/logo_apolo.dart';
+import '../services/apolopay_service.dart';
 
 enum ModalStep { selectAsset, selectNetwork, showQr, result }
 
-class PaymentModal extends StatefulWidget {
-  final PaymentOptions options;
+class ApoloPayModal extends StatefulWidget {
+  final ApoloPayOptions options;
 
-  const PaymentModal({
+  const ApoloPayModal({
     super.key,
     required this.options,
   });
 
-  static Future<void> show(BuildContext context, PaymentOptions options,
+  static Future<void> show(BuildContext context, ApoloPayOptions options,
       {String? productTitle}) {
     final bool isDesktop = MediaQuery.of(context).size.width > 880;
 
@@ -34,7 +34,7 @@ class PaymentModal extends StatefulWidget {
               const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 480, maxHeight: 800),
-            child: PaymentModal(options: options),
+            child: ApoloPayModal(options: options),
           ),
         ),
       );
@@ -44,17 +44,17 @@ class PaymentModal extends StatefulWidget {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => PaymentModal(options: options),
+      builder: (context) => ApoloPayModal(options: options),
     );
   }
 
   @override
-  State<PaymentModal> createState() => _PaymentModalState();
+  State<ApoloPayModal> createState() => _ApoloPayModalState();
 }
 
-class _PaymentModalState extends State<PaymentModal>
+class _ApoloPayModalState extends State<ApoloPayModal>
     with SingleTickerProviderStateMixin {
-  late PaymentService _service;
+  late ApoloPayService _service;
   ModalStep _currentStep = ModalStep.selectAsset;
   bool _isLoading = true;
   List<Asset> _assets = [];
@@ -70,7 +70,7 @@ class _PaymentModalState extends State<PaymentModal>
   @override
   void initState() {
     super.initState();
-    _service = PaymentService(PaymentOptions(
+    _service = ApoloPayService(ApoloPayOptions(
       client: widget.options.client,
       processId: widget.options.processId,
       onSuccess: (res) {

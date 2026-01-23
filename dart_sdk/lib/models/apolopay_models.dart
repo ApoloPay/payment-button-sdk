@@ -1,5 +1,5 @@
-import 'package:payment_button_sdk/models/client_response.dart';
-import 'package:payment_button_sdk/services/apolo_pay_client.dart';
+import 'package:apolopay_sdk/models/client_response.dart';
+import 'package:apolopay_sdk/services/apolo_pay_client.dart';
 
 class QrRequestDetails {
   final String assetId;
@@ -107,14 +107,14 @@ class QrResponseData {
       );
 }
 
-class PaymentOptions {
+class ApoloPayOptions {
   final ApoloPayClient client;
   final String processId;
   final String productTitle;
   final Function(ClientResponse<QrResponseData>) onSuccess;
   final Function(ClientError) onError;
 
-  PaymentOptions({
+  ApoloPayOptions({
     required this.client,
     required this.processId,
     this.productTitle = '',

@@ -1,13 +1,13 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:payment_button_sdk/assets/logo_apolo.dart';
-import 'package:payment_button_sdk/i18n/i18n.dart';
-import 'package:payment_button_sdk/models/client_response.dart';
-import 'package:payment_button_sdk/models/payment_client_models.dart';
-import 'package:payment_button_sdk/services/apolo_pay_client.dart';
-import 'payment_modal.dart';
+import 'package:apolopay_sdk/assets/logo_apolo.dart';
+import 'package:apolopay_sdk/i18n/i18n.dart';
+import 'package:apolopay_sdk/models/client_response.dart';
+import 'package:apolopay_sdk/models/apolopay_models.dart';
+import 'package:apolopay_sdk/services/apolo_pay_client.dart';
+import 'apolopay_modal.dart';
 
-class PaymentButton extends StatefulWidget {
+class ApoloPayButton extends StatefulWidget {
   final ApoloPayClient? client;
   final String? processId;
   final String? productTitle;
@@ -20,7 +20,7 @@ class PaymentButton extends StatefulWidget {
   final bool disabled;
   final I18nLocale? locale;
 
-  const PaymentButton({
+  const ApoloPayButton({
     super.key,
     this.client,
     this.processId,
@@ -35,10 +35,10 @@ class PaymentButton extends StatefulWidget {
   });
 
   @override
-  State<PaymentButton> createState() => _PaymentButtonState();
+  State<ApoloPayButton> createState() => _ApoloPayButtonState();
 }
 
-class _PaymentButtonState extends State<PaymentButton> {
+class _ApoloPayButtonState extends State<ApoloPayButton> {
   bool _hasConfigError = false;
 
   @override
@@ -49,7 +49,7 @@ class _PaymentButtonState extends State<PaymentButton> {
   }
 
   @override
-  void didUpdateWidget(covariant PaymentButton oldWidget) {
+  void didUpdateWidget(covariant ApoloPayButton oldWidget) {
     super.didUpdateWidget(oldWidget);
     _validateConfig();
   }
@@ -69,7 +69,7 @@ class _PaymentButtonState extends State<PaymentButton> {
 
     if (!isValid) {
       debugPrint(
-          'PaymentButton Error: Invalid publicKey "$key". Must start with "pk_" and be 35 characters long.');
+          'ApoloPayButton Error: Invalid publicKey "$key". Must start with "pk_" and be 35 characters long.');
     }
   }
 
@@ -81,9 +81,9 @@ class _PaymentButtonState extends State<PaymentButton> {
       return;
     }
 
-    PaymentModal.show(
+    ApoloPayModal.show(
       context,
-      PaymentOptions(
+      ApoloPayOptions(
         client: widget.client!,
         processId: widget.processId!,
         productTitle: widget.productTitle ?? '',

@@ -1,5 +1,5 @@
-name: payment_button_sdk
-description: SDK de Tu Plataforma para botones de pago en Flutter.
+name: apolopay_sdk
+description: SDK de Apolo Pay para Flutter.
 version: 1.0.0
 homepage:
 
