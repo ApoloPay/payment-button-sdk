@@ -94,10 +94,16 @@ class _ApoloPayButtonState extends State<ApoloPayButton> {
     );
   }
 
+  bool get isValidProcessId {
+    if (widget.processId == null || widget.processId!.isEmpty) return false;
+    final uuidRegex = RegExp(
+        r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$');
+    return uuidRegex.hasMatch(widget.processId!);
+  }
+
   @override
   Widget build(BuildContext context) {
-    final bool isLoading =
-        widget.loading || widget.processId == null || widget.processId!.isEmpty;
+    final bool isLoading = widget.loading || !isValidProcessId;
     final bool isDisabled = widget.disabled || _hasConfigError || isLoading;
 
     if (widget.builder != null) {
