@@ -31,6 +31,7 @@ class QrResponseData {
   final String address;
   final String qrCodeUrl;
   final int expiresAtMs;
+  final String? paymentUrl;
 
   QrResponseData({
     required this.id,
@@ -40,6 +41,7 @@ class QrResponseData {
     required this.address,
     required this.qrCodeUrl,
     required this.expiresAtMs,
+    this.paymentUrl,
   });
 
   Map<String, dynamic> toJson() => {
@@ -50,6 +52,7 @@ class QrResponseData {
         'address': address,
         'qrCodeUrl': qrCodeUrl,
         'expiresAtMs': expiresAtMs,
+        'paymentUrl': paymentUrl,
       };
 
   factory QrResponseData.fromJson(Map<String, dynamic> json) => QrResponseData(
@@ -104,6 +107,7 @@ class QrResponseData {
 
           return milliseconds;
         })(),
+        paymentUrl: json['paymentUrl']?.toString(),
       );
 }
 

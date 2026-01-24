@@ -9,6 +9,7 @@ import 'package:apolopay_sdk/models/apolopay_models.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'dart:convert';
 import 'package:apolopay_sdk/assets/logo_apolo.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../services/apolopay_service.dart';
 
 enum ModalStep { selectAsset, selectNetwork, showQr, result }
@@ -153,6 +154,38 @@ class _ApoloPayModalState extends State<ApoloPayModal>
     });
 
     widget.options.onError(_finalResult as ClientError);
+  }
+
+  Future<void> _handlePayFromDevice() async {
+    final url = _qrData?.paymentUrl;
+    final address = _qrData?.address;
+    final network = _selectedNetwork?.network;
+
+    String? targetUrl = url;
+
+    // Fallback if no paymentUrl is provided, try to construct a URI scheme
+    if (targetUrl == null && address != null && network != null) {
+      if (network == 'ethereum' || network == 'polygon' || network == 'bsc') {
+        targetUrl = 'ethereum:$address';
+      } else if (network == 'bitcoin') {
+        targetUrl = 'bitcoin:$address';
+      } else if (network == 'solana') {
+        targetUrl = 'solana:$address';
+      } else if (network == 'near') {
+        targetUrl = 'near:$address';
+      } else if (network == 'tron') {
+        targetUrl = 'tron:$address';
+      }
+    }
+
+    if (targetUrl != null) {
+      final uri = Uri.parse(targetUrl);
+      try {
+        await launchUrl(uri);
+      } catch (e) {
+        debugPrint('Error launching URL: $e');
+      }
+    }
   }
 
   Widget _buildRichText(String text,
@@ -615,7 +648,42 @@ class _ApoloPayModalState extends State<ApoloPayModal>
                     fontSize: 14),
               ),
             ),
+          if (_qrData?.paymentUrl != null || _canConstructPayUrl()) ...[
+            const SizedBox(height: 16),
+            _buildPayFromDeviceButton(),
+          ],
         ],
+      ),
+    );
+  }
+
+  bool _canConstructPayUrl() {
+    final address = _qrData?.address;
+    final network = _selectedNetwork?.network;
+    if (address == null || network == null) return false;
+
+    return ['ethereum', 'polygon', 'bsc', 'bitcoin', 'solana', 'near', 'tron']
+        .contains(network.toLowerCase());
+  }
+
+  Widget _buildPayFromDeviceButton() {
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton(
+        onPressed: _handlePayFromDevice,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: const Color(0xFFEA580C),
+          foregroundColor: Colors.white,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          elevation: 4,
+          shadowColor: const Color(0xFFEA580C).withOpacity(0.3),
+        ),
+        child: Text(
+          I18n.t['modal']['actions']['payFromDevice'],
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
       ),
     );
   }

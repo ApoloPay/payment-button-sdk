@@ -23,7 +23,8 @@ final Map<String, dynamic> es = {
       'scanApp':
           'Escanea con tu celular y continua desde la app de <span class="highlight">Apolo Pay</span>',
       'copy': 'Copiar',
-      'copied': '¡Copiado!'
+      'copied': '¡Copiado!',
+      'payFromDevice': 'Pagar desde este dispositivo',
     },
     'labels': {
       'network': 'Red',
