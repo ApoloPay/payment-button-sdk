@@ -62,7 +62,7 @@ export class Repository {
 
       // TODO review if enable testing environment switch to the address
       const address = network === "apolopay" ?
-        `https://p2p.apolopay.app/payment/${processId}` :
+        `https://p2p.apolopay.app/payment-process/${processId}` :
         wallet
 
       return ClientResponse.fromJson<QrResponseData>(data, {

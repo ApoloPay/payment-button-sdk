@@ -70,7 +70,7 @@ class Repository {
       final networkName = result['network'];
 
       final String address = networkName == "apolopay"
-          ? "https://p2p.apolopay.app/payment/$processId"
+          ? "https://p2p.apolopay.app/payment-process/$processId"
           : wallet;
 
       return ClientResponse.fromJson(
