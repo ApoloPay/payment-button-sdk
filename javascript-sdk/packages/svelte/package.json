@@ -1,6 +1,6 @@
 {
   "name": "@apolopay-sdk/svelte",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Botón de pago de Tu Plataforma para Svelte",
   "type": "module",
   "svelte": "./dist/index.js",
