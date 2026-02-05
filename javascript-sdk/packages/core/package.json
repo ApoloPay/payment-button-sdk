@@ -15,8 +15,7 @@
   },
   "scripts": {
     "build": "tsup src/index.ts --format esm,cjs --dts --clean",
-    "dev": "tsup src/index.ts --format esm,cjs --dts --watch",
-    "prepublishOnly": "npm audit --production"
+    "dev": "tsup src/index.ts --format esm,cjs --dts --watch"
   },
   "dependencies": {
     "socket.io-client": "4.8.3"
