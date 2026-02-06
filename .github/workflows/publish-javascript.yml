@@ -20,6 +20,9 @@ jobs:
       contents: write
       pull-requests: write
       id-token: write
+    defaults:
+      run:
+        working-directory: javascript-sdk
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
@@ -36,6 +39,7 @@ jobs:
         with:
           node-version: 20
           cache: 'pnpm'
+          cache-dependency-path: javascript-sdk/pnpm-lock.yaml
           registry-url: 'https://registry.npmjs.org'
 
       - name: Install Dependencies
@@ -47,5 +51,6 @@ jobs:
         with:
           # This expects you to have a script called release which does a build for your packages and calls changeset publish
           publish: pnpm run release
+          cwd: javascript-sdk
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
