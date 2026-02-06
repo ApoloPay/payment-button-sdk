@@ -13,9 +13,10 @@
     "check-types": "turbo run check-types",
     "changeset": "changeset",
     "version-packages": "changeset version",
-    "release": "turbo run build --filter=docs^... && changeset publish"
+    "release": "turbo run build && changeset publish"
   },
   "devDependencies": {
+    "@changesets/cli": "2.27.1",
     "rimraf": "6.1.2",
     "turbo": "2.5.8",
     "typescript": "5.4.5"

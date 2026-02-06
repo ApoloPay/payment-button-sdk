@@ -1,8 +1,9 @@
 {
   "name": "@apolopay-sdk/core",
-  "version": "0.1.0",
+  "version": "1.1.0",
   "license": "MIT",
   "sideEffects": false,
+  "description": "Core SDK for Apolo Pay",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
@@ -15,8 +16,7 @@
   },
   "scripts": {
     "build": "tsup src/index.ts --format esm,cjs --dts --clean",
-    "dev": "tsup src/index.ts --format esm,cjs --dts --watch",
-    "prepublishOnly": "npm audit --production"
+    "dev": "tsup src/index.ts --format esm,cjs --dts --watch"
   },
   "dependencies": {
     "socket.io-client": "4.8.3"

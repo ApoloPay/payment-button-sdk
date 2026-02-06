@@ -1,4 +1,4 @@
-name: Publish
+name: Publish Javascript SDK
 
 on:
   push:
@@ -7,6 +7,7 @@ on:
   pull_request:
     branches:
       - deploy/javascript
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -16,6 +17,13 @@ jobs:
   build:
     name: Build and Publish
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      id-token: write
+    defaults:
+      run:
+        working-directory: javascript-sdk
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
@@ -31,17 +39,17 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'pnpm'
+          registry-url: 'https://registry.npmjs.org'
 
       - name: Install Dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install
 
       - name: Create Release Pull Request or Publish to npm
         id: changesets
-        uses: changesets/action@v1
+        uses: changesets/action@v1.4.1
         with:
           # This expects you to have a script called release which does a build for your packages and calls changeset publish
           publish: pnpm run release
+          cwd: javascript-sdk
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

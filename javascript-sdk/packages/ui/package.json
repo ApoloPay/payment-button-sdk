@@ -1,7 +1,7 @@
 {
   "name": "@apolopay-sdk/ui",
-  "version": "0.1.0",
-  "description": "Componente de UI (Web Component) para el botón de pago",
+  "version": "1.1.0",
+  "description": "UI Components (Web Components) for payment button",
   "publishConfig": {
     "access": "public",
     "provenance": true
