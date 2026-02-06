@@ -1,7 +1,7 @@
 {
   "name": "@apolopay-sdk/svelte",
   "version": "1.0.0",
-  "description": "Botón de pago de Tu Plataforma para Svelte",
+  "description": "Svelte Payment Button Adapter",
   "publishConfig": {
     "access": "public"
   },

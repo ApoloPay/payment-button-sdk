@@ -1,6 +1,7 @@
 {
   "name": "@apolopay-sdk/react",
   "version": "1.0.0",
+  "description": "React Payment Button Adapter",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
