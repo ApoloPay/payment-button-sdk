@@ -16,6 +16,10 @@ jobs:
   build:
     name: Build and Publish
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      id-token: write
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
@@ -32,6 +36,7 @@ jobs:
         with:
           node-version: 20
           cache: 'pnpm'
+          registry-url: 'https://registry.npmjs.org'
 
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile
@@ -44,4 +49,3 @@ jobs:
           publish: pnpm run release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

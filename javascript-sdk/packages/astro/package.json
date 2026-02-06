@@ -1,7 +1,10 @@
 {
   "name": "@apolopay-sdk/astro",
-  "version": "0.1.0",
-  "description": "Adaptador de Apolo Pay para Astro",
+  "version": "1.1.0",
+  "description": "Astro Payment Button Adapter",
+  "publishConfig": {
+    "access": "public"
+  },
   "type": "module",
   "main": "dist/index.js",
   "module": "dist/index.js",
