@@ -2,6 +2,9 @@
   "name": "@apolopay-sdk/angular",
   "version": "1.0.0",
   "description": "Botón de pago de Tu Plataforma para Angular",
+  "publishConfig": {
+    "access": "public"
+  },
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
