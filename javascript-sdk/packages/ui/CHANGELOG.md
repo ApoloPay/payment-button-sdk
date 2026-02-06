@@ -1,5 +1,16 @@
 # @apolopay-sdk/ui
 
+## 1.1.0
+
+### Minor Changes
+
+- fix description
+
+### Patch Changes
+
+- Updated dependencies
+  - @apolopay-sdk/core@1.1.0
+
 ## 1.0.0
 
 ### Major Changes

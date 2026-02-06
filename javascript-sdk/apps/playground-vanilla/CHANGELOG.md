@@ -1,5 +1,12 @@
 # playground-vanilla
 
+## 0.0.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @apolopay-sdk/ui@1.1.0
+
 ## 0.0.1
 
 ### Patch Changes
