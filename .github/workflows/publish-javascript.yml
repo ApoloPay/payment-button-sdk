@@ -43,11 +43,10 @@ jobs:
       - name: Install Dependencies
         run: pnpm install
 
-      - name: Debug Changeset Path
+      - name: Debug Project Structure
         run: |
-          echo "Current directory: $(pwd)"
-          ls -la
-          ls -la javascript-sdk/.changeset || echo ".changeset not found in javascript-sdk"
+          echo "Working directory: $(pwd)"
+          ls -la .changeset || echo ".changeset not found"
 
       - name: Create Release Pull Request or Publish to npm
         id: changesets
