@@ -1,7 +1,9 @@
 name: apolopay_sdk
-description: SDK de Apolo Pay para Flutter.
+description: Apolo Pay SDK for Flutter.
 version: 1.0.0
-homepage:
+homepage: https://www.apolopay.app
+repository: https://github.com/ApoloPay/payment-button-sdk
+issue_tracker: https://github.com/ApoloPay/payment-button-sdk/issues
 
 environment:
   sdk: '>=3.0.0 <4.0.0'

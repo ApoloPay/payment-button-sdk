@@ -1,3 +1,5 @@
-## 0.0.1
+## 1.0.0
 
-* TODO: Describe initial release.
+* Initial release of the Apolo Pay SDK for Flutter.
+* Support for payment button integration.
+* Secure transaction processing.
