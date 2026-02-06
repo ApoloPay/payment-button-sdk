@@ -43,9 +43,15 @@ jobs:
       - name: Install Dependencies
         run: pnpm install
 
+      - name: Debug Changeset Path
+        run: |
+          echo "Current directory: $(pwd)"
+          ls -la
+          ls -la javascript-sdk/.changeset || echo ".changeset not found in javascript-sdk"
+
       - name: Create Release Pull Request or Publish to npm
         id: changesets
-        uses: changesets/action@v1
+        uses: changesets/action@v1.4.1
         with:
           # This expects you to have a script called release which does a build for your packages and calls changeset publish
           publish: pnpm run release
