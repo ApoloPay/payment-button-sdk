@@ -1,4 +1,4 @@
-name: Publish
+name: Publish Javascript SDK
 
 on:
   push:
@@ -41,7 +41,7 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
 
       - name: Install Dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install
 
       - name: Create Release Pull Request or Publish to npm
         id: changesets
