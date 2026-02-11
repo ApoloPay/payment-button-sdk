@@ -1,12 +1,11 @@
 import 'dart:convert';
+import 'package:apolopay_sdk/utils/variables.dart';
 import 'package:http/http.dart' as http;
 import 'package:apolopay_sdk/models/client_response.dart';
 import 'package:apolopay_sdk/models/asset.dart';
 import 'package:apolopay_sdk/models/apolopay_models.dart';
 
 class Repository {
-  static const String apiUrl = "https://pb-test-api.apolopay.app";
-
   static Map<String, String> getHeaders(String? publicKey) {
     final headers = {'Content-Type': 'application/json'};
 
@@ -20,7 +19,7 @@ class Repository {
   static Future<ClientResponse<List<Asset>>> getAssets() async {
     try {
       final response = await http.get(
-            Uri.parse('$apiUrl/payment-button/assets'),
+            Uri.parse('$apiURL/payment-button/assets'),
             headers: getHeaders(null),
           ),
           data = jsonDecode(response.body);
@@ -46,7 +45,7 @@ class Repository {
   }) async {
     try {
       final response = await http.post(
-        Uri.parse('$apiUrl/payment-button/process/confirm'),
+        Uri.parse('$apiURL/payment-button/process/confirm'),
         headers: getHeaders(publicKey),
         body: jsonEncode({
           'processId': processId,
@@ -70,7 +69,7 @@ class Repository {
       final networkName = result['network'];
 
       final String address = networkName == "apolopay"
-          ? "https://p2p.apolopay.app/payment-process/$processId"
+          ? "$appURL/payment-process/$processId"
           : wallet;
 
       return ClientResponse.fromJson(

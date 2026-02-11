@@ -760,18 +760,15 @@ class _ApoloPayModalState extends State<ApoloPayModal>
         ],
         const SizedBox(height: 32),
         if (!isSuccess)
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: () => Navigator.pop(context),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFEA580C),
-                foregroundColor: Colors.white,
-                shape: const StadiumBorder(),
-                padding: const EdgeInsets.symmetric(vertical: 16),
-              ),
-              child: Text(I18n.t['modal']['actions']['close']),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFEA580C),
+              foregroundColor: Colors.white,
+              shape: const StadiumBorder(),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
             ),
+            child: Text(I18n.t['modal']['actions']['close']),
           ),
       ],
     );

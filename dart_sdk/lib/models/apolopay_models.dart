@@ -65,47 +65,39 @@ class QrResponseData {
         address: json['address']?.toString() ?? '',
         qrCodeUrl: json['qrCodeUrl']?.toString() ?? '',
         expiresAtMs: (() {
-          dynamic val = json['expiresAtMs'] ?? json['expiresAt'];
+          final dynamic val = json['expiresAtMs'] ?? json['expiresAt'];
 
           if (val == null) {
             return DateTime.now().millisecondsSinceEpoch + 30 * 60 * 1000;
           }
 
-          int milliseconds = 0;
-          if (val is String) {
-            final parsedDate = DateTime.tryParse(val);
-            if (parsedDate != null) {
-              milliseconds = parsedDate.millisecondsSinceEpoch;
-            } else {
-              milliseconds = int.tryParse(val) ?? 0;
+          int ms = 0;
+
+          final num? parsedNum = num.tryParse(val.toString());
+
+          if (parsedNum != null) {
+            ms = parsedNum.toInt();
+          } else {
+            final date = DateTime.tryParse(val.toString());
+            if (date != null) {
+              ms = date.millisecondsSinceEpoch;
             }
-          } else if (val is num) {
-            milliseconds = val.toInt();
           }
 
-          if (milliseconds == 0) {
+          if (ms == 0) {
             return DateTime.now().millisecondsSinceEpoch + 30 * 60 * 1000;
           }
 
-          // Normalize:
-          // 1. Seconds (10 digits)? Multiply by 1000
-          if (milliseconds < 10000000000) {
-            milliseconds *= 1000;
-          }
-          // 2. Nanoseconds/Microseconds (> 10^13)? Divide by 1000
-          else if (milliseconds > 10000000000000) {
-            while (milliseconds > 2000000000000) {
-              milliseconds ~/= 1000;
+          if (ms < 10000000000) {
+            ms *= 1000;
+          } else if (ms > 10000000000000) {
+            ms = ms ~/ 1000;
+            if (ms > 10000000000000) {
+              ms = ms ~/ 1000;
             }
           }
 
-          final int now = DateTime.now().millisecondsSinceEpoch;
-
-          // Safety fallback: If expiration is in the past or too close (less than 1 min),
-          // assume clock skew and add 30 mins.
-          if (milliseconds - now < 60000) return now + 30 * 60 * 1000;
-
-          return milliseconds;
+          return ms;
         })(),
         paymentUrl: json['paymentUrl']?.toString(),
       );

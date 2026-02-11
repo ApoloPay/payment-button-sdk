@@ -1,10 +1,9 @@
 import { PaymentOptions, QrRequestDetails, QrResponseData } from "../types/payment-client-types";
 import { Asset } from "../types/asset";
 import { ClientError, ClientResponse } from "../types/client-response";
+import { apiURL, appURL } from "../utils/variables";
 
 export class Repository {
-  static apiUrl = "https://pb-test-api.apolopay.app"
-
   static headers = (publicKey?: string) => {
     const options: Record<string, string> = {
       'Content-Type': 'application/json',
@@ -17,7 +16,7 @@ export class Repository {
 
   static async getAssets(): Promise<ClientResponse<Asset[]>> {
     try {
-      const response = await fetch(`${this.apiUrl}/payment-button/assets`, {
+      const response = await fetch(`${apiURL}/payment-button/assets`, {
         method: 'GET',
         headers: this.headers(),
       })
@@ -39,7 +38,7 @@ export class Repository {
     publicKey
   }: (QrRequestDetails & Omit<PaymentOptions, 'onSuccess' | 'onError'>)): Promise<ClientResponse<QrResponseData>> {
     try {
-      const response = await fetch(`${this.apiUrl}/payment-button/process/confirm`, {
+      const response = await fetch(`${apiURL}/payment-button/process/confirm`, {
         method: 'POST',
         headers: this.headers(publicKey),
         body: JSON.stringify({
@@ -62,31 +61,50 @@ export class Repository {
 
       // TODO review if enable testing environment switch to the address
       const address = network === "apolopay" ?
-        `https://p2p.apolopay.app/payment-process/${processId}` :
+        `${appURL}/payment-process/${processId}` :
         wallet
 
       return ClientResponse.fromJson<QrResponseData>(data, {
         result: (json) => {
-          // Check both expiresAtMs and expiresAt (ISO string or timestamp)
-          let expiresAtMs = json.expiresAtMs || json.expiresAt || (Date.now() + 30 * 60 * 1000);
+          const now = Date.now();
 
-          if (typeof expiresAtMs === 'string') {
-            expiresAtMs = new Date(expiresAtMs).getTime();
-          }
+          let rawVal = json.expiresAtMs ?? json.expiresAt;
 
-          // Normalize nanoseconds/microseconds to milliseconds
-          if (typeof expiresAtMs === 'number' && expiresAtMs > 10000000000000) {
-            while (expiresAtMs > 2000000000000) {
-              expiresAtMs = Math.floor(expiresAtMs / 1000);
+          const calculateExpiration = (val: any): number => {
+            if (!val) return now + 30 * 60 * 1000;
+
+            let ms = 0;
+
+            if (!isNaN(Number(val))) {
+              ms = Number(val);
             }
-          }
+            else if (typeof val === 'string') {
+              const parsed = new Date(val).getTime();
+              if (!isNaN(parsed)) ms = parsed;
+            }
+
+            if (ms === 0) return now + 30 * 60 * 1000;
+
+            if (ms < 10000000000) {
+              ms *= 1000;
+            } 
+            else if (ms > 10000000000000) {
+              while (ms > 20000000000000) {
+                ms = Math.floor(ms / 1000);
+              }
+            }
+
+            return ms;
+          };
+
+          const finalExpiresAtMs = calculateExpiration(rawVal);
 
           return {
             ...json,
             address,
             qrCodeUrl: `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${address}&ecc=H`,
             paymentUrl: address.startsWith('http') ? address : undefined,
-            expiresAtMs: isNaN(expiresAtMs as number) ? (Date.now() + 30 * 60 * 1000) : expiresAtMs
+            expiresAtMs: finalExpiresAtMs
           }
         }
       })

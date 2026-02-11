@@ -1,6 +1,7 @@
 import { io, Socket as SocketIO } from "socket.io-client";
 import { PaymentSessionOptions } from "../types/payment-client-types";
 import { ApoloPayClient } from "../apolo-pay-client";
+import { socketURL } from "../utils/variables";
 
 interface _SocketResponse<T = any> {
   success: boolean,
@@ -10,8 +11,6 @@ interface _SocketResponse<T = any> {
 }
 
 export class SocketService {
-  static wsUrl = "https://pb-test-ws.apolopay.app"
-
   private client: ApoloPayClient;
   private sessionOptions: PaymentSessionOptions | null = null;
   private socket: SocketIO | null = null;
@@ -27,7 +26,7 @@ export class SocketService {
 
     if (this.socket && this.socket.connected) return this.disconnect();
 
-    this.socket = io(SocketService.wsUrl, {
+    this.socket = io(socketURL, {
       extraHeaders: {
         "x-public-key": this.client.getPublicKey()
       },

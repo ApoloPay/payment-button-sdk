@@ -1,3 +1,4 @@
+import 'package:apolopay_sdk/utils/variables.dart';
 import 'package:flutter/material.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 import '../models/client_response.dart';
@@ -38,13 +39,11 @@ class SocketService {
   final ApoloPayOptions options;
   io.Socket? _socket;
 
-  static const String wsUrl = "https://pb-test-ws.apolopay.app";
-
   void connect(String processId) {
     if (_socket != null && _socket!.connected) return;
 
     _socket = io.io(
-      wsUrl,
+      socketURL,
       io.OptionBuilder().setTransports(['polling']).setExtraHeaders(
           {'x-public-key': options.client.getPublicKey()}).build(),
     );
