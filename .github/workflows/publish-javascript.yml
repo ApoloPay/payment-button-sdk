@@ -55,13 +55,25 @@ jobs:
 
       - name: Generate WordPress Plugin ZIP
         if: steps.changesets.outputs.published == 'true'
-        run: pnpm run build --filter=@apolo-pay/wordpress-plugin
+        run: |
+          pnpm run build --filter=@apolo-pay/wordpress-plugin
+          PACKAGE_VERSION=$(node -p "require('./packages/ui/package.json').version")
+          mv javascript-sdk/packages/wordpress/dist/apolo-pay-plugin.zip javascript-sdk/packages/wordpress/dist/apolo-pay-plugin-v$PACKAGE_VERSION.zip
+          echo "WP_VERSION=$PACKAGE_VERSION" >> $GITHUB_ENV
         
       - name: Upload WordPress ZIP to GitHub Release
         if: steps.changesets.outputs.published == 'true'
         uses: softprops/action-gh-release@v2
         with:
-          files: javascript-sdk/packages/wordpress/dist/apolo-pay-plugin.zip
-          tag_name: ${{ steps.changesets.outputs.publishedPackages[0].name }}@${{ steps.changesets.outputs.publishedPackages[0].version }}
+          files: javascript-sdk/packages/wordpress/dist/apolo-pay-plugin-v${{ env.WP_VERSION }}.zip
+          tag_name: WordPress-v${{ env.WP_VERSION }}
+          name: "WordPress Release v${{ env.WP_VERSION }}"
+          append_body: true
+          body: |
+            
+            ---
+            ### 🔌 WordPress Integration
+            - **Plugin Version:** v${{ env.WP_VERSION }}
+            - **Installation:** Download the `apolo-pay-plugin-v${{ env.WP_VERSION }}.zip` below and upload it to your WordPress admin panel.
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
