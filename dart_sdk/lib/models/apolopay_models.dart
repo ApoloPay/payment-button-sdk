@@ -55,52 +55,59 @@ class QrResponseData {
         'paymentUrl': paymentUrl,
       };
 
-  factory QrResponseData.fromJson(Map<String, dynamic> json) => QrResponseData(
-        id: json['id']?.toString() ?? '',
-        network: json['network']?.toString() ?? '',
-        asset: json['asset']?.toString() ?? '',
-        amount: json['amount'] is String
-            ? num.tryParse(json['amount']) ?? 0
-            : (json['amount'] ?? 0),
-        address: json['address']?.toString() ?? '',
-        qrCodeUrl: json['qrCodeUrl']?.toString() ?? '',
-        expiresAtMs: (() {
-          final dynamic val = json['expiresAtMs'] ?? json['expiresAt'];
+  factory QrResponseData.fromJson(Map<String, dynamic> json) {
+    final expiresAt = (() {
+      final val = json['expiresAtMs'] ?? json['expiresAt'];
 
-          if (val == null) {
-            return DateTime.now().millisecondsSinceEpoch + 30 * 60 * 1000;
-          }
+      final defaultMilliseconds =
+          DateTime.now().millisecondsSinceEpoch + 30 * 60 * 1000;
 
-          int ms = 0;
+      if (val == null) {
+        return defaultMilliseconds;
+      }
 
-          final num? parsedNum = num.tryParse(val.toString());
+      int ms = 0;
 
-          if (parsedNum != null) {
-            ms = parsedNum.toInt();
-          } else {
-            final date = DateTime.tryParse(val.toString());
-            if (date != null) {
-              ms = date.millisecondsSinceEpoch;
-            }
-          }
+      final num? parsedNum = num.tryParse(val.toString());
 
-          if (ms == 0) {
-            return DateTime.now().millisecondsSinceEpoch + 30 * 60 * 1000;
-          }
+      if (parsedNum != null) {
+        ms = parsedNum.toInt();
+      } else {
+        final date = DateTime.tryParse(val.toString());
+        if (date != null) {
+          ms = date.millisecondsSinceEpoch;
+        }
+      }
 
-          if (ms < 10000000000) {
-            ms *= 1000;
-          } else if (ms > 10000000000000) {
-            ms = ms ~/ 1000;
-            if (ms > 10000000000000) {
-              ms = ms ~/ 1000;
-            }
-          }
+      if (ms == 0) {
+        return defaultMilliseconds;
+      }
 
-          return ms;
-        })(),
-        paymentUrl: json['paymentUrl']?.toString(),
-      );
+      if (ms < 10000000000) {
+        ms *= 1000;
+      } else if (ms > 10000000000000) {
+        ms = ms ~/ 1000;
+        if (ms > 10000000000000) {
+          ms = ms ~/ 1000;
+        }
+      }
+
+      return ms;
+    })();
+
+    return QrResponseData(
+      id: json['id']?.toString() ?? '',
+      network: json['network']?.toString() ?? '',
+      asset: json['asset']?.toString() ?? '',
+      amount: json['amount'] is String
+          ? num.tryParse(json['amount']) ?? 0
+          : (json['amount'] ?? 0),
+      address: json['address']?.toString() ?? '',
+      qrCodeUrl: json['qrCodeUrl']?.toString() ?? '',
+      expiresAtMs: expiresAt,
+      paymentUrl: json['paymentUrl']?.toString(),
+    );
+  }
 }
 
 class ApoloPayOptions {

@@ -67,11 +67,12 @@ export class Repository {
       return ClientResponse.fromJson<QrResponseData>(data, {
         result: (json) => {
           const now = Date.now();
+          const defaultMilliseconds = now + 30 * 60 * 1000
 
           let rawVal = json.expiresAtMs ?? json.expiresAt;
 
           const calculateExpiration = (val: any): number => {
-            if (!val) return now + 30 * 60 * 1000;
+            if (!val) return defaultMilliseconds;
 
             let ms = 0;
 
@@ -83,7 +84,7 @@ export class Repository {
               if (!isNaN(parsed)) ms = parsed;
             }
 
-            if (ms === 0) return now + 30 * 60 * 1000;
+            if (ms === 0) return defaultMilliseconds;
 
             if (ms < 10000000000) {
               ms *= 1000;
@@ -97,14 +98,14 @@ export class Repository {
             return ms;
           };
 
-          const finalExpiresAtMs = calculateExpiration(rawVal);
+          const expiresAtMs = calculateExpiration(rawVal);
 
           return {
             ...json,
             address,
             qrCodeUrl: `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${address}&ecc=H`,
             paymentUrl: address.startsWith('http') ? address : undefined,
-            expiresAtMs: finalExpiresAtMs
+            expiresAtMs
           }
         }
       })

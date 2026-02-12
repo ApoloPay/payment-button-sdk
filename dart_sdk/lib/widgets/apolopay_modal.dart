@@ -108,26 +108,33 @@ class _ApoloPayModalState extends State<ApoloPayModal>
 
   void _startTimer(int expiresAtMs) {
     _timer?.cancel();
+
+    _updateTimerStream(expiresAtMs);
+
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      final now = DateTime.now().millisecondsSinceEpoch;
-      final distance = expiresAtMs - now;
-
-      if (distance <= 0) {
-        _handleTimerExpired();
-        return;
-      }
-
-      final minLabel = I18n.t['modal']['labels']['minutes'];
-      final secLabel = I18n.t['modal']['labels']['seconds'];
-
-      final minutes = (distance / (1000 * 60)).floor();
-      final seconds = ((distance / 1000) % 60).floor();
-
-      final m = minutes.toString().padLeft(2, '0');
-      final s = seconds.toString().padLeft(2, '0');
-
-      _timerController.add('$m $minLabel : $s $secLabel');
+      _updateTimerStream(expiresAtMs);
     });
+  }
+
+  void _updateTimerStream(int expiresAtMs) {
+    final now = DateTime.now().millisecondsSinceEpoch;
+    final distance = expiresAtMs - now;
+
+    if (distance <= 0) {
+      _handleTimerExpired();
+      return;
+    }
+
+    final minutes = distance ~/ 60000;
+    final seconds = (distance % 60000) ~/ 1000;
+
+    final minLabel = I18n.t['modal']['labels']['minutes'];
+    final secLabel = I18n.t['modal']['labels']['seconds'];
+
+    final m = minutes.toString().padLeft(2, '0');
+    final s = seconds.toString().padLeft(2, '0');
+
+    _timerController.add('$m $minLabel : $s $secLabel');
   }
 
   @override
@@ -523,17 +530,16 @@ class _ApoloPayModalState extends State<ApoloPayModal>
         children: [
           StreamBuilder<String>(
             stream: _timerController.stream,
-            initialData:
-                '-- ${I18n.t["modal"]["labels"]["minutes"]} : -- ${I18n.t["modal"]["labels"]["seconds"]}',
+            initialData: '-- min : -- seg',
             builder: (context, snapshot) {
               return Text(
-                snapshot.data ??
-                    '-- ${I18n.t["modal"]["labels"]["minutes"]} : -- ${I18n.t["modal"]["labels"]["seconds"]}',
+                snapshot.data!,
                 style: const TextStyle(
                   color: Color(0xFFEA580C),
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
                   letterSpacing: 1.0,
+                  fontFeatures: [FontFeature.tabularFigures()],
                 ),
               );
             },
