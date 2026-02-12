@@ -70,7 +70,6 @@ jobs:
           name: "WordPress Release v${{ env.WP_VERSION }}"
           append_body: true
           body: |
-            
             ---
             ### 🔌 WordPress Integration
             - **Plugin Version:** v${{ env.WP_VERSION }}
