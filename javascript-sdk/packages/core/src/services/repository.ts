@@ -67,7 +67,7 @@ export class Repository {
       return ClientResponse.fromJson<QrResponseData>(data, {
         result: (json) => {
           const now = Date.now();
-          const defaultMilliseconds = now + 30 * 60 * 1000
+          const defaultMilliseconds = now + 10 * 60 * 1000
 
           let rawVal = json.expiresAtMs ?? json.expiresAt;
 

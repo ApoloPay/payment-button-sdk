@@ -60,7 +60,7 @@ class QrResponseData {
       final val = json['expiresAtMs'] ?? json['expiresAt'];
 
       final defaultMilliseconds =
-          DateTime.now().millisecondsSinceEpoch + 30 * 60 * 1000;
+          DateTime.now().millisecondsSinceEpoch + 10 * 60 * 1000;
 
       if (val == null) {
         return defaultMilliseconds;
