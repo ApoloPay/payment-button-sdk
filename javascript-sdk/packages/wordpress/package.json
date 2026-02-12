@@ -1,0 +1,22 @@
+{
+  "name": "@apolo-pay/wordpress-plugin",
+  "version": "1.1.0",
+  "private": true,
+  "description": "WooCommerce Payment Gateway for Apolo Pay",
+  "main": "apolo-pay.php",
+  "scripts": {
+    "build": "node scripts/copy-build.js && npm run zip",
+    "zip": "bestzip dist/apolo-pay-plugin.zip apolo-pay.php includes/ assets/ README.md",
+    "clean": "rimraf dist assets/apolopay-sdk.js"
+  },
+  "devDependencies": {
+    "bestzip": "^2.2.1",
+    "rimraf": "^5.0.0"
+  },
+  "keywords": [
+    "woocommerce",
+    "apolo-pay",
+    "payment-gateway",
+    "wordpress"
+  ]
+}

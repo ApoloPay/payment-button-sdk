@@ -48,8 +48,20 @@ jobs:
         id: changesets
         uses: changesets/action@v1.4.1
         with:
-          # This expects you to have a script called release which does a build for your packages and calls changeset publish
           publish: pnpm run release
           cwd: javascript-sdk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Generate WordPress Plugin ZIP
+        if: steps.changesets.outputs.published == 'true'
+        run: pnpm run build --filter=@apolo-pay/wordpress-plugin
+        
+      - name: Upload WordPress ZIP to GitHub Release
+        if: steps.changesets.outputs.published == 'true'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: javascript-sdk/packages/wordpress/dist/apolo-pay-plugin.zip
+          tag_name: ${{ steps.changesets.outputs.publishedPackages[0].name }}@${{ steps.changesets.outputs.publishedPackages[0].version }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
