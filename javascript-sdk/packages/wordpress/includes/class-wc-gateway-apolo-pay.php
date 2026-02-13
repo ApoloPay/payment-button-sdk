@@ -12,8 +12,7 @@ class WC_Gateway_Apolo_Pay extends WC_Payment_Gateway {
     public function __construct() {
         $this->id                 = 'apolo_pay';
         
-        // CORRECCIÓN ICONO: Usamos la ruta absoluta del archivo principal del plugin para mayor precisión
-        $this->icon               = plugins_url( 'assets/icon-2.png', dirname( __FILE__, 2 ) . '/apolo-pay.php' );
+        $this->icon               = plugins_url( 'assets/icon.png', dirname( __FILE__, 2 ) . '/apolo-pay.php' );
         
         $this->has_fields         = true;
         $this->method_title       = __( 'Apolo Pay', 'apolo-pay' );
