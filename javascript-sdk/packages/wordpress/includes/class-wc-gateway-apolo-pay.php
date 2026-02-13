@@ -9,6 +9,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class WC_Gateway_Apolo_Pay extends WC_Payment_Gateway {
 
+    public $public_key;
+    public $secret_key;
+
     public function __construct() {
         $this->id                 = 'apolo_pay';
         
@@ -24,7 +27,6 @@ class WC_Gateway_Apolo_Pay extends WC_Payment_Gateway {
         $this->title       = $this->get_option( 'title' );
         $this->description = $this->get_option( 'description' );
         $this->enabled     = $this->get_option( 'enabled' );
-        $this->testmode    = 'yes' === $this->get_option( 'testmode' );
         $this->public_key  = $this->get_option( 'public_key' );
         $this->secret_key  = $this->get_option( 'secret_key' );
 
@@ -56,12 +58,6 @@ class WC_Gateway_Apolo_Pay extends WC_Payment_Gateway {
                 'default'     => __( 'Paga de forma segura con tarjeta de crédito o débito.', 'apolo-pay' ),
                 'desc_tip'    => true,
             ),
-            'testmode' => array(
-                'title'       => __( 'Test mode', 'woocommerce' ),
-                'label'       => __( 'Enable Test Mode', 'woocommerce' ),
-                'type'    => 'checkbox',
-                'default' => 'yes',
-            ),
             'public_key' => array(
                 'title'   => __( 'Public Key', 'apolo-pay' ),
                 'type'    => 'text',
@@ -92,11 +88,10 @@ class WC_Gateway_Apolo_Pay extends WC_Payment_Gateway {
     }
 
     public function payment_fields() {
-        if ( $this->description ) echo wpautop( wp_kses_post( $this->description ) );
-        echo '<div id="apolo-pay-form-container">';
-        echo '  <payment-button id="apolo-payment-component" style="display:none;" public_key="' . esc_attr( $this->public_key ) . '"></payment-button>';
-        echo '  <input type="hidden" id="apolo_transaction_id" name="apolo_transaction_id" />';
-        echo '</div>';
+        echo '<div id="apolo-pay-form-container">
+                <apolopay-button id="apolo-payment-component" style="position: absolute; z-index: 9999;"><span slot=""></span></apolopay-button>
+                <input type="hidden" id="apolo_transaction_id" name="apolo_transaction_id" />
+              </div>';
     }
 
     public function ajax_create_process() {
@@ -131,26 +126,12 @@ class WC_Gateway_Apolo_Pay extends WC_Payment_Gateway {
 
         $response_code = wp_remote_retrieve_response_code( $response );
         $response_body = wp_remote_retrieve_body( $response );
-        $api_data      = json_decode( $response_body, true );
+        $api_data = json_decode( wp_remote_retrieve_body( $response ), true );
 
-        // LOG: Respuesta completa para inspección
-        error_log( 'APOLO DEBUG: HTTP Code ' . $response_code );
-        error_log( 'APOLO DEBUG: Body ' . $response_body );
-
-        if ( $response_code < 200 || $response_code >= 300 ) {
-            $msg = isset($api_data['message']) ? $api_data['message'] : 'Error API (' . $response_code . ')';
-            wp_send_json_error( array( 'message' => $msg ) );
-        }
-
-        // Intentamos obtener el ID de varias formas posibles
-        $process_id = null;
-        if ( isset( $api_data['id'] ) ) $process_id = $api_data['id'];
-        else if ( isset( $api_data['process_id'] ) ) $process_id = $api_data['process_id'];
-        else if ( isset( $api_data['data']['id'] ) ) $process_id = $api_data['data']['id'];
+        $process_id = isset($api_data['result']['id']) ? $api_data['result']['id'] : null;
 
         if ( ! $process_id ) {
-            error_log( 'APOLO DEBUG: No se encontró ID en el JSON' );
-            wp_send_json_error( array( 'message' => 'No se encontró el Process ID en la respuesta.' ) );
+            wp_send_json_error( array( 'message' => 'La API no devolvió un ID válido en result.' ) );
         }
 
         wp_send_json_success( array( 'process_id' => $process_id ) );
@@ -175,3 +156,4 @@ class WC_Gateway_Apolo_Pay extends WC_Payment_Gateway {
         );
     }
 }
+

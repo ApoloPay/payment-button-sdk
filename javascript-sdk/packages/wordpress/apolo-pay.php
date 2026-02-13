@@ -23,19 +23,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 add_action( 'plugins_loaded', 'init_apolo_pay_gateway_loader' );
 
 function init_apolo_pay_gateway_loader() {
-    
-    // 1. Verificar si WooCommerce está activo
-    if ( ! class_exists( 'WC_Payment_Gateway' ) ) {
-        return;
-    }
+    if ( ! class_exists( 'WC_Payment_Gateway' ) ) return;
 
-    // 2. Incluir la clase de la pasarela que definimos antes
+    // ✅ Cargamos traducciones ANTES de instanciar la clase
+    load_plugin_textdomain('apolo-pay', false, dirname(plugin_basename(__FILE__)) . '/languages');
+
     require_once plugin_dir_path( __FILE__ ) . 'includes/class-wc-gateway-apolo-pay.php';
 
-    // Esto evita el error 400 Bad Request
+    // Instancia para registrar hooks AJAX
     new WC_Gateway_Apolo_Pay();
 
-    // 3. Registrar la pasarela en WooCommerce
     add_filter( 'woocommerce_payment_gateways', function($gateways) {
         $gateways[] = 'WC_Gateway_Apolo_Pay';
         return $gateways;
@@ -61,3 +58,9 @@ function apolo_pay_action_links( $links ) {
     );
     return array_merge( $settings_link, $links );
 }
+
+add_action( 'wp_enqueue_scripts', function() {
+    if ( is_checkout() ) {
+        wp_enqueue_script( 'apolopay-sdk', plugin_dir_url( __FILE__ ) . 'assets/apolopay-sdk.js', array(), '1.1.0', true );
+    }
+});
