@@ -125,19 +125,32 @@ jQuery(function ($) {
     const attachListeners = () => {
         const btn = document.querySelector(componentSelector);
         if (btn) {
+            btn.addEventListener('closeRequest', (event) => {
+                btn.isOpen = false;
+            
+                const transactionId = $('#apolo_transaction_id').val();
+
+                if (transactionId && transactionId !== '') {
+                    console.log('Apolo Pay: Redirigiendo tras pago exitoso...');
+                    checkout_form.submit();
+                } else {
+                    console.log('Apolo Pay: El usuario cerró el modal sin completar el pago.');
+                    unblockUI();
+                }
+            });
+
             // SUCCESS
             btn.addEventListener('success', (event) => {
                 console.log('Apolo Pay: Pago Exitoso', event.detail);
 
                 // Llenar el input oculto con el Transaction ID
-                $('#apolo_transaction_id').val(event.detail.transactionId || event.detail.id);
-
-                // Reenviar el formulario de WooCommerce (ahora pasará el chequeo del paso 2)
-                checkout_form.submit();
+                const transactionId = event.detail.result?.id || event.detail.id;
+                $('#apolo_transaction_id').val(transactionId);
             });
 
             // ERROR
             btn.addEventListener('error', (event) => {
+                unblockUI();
                 console.error('Apolo Pay: Error en el pago', event.detail);
 
                 // Mostrar mensaje de error nativo de WooCommerce
