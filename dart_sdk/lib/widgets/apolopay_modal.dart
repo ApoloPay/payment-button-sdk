@@ -449,13 +449,14 @@ class _ApoloPayModalState extends State<ApoloPayModal>
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                    Text(
-                      subtitle,
-                      style: const TextStyle(
-                        color: Color(0xFF6B7280),
-                        fontSize: 12,
+                    if (subtitle.isNotEmpty)
+                      Text(
+                        subtitle,
+                        style: const TextStyle(
+                          color: Color(0xFF6B7280),
+                          fontSize: 12,
+                        ),
                       ),
-                    ),
                   ],
                 ),
               ),
@@ -627,9 +628,11 @@ class _ApoloPayModalState extends State<ApoloPayModal>
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildWarningItem(I18n.t['modal']['warnings']['networkMatch']),
-              _buildWarningItem(I18n.t['modal']['warnings']['noNFT']),
-              _buildWarningItem(warningToken),
+              if (!isApoloPay) ...[
+                _buildWarningItem(I18n.t['modal']['warnings']['networkMatch']),
+                _buildWarningItem(I18n.t['modal']['warnings']['noNFT']),
+                _buildWarningItem(warningToken),
+              ],
               const SizedBox(height: 12),
               _buildRichText(warningTimer,
                   baseStyle:

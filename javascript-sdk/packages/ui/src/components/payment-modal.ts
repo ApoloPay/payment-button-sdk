@@ -437,11 +437,6 @@ export class PaymentModal extends LitElement {
         </div>
 
         <div class="warning-text">
-          <ul>
-            <li>${unsafeHTML(t.modal.warnings.networkMatch)}</li>
-            <li>${unsafeHTML(t.modal.warnings.noNFT)}</li>
-            <li>${unsafeHTML(warningTokenHTML)}</li>
-          </ul>
           <p>${unsafeHTML(warningTimerHTML)}</p>
         </div>
 

@@ -11,7 +11,7 @@ import ApoloPayButton from "@apolopay-sdk/astro/ApoloPayButton.astro";
     <main>
       <h1>Mi Playground de Astro 🚀</h1>
 
-      <ApoloPayButton id="mi-btn" processId="d8843442-f6da-488f-a7b6-1d760fda373d" barrierDismissible />
+      <ApoloPayButton id="mi-btn" processId="processId" barrierDismissible />
     </main>
     <style is:global>
       body {
@@ -35,7 +35,7 @@ import ApoloPayButton from "@apolopay-sdk/astro/ApoloPayButton.astro";
   import type { ClientResponse, ClientError } from "@apolopay-sdk/ui";
 
   const apolo = new ApoloPayClient({
-    publicKey: "pk_0c5a13cf80261a68f4b77531339370e5",
+    publicKey: "publicKey",
   });
 
   const btn = document.getElementById("mi-btn") as any;
