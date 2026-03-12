@@ -76,17 +76,22 @@ class _ApoloPayModalState extends State<ApoloPayModal>
       client: widget.options.client,
       processId: widget.options.processId,
       onSuccess: (res) {
-        setState(() {
+        _currentStep = ModalStep.processing;
+        if (mounted) setState(() {});
+
+        Future.delayed(const Duration(seconds: 2), () {
           _finalResult = res;
           _currentStep = ModalStep.result;
+          if (mounted) setState(() {});
+
+          widget.options.onSuccess(res);
         });
-        widget.options.onSuccess(res);
       },
       onError: (err) {
-        setState(() {
-          _finalResult = err;
-          _currentStep = ModalStep.result;
-        });
+        _finalResult = err;
+        _currentStep = ModalStep.result;
+        if (mounted) setState(() {});
+
         widget.options.onError(err);
       },
     ));

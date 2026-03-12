@@ -216,9 +216,13 @@ export class ApoloPayButton extends LitElement {
         processId: this.processId,
         onSuccess: (response: ClientResponse) => {
           if (!this.isOpen) return;
-          this.status = 'success';
+          this.status = 'processing';
           this.currentStep = ModalStep.RESULT;
-          this.dispatchEvent(new CustomEvent('success', { detail: response }));
+
+          setTimeout(() => {
+            this.status = 'success';
+            this.dispatchEvent(new CustomEvent('success', { detail: response }));
+          }, 2000);
         },
         onError: (error: ClientError) => {
           if (!this.isOpen) return;

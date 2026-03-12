@@ -482,25 +482,19 @@
               <div class="dot"></div>
             </div>
 
-            <h2 class="processing-title">¡Procesando <span class="highlight">tu pago!</span></h2>
+            <h2 class="processing-title">${J(s.modal.titles.processing)}</h2>
 
-            <div class="no-reload-card">
-              <strong>¡Por favor no recargues la página!</strong>
-              <p>La pantalla se actualizará cuando se verifique tu pago</p>
+            <div class="btn-dark" style="margin-bottom: 0">
+              <h4 style="margin-top: 0; margin-bottom: .1rem;">${J(s.modal.info.noReloadPageTitle)}</h4>
+              <span style="font-size: .8rem;">${s.modal.info.noReloadPageSubTitle}</span>
             </div>
 
             <div class="text-field" style="width: 100%;">
-              <label class="text-field-label">Monto enviado (${this.currentAsset?.symbol||"USDT"})</label>
-              <input class="text-field-input" readonly value="${this.amount} ${this.currentAsset?.symbol||""}" />
-            </div>
-
-            <div class="support-box">
-              <p class="support-text">Cualquier duda o inquietud puedes comunicarte con soporte</p>
-              <button class="btn-primary" style="padding: 0.6rem 3rem;">
-                Soporte
-              </button>
+              <label class="text-field-label">${s.modal.labels.amountSent} (${this.currentAsset?.symbol})</label>
+              <input class="text-field-input" readonly value="${this.amount} ${this.currentAsset?.symbol}" />
             </div>
           </div>
+        </div>
         `:t=f`
           <div class="result-container">
             <div class="error-icon">⏳</div>
@@ -516,36 +510,8 @@
               </div>`:""}
         ${e}
         <div class="modal-body">
-          <div class="processing-container">
-            <div class="dots-loader">
-              <div class="dot"></div>
-              <div class="dot"></div>
-              <div class="dot"></div>
-              <div class="dot"></div>
-              <div class="dot"></div>
-            </div>
-
-            <h2 class="processing-title">¡Procesando <span class="highlight">tu pago!</span></h2>
-
-            <div class="btn-dark" style="margin-bottom: 0">
-              <h4 style="margin-top: 0; margin-bottom: .1rem;">${J(s.modal.info.noReloadPageTitle)}</h4>
-              <span style="font-size: .8rem;">${s.modal.info.noReloadPageSubTitle}</span>
-            </div>
-
-            <div class="text-field" style="width: 100%;">
-              <label class="text-field-label">${s.modal.labels.amountSent} (${this.currentAsset?.symbol})</label>
-              <input class="text-field-input" readonly value="${this.amount} ${this.currentAsset?.symbol}" />
-            </div>
-
-            <div class="support-box">
-              <p class="support-text">Cualquier duda o inquietud puedes comunicarte con soporte</p>
-              <button class="btn-primary" style="padding: 0.6rem 3rem;">
-                Soporte
-              </button>
-            </div>
-          </div>
+          ${t}
         </div>
-        ${t}
       </dialog>
     `}};g.styles=[Oe,cr,hr,Ar,yr,U`
       /* --- HEADER --- */
@@ -788,24 +754,7 @@
         color: var(--apolo-primary-darkest);
         margin: 0;
       }
-
-      /* Sección de soporte */
-      .support-box {
-        margin-top: 1rem;
-        display: flex;
-        flex-direction: column;
-        gap: 0.75rem;
-        align-items: center;
-      }
-
-      .support-text {
-        font-size: 0.9rem;
-        color: var(--apolo-primary-darkest);
-        font-weight: 600;
-        max-width: 250px;
-        line-height: 1.2;
-      }
-    `],b([u({type:Boolean})],g.prototype,"isOpen",2),b([u({type:Boolean})],g.prototype,"barrierDismissible",2),b([u({type:String})],g.prototype,"lang",2),b([u({type:String})],g.prototype,"productTitle",2),b([u({type:Number})],g.prototype,"currentStep",2),b([u({type:String})],g.prototype,"status",2),b([u({type:Object})],g.prototype,"error",2),b([u({type:Boolean})],g.prototype,"isLoadingData",2),b([u({type:Array})],g.prototype,"assets",2),b([u({type:String})],g.prototype,"selectedAsset",2),b([u({type:String})],g.prototype,"selectedNetwork",2),b([u({type:String})],g.prototype,"qrCodeUrl",2),b([u({type:String})],g.prototype,"paymentAddress",2),b([u({type:Number})],g.prototype,"amount",2),b([u({type:String})],g.prototype,"email",2),b([u({type:Number})],g.prototype,"qrCodeExpiresAt",2),b([u({type:String})],g.prototype,"paymentUrl",2),b([S()],g.prototype,"isAddressCopied",2),b([is("dialog")],g.prototype,"dialogElement",2),g=b([lt("payment-modal")],g);var br=Object.defineProperty,Sr=Object.getOwnPropertyDescriptor,y=(s,t,e,r)=>{for(var i=r>1?void 0:r?Sr(t,e):t,n=s.length-1,o;n>=0;n--)(o=s[n])&&(i=(r?o(t,e,i):o(i))||i);return r&&i&&br(t,e,i),i};c.ApoloPayButton=class extends Q{constructor(){super(...arguments),this.client=void 0,this.processId=void 0,this.productTitle=void 0,this.lang="es",this.label=void 0,this.loading=!1,this.disabled=!1,this.barrierDismissible=!1,this.isOpen=!1,this.status="idle",this.currentStep=m.SELECT_ASSET,this.selectedAsset=null,this.selectedNetwork=null,this.qrCodeUrl=null,this.qrCodeExpiresAt=null,this.paymentAddress=null,this.paymentUrl=null,this.assets=[],this.error=null,this.isLoadingData=!0,this.amount=0,this.hasConfigError=!1,this.email=null,this._service=null}willUpdate(t){t.has("lang")&&E.setLocale(this.lang),(t.has("client")||t.has("processId"))&&(this.validateConfig(),this.client&&this._service===null&&this.initService(),this.client&&this.processId&&this.loadInitialData()),super.willUpdate(t)}connectedCallback(){super.connectedCallback(),this.validateConfig(),this.client&&(this.initService(),this.processId&&this.loadInitialData())}initService(){!this.client||this.hasConfigError||(this._service=new Ke(this.client))}get isValidProcessId(){return this.processId?/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(this.processId):!1}validateConfig(){const t=this.client?.getPublicKey(),e=!!(t&&t.startsWith("pk_")&&t.length===35);this.client&&!e&&console.error(`PaymentButton Error: Invalid publicKey "${t}". Must start with "pk_" and be 35 characters long.`),this.hasConfigError=!this.client||!e}disconnectedCallback(){super.disconnectedCallback(),this._service?.disconnectWebSocket()}async loadInitialData(){if(this._service&&(this.isLoadingData=!0,this.error=null,!!this.processId))try{this.assets=await this._service.getAssets()}catch(t){console.error("Error loading initial payment options:",t),this.error={code:"DATA_LOAD_ERROR",message:"Could not load payment options."}}finally{this.isLoadingData=!1}}resetState(){this.currentStep=m.SELECT_ASSET,this.status="idle",this.error=null,this.selectedAsset=null,this.selectedNetwork=null,this.qrCodeUrl=null,this.paymentAddress=null,this.paymentUrl=null,this.qrCodeExpiresAt=null}handleOpen(){if(this.resetState(),this.hasConfigError||!this.client||!this.processId){console.error("PaymentButton Error: client and process-id are required and must be valid");return}this.loading||(this.isOpen=!0)}handleCloseRequest(){this.isOpen=!1,this.currentStep===m.SHOW_QR&&this.status!=="success"&&this.status!=="error"&&this._service?.disconnectWebSocket(),setTimeout(()=>this.resetState(),300)}handleAssetSelect(t){this.selectedAsset=t.detail.assetId,this.currentStep=m.SELECT_NETWORK,this.error=null}handleExpired(t){this.dispatchEvent(new CustomEvent("error",{detail:t.detail.error}))}async handleInitiatePayment(t){if(!this.client||!this.processId||(this.selectedNetwork=t.detail.networkId,!this.selectedAsset||!this.selectedNetwork))return;const e={assetId:this.selectedAsset,networkId:this.selectedNetwork};this.dispatchEvent(new CustomEvent("generateQr",{detail:e})),this.status="loading",this.currentStep=m.SHOW_QR,this.qrCodeUrl=null,this.paymentAddress=null,this.error=null;try{const r=await this._service.fetchQrCodeDetails(e,{processId:this.processId,onSuccess:i=>{this.isOpen&&(this.status="success",this.currentStep=m.RESULT,this.dispatchEvent(new CustomEvent("success",{detail:i})))},onError:i=>{this.isOpen&&(this.status="error",this.error=i,this.currentStep=m.RESULT,this.dispatchEvent(new CustomEvent("error",{detail:i})))}});this.qrCodeUrl=r.qrCodeUrl,this.paymentAddress=r.address,this.paymentUrl=r.paymentUrl||null,this.qrCodeExpiresAt=r.expiresAtMs,this.amount=typeof r.amount=="string"?parseFloat(r.amount):r.amount,this.status="idle"}catch(r){console.error("Error fetching QR code details:",r),this.error={code:"QR_FETCH_ERROR",message:r instanceof Error?r.message:"Failed to get payment details."},this.status="error",this.currentStep=m.SELECT_NETWORK}}handleChangeStep(t){this.currentStep===m.SHOW_QR&&t.detail!==m.RESULT&&this._service?.disconnectWebSocket(),this.currentStep=t.detail,this.status="idle",this.error=null,this.currentStep!==m.SHOW_QR&&(this.qrCodeUrl=null,this.paymentAddress=null,this.paymentUrl=null)}render(){return f`
+    `],b([u({type:Boolean})],g.prototype,"isOpen",2),b([u({type:Boolean})],g.prototype,"barrierDismissible",2),b([u({type:String})],g.prototype,"lang",2),b([u({type:String})],g.prototype,"productTitle",2),b([u({type:Number})],g.prototype,"currentStep",2),b([u({type:String})],g.prototype,"status",2),b([u({type:Object})],g.prototype,"error",2),b([u({type:Boolean})],g.prototype,"isLoadingData",2),b([u({type:Array})],g.prototype,"assets",2),b([u({type:String})],g.prototype,"selectedAsset",2),b([u({type:String})],g.prototype,"selectedNetwork",2),b([u({type:String})],g.prototype,"qrCodeUrl",2),b([u({type:String})],g.prototype,"paymentAddress",2),b([u({type:Number})],g.prototype,"amount",2),b([u({type:String})],g.prototype,"email",2),b([u({type:Number})],g.prototype,"qrCodeExpiresAt",2),b([u({type:String})],g.prototype,"paymentUrl",2),b([S()],g.prototype,"isAddressCopied",2),b([is("dialog")],g.prototype,"dialogElement",2),g=b([lt("payment-modal")],g);var br=Object.defineProperty,Sr=Object.getOwnPropertyDescriptor,y=(s,t,e,r)=>{for(var i=r>1?void 0:r?Sr(t,e):t,n=s.length-1,o;n>=0;n--)(o=s[n])&&(i=(r?o(t,e,i):o(i))||i);return r&&i&&br(t,e,i),i};c.ApoloPayButton=class extends Q{constructor(){super(...arguments),this.client=void 0,this.processId=void 0,this.productTitle=void 0,this.lang="es",this.label=void 0,this.loading=!1,this.disabled=!1,this.barrierDismissible=!1,this.isOpen=!1,this.status="idle",this.currentStep=m.SELECT_ASSET,this.selectedAsset=null,this.selectedNetwork=null,this.qrCodeUrl=null,this.qrCodeExpiresAt=null,this.paymentAddress=null,this.paymentUrl=null,this.assets=[],this.error=null,this.isLoadingData=!0,this.amount=0,this.hasConfigError=!1,this.email=null,this._service=null}willUpdate(t){t.has("lang")&&E.setLocale(this.lang),(t.has("client")||t.has("processId"))&&(this.validateConfig(),this.client&&this._service===null&&this.initService(),this.client&&this.processId&&this.loadInitialData()),super.willUpdate(t)}connectedCallback(){super.connectedCallback(),this.validateConfig(),this.client&&(this.initService(),this.processId&&this.loadInitialData())}initService(){!this.client||this.hasConfigError||(this._service=new Ke(this.client))}get isValidProcessId(){return this.processId?/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(this.processId):!1}validateConfig(){const t=this.client?.getPublicKey(),e=!!(t&&t.startsWith("pk_")&&t.length===35);this.client&&!e&&console.error(`PaymentButton Error: Invalid publicKey "${t}". Must start with "pk_" and be 35 characters long.`),this.hasConfigError=!this.client||!e}disconnectedCallback(){super.disconnectedCallback(),this._service?.disconnectWebSocket()}async loadInitialData(){if(this._service&&(this.isLoadingData=!0,this.error=null,!!this.processId))try{this.assets=await this._service.getAssets()}catch(t){console.error("Error loading initial payment options:",t),this.error={code:"DATA_LOAD_ERROR",message:"Could not load payment options."}}finally{this.isLoadingData=!1}}resetState(){this.currentStep=m.SELECT_ASSET,this.status="idle",this.error=null,this.selectedAsset=null,this.selectedNetwork=null,this.qrCodeUrl=null,this.paymentAddress=null,this.paymentUrl=null,this.qrCodeExpiresAt=null}handleOpen(){if(this.resetState(),this.hasConfigError||!this.client||!this.processId){console.error("PaymentButton Error: client and process-id are required and must be valid");return}this.loading||(this.isOpen=!0)}handleCloseRequest(){this.isOpen=!1,this.currentStep===m.SHOW_QR&&this.status!=="success"&&this.status!=="error"&&this._service?.disconnectWebSocket(),setTimeout(()=>this.resetState(),300)}handleAssetSelect(t){this.selectedAsset=t.detail.assetId,this.currentStep=m.SELECT_NETWORK,this.error=null}handleExpired(t){this.dispatchEvent(new CustomEvent("error",{detail:t.detail.error}))}async handleInitiatePayment(t){if(!this.client||!this.processId||(this.selectedNetwork=t.detail.networkId,!this.selectedAsset||!this.selectedNetwork))return;const e={assetId:this.selectedAsset,networkId:this.selectedNetwork};this.dispatchEvent(new CustomEvent("generateQr",{detail:e})),this.status="loading",this.currentStep=m.SHOW_QR,this.qrCodeUrl=null,this.paymentAddress=null,this.error=null;try{const r=await this._service.fetchQrCodeDetails(e,{processId:this.processId,onSuccess:i=>{this.isOpen&&(this.status="processing",this.currentStep=m.RESULT,setTimeout(()=>{this.status="success",this.dispatchEvent(new CustomEvent("success",{detail:i}))},2e3))},onError:i=>{this.isOpen&&(this.status="error",this.error=i,this.currentStep=m.RESULT,this.dispatchEvent(new CustomEvent("error",{detail:i})))}});this.qrCodeUrl=r.qrCodeUrl,this.paymentAddress=r.address,this.paymentUrl=r.paymentUrl||null,this.qrCodeExpiresAt=r.expiresAtMs,this.amount=typeof r.amount=="string"?parseFloat(r.amount):r.amount,this.status="idle"}catch(r){console.error("Error fetching QR code details:",r),this.error={code:"QR_FETCH_ERROR",message:r instanceof Error?r.message:"Failed to get payment details."},this.status="error",this.currentStep=m.SELECT_NETWORK}}handleChangeStep(t){this.currentStep===m.SHOW_QR&&t.detail!==m.RESULT&&this._service?.disconnectWebSocket(),this.currentStep=t.detail,this.status="idle",this.error=null,this.currentStep!==m.SHOW_QR&&(this.qrCodeUrl=null,this.paymentAddress=null,this.paymentUrl=null)}render(){return f`
       <div id="trigger-wrapper" @click=${this.handleOpen}>
         <slot>
           <trigger-button 
