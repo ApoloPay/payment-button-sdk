@@ -436,6 +436,11 @@ export class PaymentModal extends LitElement {
           <span class="qr-badge">${this.amount} ${this.currentAsset?.symbol}</span>
         </div>
 
+        <div class="btn-dark">
+          <h4 style="margin-top: 0; margin-bottom: .1rem;">${unsafeHTML(t.modal.info.noReloadPageTitle)}</h4>
+          <span style="font-size: .8rem;">${t.modal.info.noReloadPageSubTitle}</span>
+        </div>
+
         <div class="warning-text">
           <p>${unsafeHTML(warningTimerHTML)}</p>
         </div>
@@ -463,6 +468,11 @@ export class PaymentModal extends LitElement {
       }
         </div>
         <span class="qr-badge">${this.amount} ${this.currentAsset?.symbol}</span>
+      </div>
+
+      <div class="btn-dark">
+        <h4 style="margin-top: 0; margin-bottom: .1rem;">${unsafeHTML(t.modal.info.noReloadPageTitle)}</h4>
+        <span style="font-size: .8rem;">${t.modal.info.noReloadPageSubTitle}</span>
       </div>
 
       <div class="text-field">
@@ -528,7 +538,7 @@ export class PaymentModal extends LitElement {
           `)}
         </div>
         <p class="warning-text" style="font-size: 0.9rem; text-align: center; margin-top: 1.5rem">
-          ${t.modal.warnings.selectNetworkLater}
+          ${t.modal.info.selectNetworkLater}
         </p>
       `;
     }

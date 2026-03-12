@@ -33,12 +33,16 @@ export interface Dictionary {
       minutes: string;
       seconds: string;
     };
+    info: {
+      noReloadPageTitle: string;
+      noReloadPageSubTitle: string;
+      selectNetworkLater: string;
+    };
     warnings: {
       networkMatch: string;
       noNFT: string;
       onlyToken: string;
       timer: string;
-      selectNetworkLater: string;
     };
     success: {
       message: string;

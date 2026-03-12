@@ -339,6 +339,17 @@ class _ApoloPayModalState extends State<ApoloPayModal>
               subtitle: I18n.t['modal']['subtitles']['selectAsset'],
             ),
             Expanded(child: _buildAssetList()),
+            Padding(
+              padding: const EdgeInsets.only(top: 12, bottom: 24),
+              child: Text(
+                I18n.t['modal']['info']['selectNetworkLater'],
+                style: const TextStyle(
+                  color: Color(0xFF1C315C),
+                  fontSize: 16,
+                  fontWeight: FontWeight.normal,
+                ),
+              ),
+            ),
           ],
         );
       case ModalStep.selectNetwork:
@@ -615,6 +626,34 @@ class _ApoloPayModalState extends State<ApoloPayModal>
             ],
           ),
           const SizedBox(height: 32),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: const Color(0xFF041C4C),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Column(children: [
+              _buildRichText(
+                I18n.t['modal']['info']['noReloadPageTitle'],
+                textAlign: TextAlign.center,
+                baseStyle: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                I18n.t['modal']['info']['noReloadPageSubTitle'],
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.normal,
+                    fontSize: 14),
+              ),
+            ]),
+          ),
+          SizedBox(height: isApoloPay ? 12 : 24),
           if (!isApoloPay) ...[
             _buildInfoField(
                 label: I18n.t['modal']['labels']['network'],
@@ -653,7 +692,7 @@ class _ApoloPayModalState extends State<ApoloPayModal>
                 textAlign: TextAlign.center,
                 baseStyle: const TextStyle(
                     color: Colors.white,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.normal,
                     fontSize: 14),
               ),
             ),
@@ -691,7 +730,7 @@ class _ApoloPayModalState extends State<ApoloPayModal>
         ),
         child: Text(
           I18n.t['modal']['actions']['payFromDevice'],
-          style: const TextStyle(fontWeight: FontWeight.bold),
+          style: const TextStyle(fontWeight: FontWeight.normal),
         ),
       ),
     );

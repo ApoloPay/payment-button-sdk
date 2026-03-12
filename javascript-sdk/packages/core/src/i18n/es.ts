@@ -35,12 +35,16 @@ export const es: Dictionary = {
       minutes: 'min',
       seconds: 'seg',
     },
+    info: {
+      noReloadPageTitle: '¡Por favor no <span style="color: var(--apolo-accent)">recargues la página!</span>',
+      noReloadPageSubTitle: 'La pantalla se actualizara cuando confirmes tu pago',
+      selectNetworkLater: 'Luego podrás seleccionar la red de tu preferencia',
+    },
     warnings: {
       networkMatch: 'Asegúrate de que la <strong>red de tu wallet coincida</strong> con la red de destino.',
       noNFT: 'No envíes NFTs a esta wallet.',
       onlyToken: 'Solo se aceptan <strong>depósitos en {symbol}</strong>. El envío de otro tipo de token podría resultar en su pérdida.',
       timer: 'Realiza el pago dentro del tiempo indicado. <strong>{time}</strong> De lo contrario, el código QR se vencerá.',
-      selectNetworkLater: 'Luego podrás seleccionar la red de tu preferencia',
     },
     success: {
       message: 'Tu pago fue exitoso y en breve recibirás un correo',
