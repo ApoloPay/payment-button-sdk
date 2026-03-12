@@ -11,7 +11,8 @@ export const es: Dictionary = {
       scanQr: 'Depósito <span class="highlight">{symbol}</span>',
       success: '¡Gracias por <span class="highlight">tu compra!</span>',
       error: 'Error en el Pago',
-      idle: 'Estado inesperado'
+      idle: 'Estado inesperado',
+      processing: '¡Procesando <span class="highlight">tu pago!</span>'
     },
     subtitles: {
       selectAsset: 'Selecciona la stablecoin con la que deseas pagar',
@@ -34,6 +35,7 @@ export const es: Dictionary = {
       product: 'Producto o Servicio',
       minutes: 'min',
       seconds: 'seg',
+      amountSent: 'Monto Enviado'
     },
     info: {
       noReloadPageTitle: '¡Por favor no <span style="color: var(--apolo-accent)">recargues la página!</span>',

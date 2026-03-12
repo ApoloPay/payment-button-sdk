@@ -11,6 +11,7 @@ import { qrBaseStyles } from '../styles/qr-base';
 import { handleImageError } from '../utils/image_error';
 import { spinnerStyles } from '../styles/spinner-styles';
 import './payment-timer.js';
+import { ModalStatus } from '../types/status.type';
 
 @customElement('payment-modal')
 export class PaymentModal extends LitElement {
@@ -20,7 +21,7 @@ export class PaymentModal extends LitElement {
   @property({ type: String }) override lang: Locale = 'es';
   @property({ type: String }) productTitle = '';
   @property({ type: Number }) currentStep: ModalStep = ModalStep.SELECT_ASSET;
-  @property({ type: String }) status: 'idle' | 'success' | 'error' = 'idle';
+  @property({ type: String }) status: ModalStatus = 'idle';
   @property({ type: Object }) error: ClientError | null = null;
   @property({ type: Boolean }) isLoadingData = true; // For initial asset/network load
   @property({ type: Array }) assets: Asset[] = [];
@@ -405,6 +406,50 @@ export class PaymentModal extends LitElement {
       
       /* Estilo Error */
       .error-icon { font-size: 4rem; margin-bottom: 1rem; }
+
+      /* Estilo Processing */
+      .processing-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1.5rem;
+        padding-top: 1rem;
+      }
+
+      /* Animación de puntos */
+      .dots-loader {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+        height: 40px;
+      }
+
+      .dot {
+        width: 12px;
+        height: 12px;
+        background-color: var(--apolo-accent);
+        border-radius: 50%;
+        display: inline-block;
+        animation: dot-pulse 1.5s infinite ease-in-out;
+      }
+
+      .dot:nth-child(2) { animation-delay: 0.2s; width: 16px; height: 16px; }
+      .dot:nth-child(3) { animation-delay: 0.4s; width: 20px; height: 20px; }
+      .dot:nth-child(4) { animation-delay: 0.6s; width: 16px; height: 16px; }
+      .dot:nth-child(5) { animation-delay: 0.8s; }
+
+      @keyframes dot-pulse {
+        0%, 100% { transform: scale(0.7); opacity: 0.5; }
+        50% { transform: scale(1.1); opacity: 1; }
+      }
+
+      .processing-title {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: var(--apolo-primary-darkest);
+        margin: 0;
+      }
     `
   ];
 
@@ -612,6 +657,31 @@ export class PaymentModal extends LitElement {
             <p class="result-desc">${this.error?.message || t.errors.generic}</p>
             <button class="btn-primary" @click=${this.requestClose}>${t.modal.actions.close}</button>
           </div>
+        `;
+      } else if (this.status === 'processing') {
+        content = html`
+          <div class="processing-container">
+            <div class="dots-loader">
+              <div class="dot"></div>
+              <div class="dot"></div>
+              <div class="dot"></div>
+              <div class="dot"></div>
+              <div class="dot"></div>
+            </div>
+
+            <h2 class="processing-title">${unsafeHTML(t.modal.titles.processing)}</h2>
+
+            <div class="btn-dark" style="margin-bottom: 0">
+              <h4 style="margin-top: 0; margin-bottom: .1rem;">${unsafeHTML(t.modal.info.noReloadPageTitle)}</h4>
+              <span style="font-size: .8rem;">${t.modal.info.noReloadPageSubTitle}</span>
+            </div>
+
+            <div class="text-field" style="width: 100%;">
+              <label class="text-field-label">${t.modal.labels.amountSent} (${this.currentAsset?.symbol})</label>
+              <input class="text-field-input" readonly value="${this.amount} ${this.currentAsset?.symbol}" />
+            </div>
+          </div>
+        </div>
         `;
       } else {
         content = html`

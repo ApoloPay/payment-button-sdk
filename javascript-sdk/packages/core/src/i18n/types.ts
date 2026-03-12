@@ -10,6 +10,7 @@ export interface Dictionary {
       success: string;
       error: string;
       idle: string;
+      processing: string;
     };
     subtitles: {
       selectAsset: string;
@@ -32,6 +33,7 @@ export interface Dictionary {
       product: string;
       minutes: string;
       seconds: string;
+      amountSent: string;
     };
     info: {
       noReloadPageTitle: string;

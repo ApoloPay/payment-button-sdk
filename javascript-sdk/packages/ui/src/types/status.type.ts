@@ -1,0 +1,1 @@
+export type ModalStatus = 'idle' | 'loading' | 'success' | 'error' | 'processing'

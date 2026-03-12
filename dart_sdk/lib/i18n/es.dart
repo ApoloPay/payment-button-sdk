@@ -9,7 +9,8 @@ final Map<String, dynamic> es = {
       'scanQr': 'Depósito <span class="highlight">{symbol}</span>',
       'success': '¡Gracias por <span class="highlight">tu compra!</span>',
       'error': 'Error en el Pago',
-      'idle': 'Estado inesperado'
+      'idle': 'Estado inesperado',
+      'processing': '¡Procesando <span class="highlight">tu pago!</span>'
     },
     'subtitles': {
       'selectAsset': 'Selecciona la stablecoin con la que deseas pagar',
@@ -33,6 +34,7 @@ final Map<String, dynamic> es = {
       'product': 'Producto o Servicio',
       'minutes': 'min',
       'seconds': 'seg',
+      'amountSent': 'Monto Enviado'
     },
     'info': {
       'noReloadPageTitle': '¡Por favor no <span class="highlight">recargues la página!</span>',

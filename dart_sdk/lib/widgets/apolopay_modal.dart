@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:apolopay_sdk/i18n/i18n.dart';
@@ -12,7 +13,7 @@ import 'package:apolopay_sdk/assets/logo_apolo.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../services/apolopay_service.dart';
 
-enum ModalStep { selectAsset, selectNetwork, showQr, result }
+enum ModalStep { selectAsset, selectNetwork, showQr, processing, result }
 
 class ApoloPayModal extends StatefulWidget {
   final ApoloPayOptions options;
@@ -327,6 +328,62 @@ class _ApoloPayModalState extends State<ApoloPayModal>
     );
   }
 
+  Widget _buildProcessingStep() {
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          const SizedBox(height: 20),
+          _DotsLoader(),
+          const SizedBox(height: 24),
+          _buildRichText(
+            I18n.t['modal']['titles']['processing'],
+            baseStyle: const TextStyle(
+              color: Color(0xFF1C315C),
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 24),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: const Color(0xFF041C4C),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Column(children: [
+              _buildRichText(
+                I18n.t['modal']['info']['noReloadPageTitle'],
+                textAlign: TextAlign.center,
+                baseStyle: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                I18n.t['modal']['info']['noReloadPageSubTitle'],
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.normal,
+                    fontSize: 14),
+              ),
+            ]),
+          ),
+          const SizedBox(height: 24),
+          _buildInfoField(
+            label:
+                "${I18n.t['modal']['labels']['amountSent']} (${_selectedAsset?.symbol})",
+            value: "${_qrData?.amount} ${_selectedAsset?.symbol}",
+          ),
+          const SizedBox(height: 20),
+        ],
+      ),
+    );
+  }
+
   Widget _buildCurrentStep() {
     if (_isLoading) return const Center(child: CircularProgressIndicator());
 
@@ -377,6 +434,8 @@ class _ApoloPayModalState extends State<ApoloPayModal>
             Expanded(child: _buildQrView()),
           ],
         );
+      case ModalStep.processing:
+        return _buildProcessingStep();
       case ModalStep.result:
         return _buildResult();
     }
@@ -897,6 +956,64 @@ class _ApoloPayModalState extends State<ApoloPayModal>
           ),
         ],
       ),
+    );
+  }
+}
+
+class _DotsLoader extends StatefulWidget {
+  @override
+  State<_DotsLoader> createState() => _DotsLoaderState();
+}
+
+class _DotsLoaderState extends State<_DotsLoader>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 1500))
+      ..repeat(reverse: true);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: List.generate(5, (index) {
+        // Tamaños: 12, 16, 20, 16, 12 como en la imagen
+        final baseSizes = [12.0, 16.0, 20.0, 16.0, 12.0];
+
+        return AnimatedBuilder(
+          animation: _controller,
+          builder: (context, child) {
+            // Creamos un desfase basado en el índice
+            final delay = index * 0.15;
+            final progress = (_controller.value - delay).clamp(0.0, 1.0);
+            final double scale = 0.8 +
+                (0.4 *
+                    Curves.easeInOut.transform(
+                        (1.0 - (progress - 0.5).abs() * 2).clamp(0.0, 1.0)));
+
+            return Container(
+              margin: const EdgeInsets.symmetric(horizontal: 4),
+              width: baseSizes[index] * scale,
+              height: baseSizes.reduce(max),
+              decoration: const BoxDecoration(
+                color: Color(0xFFEA580C),
+                shape: BoxShape.circle,
+              ),
+            );
+          },
+        );
+      }),
     );
   }
 }

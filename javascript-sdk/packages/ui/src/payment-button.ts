@@ -10,6 +10,7 @@ import {
   type ClientResponse,
   type ClientError,
 } from '@apolopay-sdk/core';
+import { ModalStatus } from './types/status.type.js';
 
 // Import child components
 import './components/trigger-button.js';
@@ -58,7 +59,7 @@ export class ApoloPayButton extends LitElement {
 
   // --- Internal State ---
   @state() private isOpen = false; // Controls modal visibility
-  @state() private status: 'idle' | 'loading' | 'success' | 'error' = 'idle'; // General status, used for QR generation and final result
+  @state() private status: ModalStatus = 'idle'; // General status, used for QR generation and final result
   @state() private currentStep: ModalStep = ModalStep.SELECT_ASSET; // Current step in the modal flow
   @state() private selectedAsset: string | null = null; // ID of the chosen asset
   @state() private selectedNetwork: string | null = null; // ID of the chosen blockchain
