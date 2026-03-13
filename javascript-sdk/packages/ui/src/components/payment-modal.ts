@@ -1,6 +1,6 @@
 import { LitElement, html, css } from 'lit';
 import { customElement, property, query, state } from 'lit/decorators.js';
-import { I18n, ModalStep } from '@apolopay-sdk/core';
+import { ClientCode, I18n, ModalStep } from '@apolopay-sdk/core';
 import type { Locale, Asset, Network, Dictionary, ClientError } from '@apolopay-sdk/core';
 import { modalBaseStyles } from '../styles/modal-base';
 import { sharedStyles } from '../styles/shared-styles';
@@ -30,6 +30,7 @@ export class PaymentModal extends LitElement {
   @property({ type: String }) qrCodeUrl: string | null = null;
   @property({ type: String }) paymentAddress: string | null = null;
   @property({ type: Number }) amount = 0;
+  @property({ type: Number }) amountPaid?: number = undefined;
   @property({ type: String }) email = '';
   @property({ type: Number }) qrCodeExpiresAt: number | null = null;
   @property({ type: String }) paymentUrl: string | null = null;
@@ -140,7 +141,7 @@ export class PaymentModal extends LitElement {
   private handleTimerExpired() {
     this.status = 'error';
     this.error = {
-      code: 'PAYMENT_TIMEOUT',
+      code: ClientCode.payment_timeout,
       message: I18n.t.errors.timeout
     };
     this.changeStep(ModalStep.RESULT);
@@ -450,6 +451,34 @@ export class PaymentModal extends LitElement {
         color: var(--apolo-primary-darkest);
         margin: 0;
       }
+
+      /* Balance Card */
+      .balance-card {
+        background-color: #fff7ed; /* Un naranja muy claro de fondo */
+        border: 1px dashed var(--apolo-accent);
+        border-radius: 12px;
+        padding: 0.8rem;
+        margin-bottom: 1.5rem;
+        animation: slideDown 0.4s ease-out;
+      }
+
+      .balance-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.85rem;
+        margin-bottom: 0.25rem;
+      }
+
+      .balance-row:last-child { margin-bottom: 0; }
+
+      .balance-label { color: #6b7280; }
+      .balance-value { font-weight: 700; color: var(--apolo-primary-darkest); }
+
+      @keyframes slideDown {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
     `
   ];
 
@@ -468,17 +497,30 @@ export class PaymentModal extends LitElement {
 
     // 1. Caso Apolo Pay
     if (network?.network === 'apolopay') {
+      const symbol = this.currentAsset?.symbol || '';
+
       return html`
         <payment-timer class="timer" .expiresAt=${this.qrCodeExpiresAt} @expired=${this.handleTimerExpired}></payment-timer>
-        
+
+        ${this.amountPaid && this.amountPaid > 0 ? html`
+          <div class="balance-card">
+            <div class="balance-row">
+              <span class="balance-label">${I18n.t.modal.labels.paid}:</span>
+              <span class="balance-value">${this.amountPaid} ${symbol}</span>
+            </div>
+            <div class="balance-row">
+              <span class="balance-label">${I18n.t.modal.labels.remainingToPay}:</span>
+              <span class="balance-value highlight">${this.amount} ${symbol}</span>
+            </div>
+          </div>
+        ` : ''}
+
         <div class="qr-frame">
           <div class="qr-wrapper">
-            <img src="${this.qrCodeUrl}" class="qr-code-img" alt="QR Apolo Pay" @error=${handleImageError} />
-            
-            <img src="${logoApolo}" class="qr-overlay-icon" alt="Network Icon" style="padding: 4px;" />
+            <img src="${this.qrCodeUrl}" class="qr-code-img" alt="QR Apolo Pay" />
+            <img src="${logoApolo}" class="qr-overlay-icon" style="padding: 4px;" />
           </div>
-
-          <span class="qr-badge">${this.amount} ${this.currentAsset?.symbol}</span>
+          <span class="qr-badge">${this.amount} ${symbol}</span>
         </div>
 
         <div class="btn-dark">

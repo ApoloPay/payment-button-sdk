@@ -18,14 +18,32 @@ export interface QrResponseData {
   paymentUrl?: string; // URL opcional para pagar directamente desde el dispositivo
 }
 
+export interface PaymentResponseData {
+  id: string,
+  network: string,
+  asset: string,
+  amount: number | string,
+  status: string;
+}
+
+export interface PartialPaymentResponseData {
+  id: string,
+  network: string,
+  asset: string,
+  amount: number | string,
+  amountPaid: number | string,
+  status: string;
+}
+
 export interface ClientOptions {
   publicKey: string;
 }
 
 export interface PaymentSessionOptions {
   processId: string;
-  onSuccess: (response: ClientResponse) => void;
-  onError: (error: ClientError) => void;
+  onSuccess?: (response: ClientResponse<PaymentResponseData>) => void;
+  onPartialPayment?: (response: ClientResponse<PartialPaymentResponseData>) => void;
+  onError?: (error: ClientError) => void;
 }
 
 export interface PaymentOptions extends ClientOptions, PaymentSessionOptions { }

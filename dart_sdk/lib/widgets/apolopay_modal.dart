@@ -84,7 +84,19 @@ class _ApoloPayModalState extends State<ApoloPayModal>
           _currentStep = ModalStep.result;
           if (mounted) setState(() {});
 
-          widget.options.onSuccess(res);
+          widget.options.onSuccess?.call(res);
+        });
+      },
+      onPartialPayment: (res) {
+        _currentStep = ModalStep.processing;
+        if (mounted) setState(() {});
+
+        Future.delayed(const Duration(seconds: 2), () {
+          _finalResult = res;
+          _currentStep = ModalStep.showQr;
+          if (mounted) setState(() {});
+
+          widget.options.onPartialPayment?.call(res);
         });
       },
       onError: (err) {
@@ -92,7 +104,7 @@ class _ApoloPayModalState extends State<ApoloPayModal>
         _currentStep = ModalStep.result;
         if (mounted) setState(() {});
 
-        widget.options.onError(err);
+        widget.options.onError?.call(err);
       },
     ));
     _loadAssets();
@@ -106,7 +118,7 @@ class _ApoloPayModalState extends State<ApoloPayModal>
         _isLoading = false;
       });
     } catch (e) {
-      debugPrint('Error loading assets: $e');
+      debugPrint('Error loading assets: ${(e as ClientError).message}');
       setState(() => _isLoading = false);
       // Handle error
     }
@@ -134,8 +146,8 @@ class _ApoloPayModalState extends State<ApoloPayModal>
     final minutes = distance ~/ 60000;
     final seconds = (distance % 60000) ~/ 1000;
 
-    final minLabel = I18n.t['modal']['labels']['minutes'];
-    final secLabel = I18n.t['modal']['labels']['seconds'];
+    final minLabel = I18n.t.modal.labels.minutes;
+    final secLabel = I18n.t.modal.labels.seconds;
 
     final m = minutes.toString().padLeft(2, '0');
     final s = seconds.toString().padLeft(2, '0');
@@ -152,8 +164,8 @@ class _ApoloPayModalState extends State<ApoloPayModal>
   }
 
   void _handleTimerExpired() {
-    final minLabel = I18n.t['modal']['labels']['minutes'];
-    final secLabel = I18n.t['modal']['labels']['seconds'];
+    final minLabel = I18n.t.modal.labels.minutes;
+    final secLabel = I18n.t.modal.labels.seconds;
 
     _timer?.cancel();
     _timerController.add('00 $minLabel : 00 $secLabel');
@@ -161,12 +173,12 @@ class _ApoloPayModalState extends State<ApoloPayModal>
     setState(() {
       _currentStep = ModalStep.result;
       _finalResult = ClientError(
-        code: 'PAYMENT_TIMEOUT',
-        message: I18n.t['errors']['timeout'],
+        code: ClientCode.paymentTimeout,
+        message: I18n.t.errors.timeout,
       );
     });
 
-    widget.options.onError(_finalResult as ClientError);
+    widget.options.onError?.call(_finalResult as ClientError);
   }
 
   Future<void> _handlePayFromDevice() async {
@@ -341,7 +353,7 @@ class _ApoloPayModalState extends State<ApoloPayModal>
           _DotsLoader(),
           const SizedBox(height: 24),
           _buildRichText(
-            I18n.t['modal']['titles']['processing'],
+            I18n.t.modal.titles.processing,
             baseStyle: const TextStyle(
               color: Color(0xFF1C315C),
               fontSize: 24,
@@ -359,7 +371,7 @@ class _ApoloPayModalState extends State<ApoloPayModal>
             ),
             child: Column(children: [
               _buildRichText(
-                I18n.t['modal']['info']['noReloadPageTitle'],
+                I18n.t.modal.info.noReloadPageTitle,
                 textAlign: TextAlign.center,
                 baseStyle: const TextStyle(
                     color: Colors.white,
@@ -368,7 +380,7 @@ class _ApoloPayModalState extends State<ApoloPayModal>
               ),
               const SizedBox(height: 4),
               Text(
-                I18n.t['modal']['info']['noReloadPageSubTitle'],
+                I18n.t.modal.info.noReloadPageSubTitle,
                 textAlign: TextAlign.center,
                 style: const TextStyle(
                     color: Colors.white,
@@ -380,7 +392,7 @@ class _ApoloPayModalState extends State<ApoloPayModal>
           const SizedBox(height: 24),
           _buildInfoField(
             label:
-                "${I18n.t['modal']['labels']['amountSent']} (${_selectedAsset?.symbol})",
+                "${I18n.t.modal.labels.amountSent} (${_selectedAsset?.symbol})",
             value: "${_qrData?.amount} ${_selectedAsset?.symbol}",
           ),
           const SizedBox(height: 20),
@@ -397,14 +409,14 @@ class _ApoloPayModalState extends State<ApoloPayModal>
         return Column(
           children: [
             _buildStepTitleAndSubtitle(
-              title: I18n.t['modal']['titles']['selectAsset'],
-              subtitle: I18n.t['modal']['subtitles']['selectAsset'],
+              title: I18n.t.modal.titles.selectAsset,
+              subtitle: I18n.t.modal.subTitles.selectAsset,
             ),
             Expanded(child: _buildAssetList()),
             Padding(
               padding: const EdgeInsets.only(top: 12, bottom: 24),
               child: Text(
-                I18n.t['modal']['info']['selectNetworkLater'],
+                I18n.t.modal.info.selectNetworkLater,
                 style: const TextStyle(
                   color: Color(0xFF1C315C),
                   fontSize: 16,
@@ -418,8 +430,8 @@ class _ApoloPayModalState extends State<ApoloPayModal>
         return Column(
           children: [
             _buildStepTitleAndSubtitle(
-              title: I18n.t['modal']['titles']['selectNetwork'],
-              subtitle: I18n.t['modal']['subtitles']['selectNetwork'],
+              title: I18n.t.modal.titles.selectNetwork,
+              subtitle: I18n.t.modal.subTitles.selectNetwork,
             ),
             Expanded(child: _buildNetworkList()),
           ],
@@ -429,7 +441,7 @@ class _ApoloPayModalState extends State<ApoloPayModal>
           children: [
             _buildStepTitleAndSubtitle(
               title: I18n.interpolate(
-                I18n.t['modal']['titles']['scanQr'],
+                I18n.t.modal.titles.scanQr,
                 {'symbol': _selectedAsset?.symbol ?? ''},
               ),
               subtitle: widget.options.productTitle.isNotEmpty
@@ -550,32 +562,31 @@ class _ApoloPayModalState extends State<ApoloPayModal>
       itemBuilder: (context, index) {
         final network = networks[index];
         return _buildSelectionCard(
-          title: network.name,
-          subtitle: '',
-          imageUrl: network.network == 'apolopay'
-              ? ''
-              : network.image, // Temporary, will handle apolopay logo
-          onTap: () async {
-            setState(() => _isLoading = true);
-            try {
-              final qrData = await _service.fetchQrCodeDetails(
-                assetId: _selectedAsset!.id,
-                networkId: network.id,
-              );
-              setState(() {
-                _qrData = qrData;
-                _selectedNetwork = network;
-                _currentStep = ModalStep.showQr;
-                _isLoading = false;
-              });
-              _startTimer(qrData.expiresAtMs);
-            } catch (e) {
-              debugPrint(
-                  'Error fetching QR details: ${e is ClientError ? e.message : e}');
-              setState(() => _isLoading = false);
-            }
-          },
-        );
+            title: network.name,
+            subtitle: '',
+            imageUrl: network.network == 'apolopay'
+                ? ''
+                : network.image, // Temporary, will handle apolopay logo
+            onTap: () async {
+              setState(() => _isLoading = true);
+              try {
+                final qrData = await _service.fetchQrCodeDetails(
+                  assetId: _selectedAsset!.id,
+                  networkId: network.id,
+                );
+                setState(() {
+                  _qrData = qrData;
+                  _selectedNetwork = network;
+                  _currentStep = ModalStep.showQr;
+                  _isLoading = false;
+                });
+                _startTimer(qrData.expiresAtMs);
+              } catch (e) {
+                debugPrint(
+                    'Error fetching QR details: ${e is ClientError ? e.message : e}');
+                setState(() => _isLoading = false);
+              }
+            });
       },
     );
   }
@@ -583,23 +594,60 @@ class _ApoloPayModalState extends State<ApoloPayModal>
   Widget _buildQrView() {
     if (_qrData == null) {
       return Center(
-          child: Text(I18n.t['modal']['titles']['error'],
-              style: const TextStyle(color: Color(0xFF1C315C))));
+        child: Text(I18n.t.modal.titles.error,
+            style: const TextStyle(color: Color(0xFF1C315C))),
+      );
     }
 
+    final partialPaymentResponseData = _finalResult
+            is ClientResponse<PartialPaymentResponseData>
+        ? (_finalResult as ClientResponse<PartialPaymentResponseData>).result
+        : null;
+
     final String symbol = _selectedAsset?.symbol ?? '';
-    final warningToken = I18n.interpolate(
-        I18n.t['modal']['warnings']['onlyToken'], {'symbol': symbol});
+
+    final double currentAmountPaid = partialPaymentResponseData != null
+        ? partialPaymentResponseData.amountPaid.toDouble()
+        : 0;
+    final String remainingAmount =
+        '${partialPaymentResponseData?.amount ?? _qrData?.amount ?? ''}';
+
+    final warningToken =
+        I18n.interpolate(I18n.t.modal.warnings.onlyToken, {'symbol': symbol});
 
     final int diffMs =
         _qrData!.expiresAtMs - DateTime.now().millisecondsSinceEpoch;
     final int minutesLeft = (diffMs / (1000 * 60)).ceil();
     final String timeWindow = '${minutesLeft > 0 ? minutesLeft : 0} min';
 
-    final warningTimer = I18n.interpolate(
-        I18n.t['modal']['warnings']['timer'], {'time': timeWindow});
+    final warningTimer =
+        I18n.interpolate(I18n.t.modal.warnings.timer, {'time': timeWindow});
 
     final bool isApoloPay = _selectedNetwork?.network == 'apolopay';
+
+    // Widget auxiliar para las filas de balance
+    Widget buildBalanceRow(String label, String value,
+        {required bool isHighlight}) {
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            label,
+            style: const TextStyle(color: Color(0xFF6B7280), fontSize: 13),
+          ),
+          Text(
+            value,
+            style: TextStyle(
+              color: isHighlight
+                  ? const Color(0xFFEA580C)
+                  : const Color(0xFF1C315C),
+              fontWeight: FontWeight.bold,
+              fontSize: isHighlight ? 14 : 13,
+            ),
+          ),
+        ],
+      );
+    }
 
     return SingleChildScrollView(
       child: Column(
@@ -620,6 +668,36 @@ class _ApoloPayModalState extends State<ApoloPayModal>
               );
             },
           ),
+
+          // --- BALANCE CARD (PAGO PARCIAL) ---
+          if (currentAmountPaid > 0) ...[
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              decoration: BoxDecoration(
+                color: const Color(0xFFFFF7ED), // Fondo naranja muy suave
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: const Color(0xFFEA580C).withOpacity(0.5),
+                  width: 1,
+                ),
+              ),
+              child: Column(children: [
+                buildBalanceRow(
+                  "${I18n.t.modal.labels.paid}:",
+                  "$currentAmountPaid $symbol",
+                  isHighlight: false,
+                ),
+                const SizedBox(height: 4),
+                buildBalanceRow(
+                  "${I18n.t.modal.labels.remainingToPay}:",
+                  "$remainingAmount $symbol",
+                  isHighlight: true,
+                ),
+              ]),
+            ),
+          ],
+
           const SizedBox(height: 16),
           Stack(
             clipBehavior: Clip.none,
@@ -679,7 +757,7 @@ class _ApoloPayModalState extends State<ApoloPayModal>
                     ],
                   ),
                   child: Text(
-                    '${_qrData?.amount ?? ''} $symbol',
+                    '$remainingAmount $symbol',
                     style: const TextStyle(
                         color: Color(0xFFEA580C),
                         fontSize: 16,
@@ -699,7 +777,7 @@ class _ApoloPayModalState extends State<ApoloPayModal>
             ),
             child: Column(children: [
               _buildRichText(
-                I18n.t['modal']['info']['noReloadPageTitle'],
+                I18n.t.modal.info.noReloadPageTitle,
                 textAlign: TextAlign.center,
                 baseStyle: const TextStyle(
                     color: Colors.white,
@@ -708,7 +786,7 @@ class _ApoloPayModalState extends State<ApoloPayModal>
               ),
               const SizedBox(height: 4),
               Text(
-                I18n.t['modal']['info']['noReloadPageSubTitle'],
+                I18n.t.modal.info.noReloadPageSubTitle,
                 textAlign: TextAlign.center,
                 style: const TextStyle(
                     color: Colors.white,
@@ -720,10 +798,10 @@ class _ApoloPayModalState extends State<ApoloPayModal>
           SizedBox(height: isApoloPay ? 12 : 24),
           if (!isApoloPay) ...[
             _buildInfoField(
-                label: I18n.t['modal']['labels']['network'],
+                label: I18n.t.modal.labels.network,
                 value: _selectedNetwork?.name ?? ''),
             _buildInfoField(
-                label: I18n.t['modal']['labels']['address'],
+                label: I18n.t.modal.labels.address,
                 value: _qrData!.address,
                 hasCopy: true),
             const SizedBox(height: 12),
@@ -732,8 +810,8 @@ class _ApoloPayModalState extends State<ApoloPayModal>
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               if (!isApoloPay) ...[
-                _buildWarningItem(I18n.t['modal']['warnings']['networkMatch']),
-                _buildWarningItem(I18n.t['modal']['warnings']['noNFT']),
+                _buildWarningItem(I18n.t.modal.warnings.networkMatch),
+                _buildWarningItem(I18n.t.modal.warnings.noNFT),
                 _buildWarningItem(warningToken),
               ],
               const SizedBox(height: 12),
@@ -752,7 +830,7 @@ class _ApoloPayModalState extends State<ApoloPayModal>
                 borderRadius: BorderRadius.circular(12),
               ),
               child: _buildRichText(
-                I18n.t['modal']['actions']['scanApp'],
+                I18n.t.modal.actions.scanApp,
                 textAlign: TextAlign.center,
                 baseStyle: const TextStyle(
                     color: Colors.white,
@@ -793,7 +871,7 @@ class _ApoloPayModalState extends State<ApoloPayModal>
           shadowColor: const Color(0xFFEA580C).withOpacity(0.3),
         ),
         child: Text(
-          I18n.t['modal']['actions']['payFromDevice'],
+          I18n.t.modal.actions.payFromDevice,
           style: const TextStyle(fontWeight: FontWeight.normal),
         ),
       ),
@@ -832,9 +910,7 @@ class _ApoloPayModalState extends State<ApoloPayModal>
           const Icon(Icons.error_outline, color: Colors.red, size: 80),
         const SizedBox(height: 24),
         _buildRichText(
-          isSuccess
-              ? I18n.t['modal']['titles']['success']
-              : I18n.t['modal']['titles']['error'],
+          isSuccess ? I18n.t.modal.titles.success : I18n.t.modal.titles.error,
           baseStyle: const TextStyle(
               color: Color(0xFF1C315C),
               fontSize: 24,
@@ -844,15 +920,15 @@ class _ApoloPayModalState extends State<ApoloPayModal>
         const SizedBox(height: 16),
         _buildRichText(
           isSuccess
-              ? '${I18n.t['modal']['success']['message']} ${I18n.t['modal']['success']['message2']}'
-              : (_finalResult?.message ?? I18n.t['errors']['generic']),
+              ? '${I18n.t.modal.success.message} ${I18n.t.modal.success.message2}'
+              : (_finalResult?.message ?? I18n.t.errors.generic),
           textAlign: TextAlign.center,
           baseStyle: const TextStyle(color: Color(0xFF1C315C), fontSize: 15),
         ),
         if (isSuccess) ...[
           const SizedBox(height: 32),
           Text(
-            I18n.t['modal']['success']['details'],
+            I18n.t.modal.success.details,
             style: const TextStyle(
               color: Color(0xFF1C315C),
               fontSize: 16,
@@ -863,10 +939,10 @@ class _ApoloPayModalState extends State<ApoloPayModal>
           const SizedBox(height: 24),
           if (widget.options.productTitle.isNotEmpty)
             _buildInfoField(
-                label: I18n.t['modal']['labels']['product'],
+                label: I18n.t.modal.labels.product,
                 value: widget.options.productTitle),
           _buildInfoField(
-              label: I18n.t['modal']['labels']['amount'],
+              label: I18n.t.modal.labels.amount,
               value:
                   '${_qrData?.amount ?? ""} ${_selectedAsset?.symbol ?? ""}'),
         ],
@@ -880,7 +956,7 @@ class _ApoloPayModalState extends State<ApoloPayModal>
               shape: const StadiumBorder(),
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
             ),
-            child: Text(I18n.t['modal']['actions']['close']),
+            child: Text(I18n.t.modal.actions.close),
           ),
       ],
     );
@@ -934,8 +1010,8 @@ class _ApoloPayModalState extends State<ApoloPayModal>
                         alignment: Alignment.center,
                         child: Text(
                           _isCopied
-                              ? I18n.t['modal']['actions']['copied']
-                              : I18n.t['modal']['actions']['copy'],
+                              ? I18n.t.modal.actions.copied
+                              : I18n.t.modal.actions.copy,
                           style: const TextStyle(
                               color: Colors.white,
                               fontSize: 12,

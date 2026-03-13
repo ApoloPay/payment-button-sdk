@@ -9,6 +9,9 @@ import {
   type QrRequestDetails,
   type ClientResponse,
   type ClientError,
+  ClientCode,
+  PartialPaymentResponseData,
+  PaymentResponseData,
 } from '@apolopay-sdk/core';
 import { ModalStatus } from './types/status.type.js';
 
@@ -22,7 +25,7 @@ export class ApoloPayButton extends LitElement {
   // --- Component Properties ---
   @property({ type: Object }) client: ApoloPayClient | undefined = undefined;
   @property({ type: String, attribute: 'process-id' }) processId: string | undefined = undefined;
-  @property({ type: String, attribute: 'product-title' }) productTitle? = undefined;
+  @property({ type: String, attribute: 'product-title' }) productTitle?: string = undefined;
   @property({ type: String }) override lang: Locale = 'es';
   @property({ type: String }) label?: string = undefined;
   @property({ type: Boolean }) loading: boolean = false;
@@ -71,6 +74,7 @@ export class ApoloPayButton extends LitElement {
   @state() private error: ClientError | null = null; // Stores error details if something fails
   @state() private isLoadingData = true; // Tracks initial loading of assets/networks
   @state() private amount: number = 0; // Fetched from processId
+  @state() private amountPaid?: number | undefined = undefined;
   @state() private hasConfigError = false; // Invalid publicKey or missing client
   @state() private email: string | null = null; // TODO set email from socket response
   @state() private _service: PaymentService | null = null; // Internal business logic manager
@@ -136,7 +140,7 @@ export class ApoloPayButton extends LitElement {
       this.assets = await this._service.getAssets();
     } catch (e) {
       console.error('Error loading initial payment options:', e);
-      this.error = { code: 'DATA_LOAD_ERROR', message: 'Could not load payment options.' };
+      this.error = { code: ClientCode.data_load_error, message: I18n.t.errors.dataLoadError };
     } finally {
       this.isLoadingData = false;
     }
@@ -188,7 +192,7 @@ export class ApoloPayButton extends LitElement {
     this.error = null;
   }
 
-  private handleExpired(event: CustomEvent<{ error: { code: string; message: string } }>) {
+  private handleExpired(event: CustomEvent<{ error: { code: ClientCode; message: string } }>) {
     this.dispatchEvent(new CustomEvent('error', { detail: event.detail.error }));
   }
 
@@ -214,7 +218,7 @@ export class ApoloPayButton extends LitElement {
     try {
       const qrData = await this._service!.fetchQrCodeDetails(detail, {
         processId: this.processId,
-        onSuccess: (response: ClientResponse) => {
+        onSuccess: (response: ClientResponse<PaymentResponseData>) => {
           if (!this.isOpen) return;
           this.status = 'processing';
           this.currentStep = ModalStep.RESULT;
@@ -222,6 +226,19 @@ export class ApoloPayButton extends LitElement {
           setTimeout(() => {
             this.status = 'success';
             this.dispatchEvent(new CustomEvent('success', { detail: response }));
+          }, 2000);
+        },
+        onPartialPayment: (response: ClientResponse<PartialPaymentResponseData>) => {
+          if (!this.isOpen) return;
+          this.status = 'processing';
+          this.currentStep = ModalStep.RESULT;
+
+          setTimeout(() => {
+            this.status = 'idle';
+            this.amount = Number(response.result?.amount || "0")
+            this.amountPaid = Number(response.result?.amountPaid || "0")
+
+            this.dispatchEvent(new CustomEvent('partialPayment', { detail }));
           }, 2000);
         },
         onError: (error: ClientError) => {
@@ -240,7 +257,7 @@ export class ApoloPayButton extends LitElement {
       this.status = 'idle';
     } catch (e) {
       console.error("Error fetching QR code details:", e);
-      this.error = { code: 'QR_FETCH_ERROR', message: (e instanceof Error ? e.message : 'Failed to get payment details.') };
+      this.error = { code: ClientCode.qr_fetch_error, message: (e instanceof Error ? e.message : I18n.t.errors.qrFetchError) };
       this.status = 'error';
       this.currentStep = ModalStep.SELECT_NETWORK;
     }
@@ -311,6 +328,7 @@ export class ApoloPayButton extends LitElement {
         .qrCodeUrl=${this.qrCodeUrl}
         .paymentAddress=${this.paymentAddress}
         .amount=${this.amount}
+        .amountPaid=${this.amountPaid}
         .email=${this.email}
         .qrCodeExpiresAt=${this.qrCodeExpiresAt}
         .paymentUrl=${this.paymentUrl}

@@ -110,18 +110,98 @@ class QrResponseData {
   }
 }
 
+class PaymentResponseData {
+  final String id;
+  final String network;
+  final String asset;
+  final num amount;
+  final String status;
+
+  PaymentResponseData({
+    required this.id,
+    required this.network,
+    required this.asset,
+    required this.amount,
+    required this.status,
+  });
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'network': network,
+        'asset': asset,
+        'amount': amount,
+        'status': status,
+      };
+
+  factory PaymentResponseData.fromJson(Map<String, dynamic> json) {
+    return PaymentResponseData(
+      id: json['id']?.toString() ?? '',
+      network: json['network']?.toString() ?? '',
+      asset: json['asset']?.toString() ?? '',
+      amount: json['amount'] is String
+          ? num.tryParse(json['amount']) ?? 0
+          : (json['amount'] ?? 0),
+      status: json['status']?.toString() ?? '',
+    );
+  }
+}
+
+class PartialPaymentResponseData {
+  final String id;
+  final String network;
+  final String asset;
+  final num amount;
+  final num amountPaid;
+  final String status;
+
+  PartialPaymentResponseData({
+    required this.id,
+    required this.network,
+    required this.asset,
+    required this.amount,
+    required this.amountPaid,
+    required this.status,
+  });
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'network': network,
+        'asset': asset,
+        'amount': amount,
+        'amountPaid': amountPaid,
+        'status': status,
+      };
+
+  factory PartialPaymentResponseData.fromJson(Map<String, dynamic> json) {
+    return PartialPaymentResponseData(
+      id: json['id']?.toString() ?? '',
+      network: json['network']?.toString() ?? '',
+      asset: json['asset']?.toString() ?? '',
+      amount: json['amount'] is String
+          ? num.tryParse(json['amount']) ?? 0
+          : (json['amount'] ?? 0),
+      amountPaid: json['amountPaid'] is String
+          ? num.tryParse(json['amountPaid']) ?? 0
+          : (json['amountPaid'] ?? 0),
+      status: json['status']?.toString() ?? '',
+    );
+  }
+}
+
 class ApoloPayOptions {
   final ApoloPayClient client;
   final String processId;
   final String productTitle;
-  final Function(ClientResponse<QrResponseData>) onSuccess;
-  final Function(ClientError) onError;
+  final Function(ClientResponse<QrResponseData>)? onSuccess;
+  final Function(ClientResponse<PartialPaymentResponseData>)? onPartialPayment;
+  final Function(ClientError)? onError;
 
   ApoloPayOptions({
     required this.client,
     required this.processId,
     this.productTitle = '',
-    required this.onSuccess,
-    required this.onError,
+    this.onSuccess,
+    this.onPartialPayment,
+    this.onError,
   });
 }

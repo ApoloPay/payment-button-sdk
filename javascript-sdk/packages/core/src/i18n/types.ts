@@ -34,6 +34,8 @@ export interface Dictionary {
       minutes: string;
       seconds: string;
       amountSent: string;
+      paid: string;
+      remainingToPay: string;
     };
     info: {
       noReloadPageTitle: string;
@@ -53,10 +55,20 @@ export interface Dictionary {
       support: string;
     };
   };
+  successes: {
+    success: string;
+  };
   errors: {
     generic: string;
     publicKeyMissing: string;
     config: string;
     timeout: string;
+    paymentFailed: string;
+    connectError: string;
+    socketConnectionError: string;
+    dataLoadError: string;
+    qrFetchError: string;
+    getAssetsError: string;
+    unknownError: string;
   };
 }

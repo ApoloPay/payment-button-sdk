@@ -1,12 +1,20 @@
+import 'package:apolopay_sdk/apolopay_sdk.dart';
 import 'package:apolopay_sdk/utils/variables.dart';
 import 'package:flutter/material.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 import '../models/client_response.dart';
-import '../models/apolopay_models.dart';
+
+enum SocketEvents {
+  fundsReceived('funds_received'),
+  partialPayment('partial_payment');
+
+  const SocketEvents(this.value);
+  final String value;
+}
 
 class _SocketResponse<T> {
   final bool success;
-  final String event;
+  final SocketEvents event;
   final String message;
   final T result;
 
@@ -57,24 +65,31 @@ class SocketService {
       final response = _SocketResponse.fromJson(data);
 
       if (!response.success) {
-        return options.onError(ClientError.fromError(response.toJson()));
+        return options.onError?.call(ClientError.fromError(response.toJson()));
       }
 
-      final result = response.result as Map<String, dynamic>;
-      if (result['status'] == 'completed') {
-        options.onSuccess(ClientResponse(
-          code: 'payment_success',
+      if (response.event == SocketEvents.partialPayment) {
+        return options.onPartialPayment?.call(ClientResponse(
+          code: ClientCode.paymentPartial,
           message: response.message,
-          result: QrResponseData.fromJson(result),
+          result: PartialPaymentResponseData.fromJson(response.result),
+        ));
+      }
+
+      if (response.event == SocketEvents.fundsReceived) {
+        return options.onSuccess?.call(ClientResponse(
+          code: ClientCode.paymentSuccess,
+          message: response.message,
+          result: QrResponseData.fromJson(response.result),
         ));
       }
     });
 
     _socket!.onConnectError((error) {
-      options.onError(ClientError.fromError(
+      options.onError?.call(ClientError.fromError(
         error,
-        code: 'SOCKET_CONNECTION_ERROR',
-        message: 'Error de conexión en tiempo real.',
+        code: ClientCode.socketConnectionError,
+        message: I18n.t.errors.socketConnectionError,
       ));
       disconnect();
     });

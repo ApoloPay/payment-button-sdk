@@ -1,7 +1,8 @@
 import { PaymentOptions, QrRequestDetails, QrResponseData } from "../types/payment-client-types";
 import { Asset } from "../types/asset";
-import { ClientError, ClientResponse } from "../types/client-response";
+import { ClientCode, ClientError, ClientResponse } from "../types/client-response";
 import { apiURL, appURL } from "../utils/variables";
+import { I18n } from "../i18n";
 
 export class Repository {
   static headers = (publicKey?: string) => {
@@ -25,8 +26,8 @@ export class Repository {
       return ClientResponse.fromJson<Asset[]>(data);
     } catch (error) {
       throw ClientError.fromError(error, {
-        code: 'get_assets_error',
-        message: 'Error al obtener los activos'
+        code: ClientCode.get_assets_error,
+        message: I18n.t.errors.getAssetsError
       });
     }
   }
@@ -88,7 +89,7 @@ export class Repository {
 
             if (ms < 10000000000) {
               ms *= 1000;
-            } 
+            }
             else if (ms > 10000000000000) {
               while (ms > 20000000000000) {
                 ms = Math.floor(ms / 1000);
@@ -111,8 +112,8 @@ export class Repository {
       })
     } catch (error) {
       throw ClientError.fromError(error, {
-        code: 'fetch_qr_code_details_error',
-        message: 'Error al obtener los detalles del código QR'
+        code: ClientCode.qr_fetch_error,
+        message: I18n.t.errors.qrFetchError
       });
     }
   }

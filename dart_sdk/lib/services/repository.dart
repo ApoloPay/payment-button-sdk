@@ -1,9 +1,9 @@
 import 'dart:convert';
+import 'package:apolopay_sdk/apolopay_sdk.dart';
 import 'package:apolopay_sdk/utils/variables.dart';
 import 'package:http/http.dart' as http;
 import 'package:apolopay_sdk/models/client_response.dart';
 import 'package:apolopay_sdk/models/asset.dart';
-import 'package:apolopay_sdk/models/apolopay_models.dart';
 
 class Repository {
   static Map<String, String> getHeaders(String? publicKey) {
@@ -31,8 +31,8 @@ class Repository {
     } catch (error) {
       throw ClientError.fromError(
         error,
-        code: 'assets_error',
-        message: 'Error al obtener los assets',
+        code: ClientCode.getAssetsError,
+        message: I18n.t.errors.getAssetsError,
       );
     }
   }
@@ -58,8 +58,8 @@ class Repository {
       if (data['result'] == null) {
         throw ClientError.fromError(
           data,
-          code: data['status'] ?? 'qr_fetch_error',
-          message: data['message'] ?? 'Error al obtener el código QR',
+          code: ClientCode.qrFetchError,
+          message: data['message'] ?? I18n.t.errors.qrFetchError,
         );
       }
 
@@ -88,8 +88,8 @@ class Repository {
     } catch (error) {
       throw ClientError.fromError(
         error,
-        code: 'qr_error',
-        message: 'Error al obtener el QR',
+        code: ClientCode.qrFetchError,
+        message: I18n.t.errors.qrFetchError,
       );
     }
   }

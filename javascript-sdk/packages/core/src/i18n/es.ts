@@ -35,30 +35,42 @@ export const es: Dictionary = {
       product: 'Producto o Servicio',
       minutes: 'min',
       seconds: 'seg',
-      amountSent: 'Monto Enviado'
+      amountSent: 'Monto Enviado',
+      paid: 'Pagado',
+      remainingToPay: 'Restante por pagar'
     },
     info: {
       noReloadPageTitle: '¡Por favor no <span style="color: var(--apolo-accent)">recargues la página!</span>',
       noReloadPageSubTitle: 'La pantalla se actualizara cuando confirmes tu pago',
-      selectNetworkLater: 'Luego podrás seleccionar la red de tu preferencia',
+      selectNetworkLater: 'Luego podrás seleccionar la red de tu preferencia'
     },
     warnings: {
       networkMatch: 'Asegúrate de que la <strong>red de tu wallet coincida</strong> con la red de destino.',
       noNFT: 'No envíes NFTs a esta wallet.',
       onlyToken: 'Solo se aceptan <strong>depósitos en {symbol}</strong>. El envío de otro tipo de token podría resultar en su pérdida.',
-      timer: 'Realiza el pago dentro del tiempo indicado. <strong>{time}</strong> De lo contrario, el código QR se vencerá.',
+      timer: 'Realiza el pago dentro del tiempo indicado. <strong>{time}</strong> De lo contrario, el código QR se vencerá.'
     },
     success: {
       message: 'Tu pago fue exitoso y en breve recibirás un correo',
       message2: 'con los detalles.',
       details: 'Detalles de la compra',
-      support: 'Cualquier duda o inquietud puedes comunicarte con soporte',
+      support: 'Cualquier duda o inquietud puedes comunicarte con soporte'
     }
+  },
+  successes: {
+    success: 'Éxito',
   },
   errors: {
     generic: 'Ocurrió un error inesperado.',
     publicKeyMissing: 'Falta la Public Key',
     config: 'Error de Configuración',
     timeout: 'El tiempo para realizar el pago ha expirado. Por favor genera una nueva orden.',
+    paymentFailed: 'El pago ha fallado. Por favor genera una nueva orden.',
+    connectError: 'Error de conexión.',
+    socketConnectionError: 'Error de conexión en el socket.',
+    dataLoadError: 'No se pudo cargar los datos de pago.',
+    qrFetchError: 'Fallo al obtener los detalles del código QR.',
+    getAssetsError: 'Error al obtener los activos.',
+    unknownError: 'Ocurrió un error inesperado.'
   }
 };

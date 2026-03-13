@@ -2,10 +2,12 @@ import { io, Socket as SocketIO } from "socket.io-client";
 import { PaymentSessionOptions } from "../types/payment-client-types";
 import { ApoloPayClient } from "../apolo-pay-client";
 import { socketURL } from "../utils/variables";
+import { ClientCode } from "../types/client-response";
+import { I18n } from "../i18n";
 
 interface _SocketResponse<T = any> {
   success: boolean,
-  event: string,
+  event: 'funds_received' | 'partial_payment',
   message: string,
   result: T
 }
@@ -42,7 +44,7 @@ export class SocketService {
 
     this.socket.on('connect_error', (error: Error) => {
       console.error('Error en conexión Socket.io:', error);
-      this.sessionOptions?.onError({ code: 'connect_error', message: 'Error de conexión en tiempo real.', error });
+      this.sessionOptions?.onError?.({ code: ClientCode.connect_error, message: I18n.t.errors.connectError, error });
       this.disconnect();
     });
 
@@ -53,19 +55,25 @@ export class SocketService {
   }
 
   private handleWebSocketMessage(response: _SocketResponse): void {
-    console.log(response);
-
     if (!response.success) {
-      return this.sessionOptions?.onError({
-        code: 'payment_failed',
+      return this.sessionOptions?.onError?.({
+        code: ClientCode.payment_failed,
         message: response.message,
         error: response.result
       });
     }
 
-    if (response.result.status === 'completed') {
-      return this.sessionOptions?.onSuccess({
-        code: 'payment_success',
+    if (response.event === 'partial_payment') {
+      return this.sessionOptions?.onPartialPayment?.({
+        code: ClientCode.payment_partial,
+        message: response.message,
+        result: response.result
+      });
+    }
+
+    if (response.event === 'funds_received') {
+      return this.sessionOptions?.onSuccess?.({
+        code: ClientCode.payment_success,
         message: response.message,
         result: response.result
       });

@@ -11,8 +11,10 @@ class ApoloPayButton extends StatefulWidget {
   final ApoloPayClient? client;
   final String? processId;
   final String? productTitle;
-  final void Function(ClientResponse<QrResponseData> response) onSuccess;
-  final void Function(ClientError error) onError;
+  final void Function(ClientResponse<QrResponseData> response)? onSuccess;
+  final void Function(ClientResponse<PartialPaymentResponseData> response)?
+      onPartialPayment;
+  final void Function(ClientError error)? onError;
   final Widget Function(BuildContext context, void Function() handlePress)?
       builder;
   final String label;
@@ -25,8 +27,9 @@ class ApoloPayButton extends StatefulWidget {
     this.client,
     this.processId,
     this.productTitle,
-    required this.onSuccess,
-    required this.onError,
+    this.onSuccess,
+    this.onPartialPayment,
+    this.onError,
     this.builder,
     this.label = 'Apolo Pay',
     this.loading = false,
@@ -88,6 +91,7 @@ class _ApoloPayButtonState extends State<ApoloPayButton> {
         processId: widget.processId!,
         productTitle: widget.productTitle ?? '',
         onSuccess: widget.onSuccess,
+        onPartialPayment: widget.onPartialPayment,
         onError: widget.onError,
       ),
       productTitle: widget.productTitle,
@@ -164,9 +168,7 @@ class _ApoloPayButtonState extends State<ApoloPayButton> {
                   child: Text(
                     _hasConfigError
                         ? 'Config Error'
-                        : (isLoading
-                            ? I18n.t['trigger']['loading']
-                            : widget.label),
+                        : (isLoading ? I18n.t.trigger.loading : widget.label),
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: _hasConfigError ? Colors.red : Colors.white,
