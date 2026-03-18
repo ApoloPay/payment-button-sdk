@@ -88,16 +88,11 @@ class _ApoloPayModalState extends State<ApoloPayModal>
         });
       },
       onPartialPayment: (res) {
-        _currentStep = ModalStep.processing;
+        _finalResult = res;
+        _currentStep = ModalStep.showQr;
         if (mounted) setState(() {});
 
-        Future.delayed(const Duration(seconds: 2), () {
-          _finalResult = res;
-          _currentStep = ModalStep.showQr;
-          if (mounted) setState(() {});
-
-          widget.options.onPartialPayment?.call(res);
-        });
+        widget.options.onPartialPayment?.call(res);
       },
       onError: (err) {
         _finalResult = err;
@@ -609,8 +604,9 @@ class _ApoloPayModalState extends State<ApoloPayModal>
     final double currentAmountPaid = partialPaymentResponseData != null
         ? partialPaymentResponseData.amountPaid.toDouble()
         : 0;
-    final String remainingAmount =
-        '${partialPaymentResponseData?.amount ?? _qrData?.amount ?? ''}';
+    final double remainingAmount =
+        (partialPaymentResponseData?.amount ?? _qrData?.amount ?? 0).toDouble();
+    final double remainingAmountForPay = remainingAmount - currentAmountPaid;
 
     final warningToken =
         I18n.interpolate(I18n.t.modal.warnings.onlyToken, {'symbol': symbol});
@@ -757,7 +753,7 @@ class _ApoloPayModalState extends State<ApoloPayModal>
                     ],
                   ),
                   child: Text(
-                    '$remainingAmount $symbol',
+                    '$remainingAmountForPay $symbol',
                     style: const TextStyle(
                         color: Color(0xFFEA580C),
                         fontSize: 16,

@@ -230,16 +230,12 @@ export class ApoloPayButton extends LitElement {
         },
         onPartialPayment: (response: ClientResponse<PartialPaymentResponseData>) => {
           if (!this.isOpen) return;
-          this.status = 'processing';
-          this.currentStep = ModalStep.RESULT;
+          this.status = 'idle';
+          this.currentStep = ModalStep.SHOW_QR;
+          this.amount = Number(response.result?.amount || "0")
+          this.amountPaid = Number(response.result?.amountPaid || "0")
 
-          setTimeout(() => {
-            this.status = 'idle';
-            this.amount = Number(response.result?.amount || "0")
-            this.amountPaid = Number(response.result?.amountPaid || "0")
-
-            this.dispatchEvent(new CustomEvent('partialPayment', { detail }));
-          }, 2000);
+          this.dispatchEvent(new CustomEvent('partialPayment', { detail }));
         },
         onError: (error: ClientError) => {
           if (!this.isOpen) return;
@@ -254,6 +250,7 @@ export class ApoloPayButton extends LitElement {
       this.paymentUrl = qrData.paymentUrl || null;
       this.qrCodeExpiresAt = qrData.expiresAtMs;
       this.amount = typeof qrData.amount === 'string' ? parseFloat(qrData.amount) : qrData.amount;
+      if (qrData.amountPaid) this.amountPaid = typeof qrData.amountPaid === 'string' ? parseFloat(qrData.amountPaid) : qrData.amountPaid;
       this.status = 'idle';
     } catch (e) {
       console.error("Error fetching QR code details:", e);

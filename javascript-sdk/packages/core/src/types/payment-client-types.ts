@@ -12,6 +12,7 @@ export interface QrResponseData {
   network: string,
   asset: string,
   amount: number | string,
+  amountPaid?: number | string | null,
   address: string,
   qrCodeUrl: string; // URL de la imagen del QR (o los datos para generarla)
   expiresAtMs: number; // Fecha exacta de expiración (ISO String o Timestamp)

@@ -494,11 +494,11 @@ export class PaymentModal extends LitElement {
     });
 
     const network = this.currentNetwork;
+    const symbol = this.currentAsset?.symbol || '';
+    const remainingForPay = this.amount - (this.amountPaid || 0);
 
     // 1. Caso Apolo Pay
     if (network?.network === 'apolopay') {
-      const symbol = this.currentAsset?.symbol || '';
-
       return html`
         <payment-timer class="timer" .expiresAt=${this.qrCodeExpiresAt} @expired=${this.handleTimerExpired}></payment-timer>
 
@@ -520,7 +520,7 @@ export class PaymentModal extends LitElement {
             <img src="${this.qrCodeUrl}" class="qr-code-img" alt="QR Apolo Pay" />
             <img src="${logoApolo}" class="qr-overlay-icon" style="padding: 4px;" />
           </div>
-          <span class="qr-badge">${this.amount} ${symbol}</span>
+          <span class="qr-badge">${remainingForPay} ${symbol}</span>
         </div>
 
         <div class="btn-dark">
@@ -544,7 +544,20 @@ export class PaymentModal extends LitElement {
     // 2. Caso Red Externa
     return html`
       <payment-timer class="timer" .expiresAt=${this.qrCodeExpiresAt} @expired=${this.handleTimerExpired}></payment-timer>
-      
+
+      ${this.amountPaid && this.amountPaid > 0 ? html`
+        <div class="balance-card">
+          <div class="balance-row">
+            <span class="balance-label">${I18n.t.modal.labels.paid}:</span>
+            <span class="balance-value">${this.amountPaid} ${symbol}</span>
+          </div>
+          <div class="balance-row">
+            <span class="balance-label">${I18n.t.modal.labels.remainingToPay}:</span>
+            <span class="balance-value highlight">${this.amount} ${symbol}</span>
+          </div>
+        </div>
+      ` : ''}
+
       <div class="qr-frame">
         <div class="qr-wrapper">
           <img src="${this.qrCodeUrl}" class="qr-code-img" alt="QR Wallet" @error=${handleImageError} />
@@ -554,7 +567,7 @@ export class PaymentModal extends LitElement {
         : ''
       }
         </div>
-        <span class="qr-badge">${this.amount} ${this.currentAsset?.symbol}</span>
+        <span class="qr-badge">${remainingForPay} ${this.currentAsset?.symbol}</span>
       </div>
 
       <div class="btn-dark">

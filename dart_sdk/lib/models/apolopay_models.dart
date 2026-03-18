@@ -28,6 +28,7 @@ class QrResponseData {
   final String network;
   final String asset;
   final num amount;
+  final num amountPaid;
   final String address;
   final String qrCodeUrl;
   final int expiresAtMs;
@@ -38,6 +39,7 @@ class QrResponseData {
     required this.network,
     required this.asset,
     required this.amount,
+    required this.amountPaid,
     required this.address,
     required this.qrCodeUrl,
     required this.expiresAtMs,
@@ -49,6 +51,7 @@ class QrResponseData {
         'network': network,
         'asset': asset,
         'amount': amount,
+        'amountPaid': amountPaid,
         'address': address,
         'qrCodeUrl': qrCodeUrl,
         'expiresAtMs': expiresAtMs,
@@ -102,6 +105,9 @@ class QrResponseData {
       amount: json['amount'] is String
           ? num.tryParse(json['amount']) ?? 0
           : (json['amount'] ?? 0),
+      amountPaid: json['amountPaid'] is String
+          ? num.tryParse(json['amountPaid']) ?? 0
+          : (json['amountPaid'] ?? 0),
       address: json['address']?.toString() ?? '',
       qrCodeUrl: json['qrCodeUrl']?.toString() ?? '',
       expiresAtMs: expiresAt,
