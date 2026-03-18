@@ -164,6 +164,7 @@ class DictionaryErrors {
     required this.socketConnectionError,
     required this.dataLoadError,
     required this.qrFetchError,
+    required this.paymentProcessNotAvailable,
     required this.getAssetsError,
     required this.unknownError,
   });
@@ -176,6 +177,7 @@ class DictionaryErrors {
   final String socketConnectionError;
   final String dataLoadError;
   final String qrFetchError;
+  final String paymentProcessNotAvailable;
   final String getAssetsError;
   final String unknownError;
 }

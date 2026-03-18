@@ -24,7 +24,9 @@
   {label}
   barrier-dismissible={barrierDismissible}
   on:success
+  on:partialPayment
   on:error
+  on:expired
 >
   <slot />
 </apolopay-button>

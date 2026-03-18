@@ -19,6 +19,10 @@ const handleSuccess = (response: ClientResponse) => {
 const handleError = (error: ClientError) => {
   console.error('Error (Vue):', error.message);
 };
+
+const handleExpired = (error: ClientError) => {
+  console.error('Expirado (Vue):', error.message);
+};
 </script>
 
 <template>
@@ -31,6 +35,7 @@ const handleError = (error: ClientError) => {
       barrierDismissible
       @success="handleSuccess"
       @error="handleError"
+      @expired="handleExpired"
     ></ApoloPayButton>
   </div>
 </template>

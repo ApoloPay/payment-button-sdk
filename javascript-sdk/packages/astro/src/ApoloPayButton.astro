@@ -6,6 +6,8 @@ import type {
   ClientError,
   Locale,
   ApoloPayClient,
+PaymentResponseData,
+PartialPaymentResponseData,
 } from "@apolopay-sdk/ui";
 
 interface Props extends HTMLAttributes<"div"> {
@@ -17,8 +19,10 @@ interface Props extends HTMLAttributes<"div"> {
   loading?: boolean;
   label?: string;
   barrierDismissible?: boolean;
-  onSuccess?: (event: CustomEvent<ClientResponse>) => void;
+  onSuccess?: (event: CustomEvent<ClientResponse<PaymentResponseData>>) => void;
+  onPartialPayment?: (event: CustomEvent<ClientResponse<PartialPaymentResponseData>>) => void;
   onError?: (event: CustomEvent<ClientError>) => void;
+  onExpired?: (event: CustomEvent<ClientError>) => void;
 }
 
 const {

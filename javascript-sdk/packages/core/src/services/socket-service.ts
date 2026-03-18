@@ -32,7 +32,7 @@ export class SocketService {
       extraHeaders: {
         "x-public-key": this.client.getPublicKey()
       },
-      transports: ['polling']
+      transports: ['websocket', 'polling']
     });
 
     const { processId } = session;

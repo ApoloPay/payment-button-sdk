@@ -10,6 +10,7 @@ export enum ClientCode {
   socket_connection_error = 'socket_connection_error',
   data_load_error = 'data_load_error',
   qr_fetch_error = 'qr_fetch_error',
+  paymentProcessNotAvailable = 'payment_process_not_available',
   get_assets_error = 'get_assets_error',
   unknown_error = 'unknown_error'
 }
@@ -54,8 +55,10 @@ export class ClientError extends ClientResponseBase {
   }
 
   static fromError(error: any, { code, message }: { code?: ClientCode, message?: string } = {}): ClientError {
-    const errCode = error.statusCode || code || ClientCode.unknown_error;
-    const errMessage = error.message || message || I18n.t.errors.unknownError;
+    if (error instanceof ClientError) return error;
+
+    const errCode = code || error.statusCode || ClientCode.unknown_error;
+    const errMessage = message || error.message || I18n.t.errors.unknownError;
     const err = error.error || error;
 
     return new ClientError({ code: errCode, message: errMessage, error: err });

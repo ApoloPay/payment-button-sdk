@@ -32,8 +32,6 @@ export class PaymentService {
       publicKey: this.client.getPublicKey()
     });
 
-    console.log('qrData', qrData);
-
     this.socket.connect(session);
 
     return qrData.result!;

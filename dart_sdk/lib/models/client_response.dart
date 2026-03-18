@@ -10,6 +10,7 @@ enum ClientCode {
   socketConnectionError('socket_connection_error'),
   dataLoadError('data_load_error'),
   qrFetchError('qr_fetch_error'),
+  paymentProcessNotAvailable('payment_process_not_available'),
   getAssetsError('get_assets_error'),
   unknownError('unknown_error');
 
@@ -63,13 +64,17 @@ class ClientError extends ClientResponseBase {
     ClientCode? code,
     String? message,
   }) {
+    if (error is ClientError) return error;
+
     if (error is Map) {
       return ClientError(
-        code: ClientCode.values.firstWhere(
-          (code) => code.value == (error['statusCode'] ?? error['status']),
-          orElse: () => ClientCode.unknownError,
-        ),
-        message: (error['message'] ?? message)?.toString() ??
+        code: code ??
+            ClientCode.values.firstWhere(
+              (code) => code.value == (error['statusCode'] ?? error['status']),
+              orElse: () => ClientCode.unknownError,
+            ),
+        message: message ??
+            error['message']?.toString() ??
             I18n.t.errors.unknownError,
         error: error['error'] ?? error,
       );

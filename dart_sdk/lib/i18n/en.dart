@@ -77,6 +77,7 @@ const en = Dictionary(
     socketConnectionError: 'Connection error in socket.',
     dataLoadError: 'Could not load payment options.',
     qrFetchError: 'Failed to get payment details.',
+    paymentProcessNotAvailable: 'The payment process is not available.',
     getAssetsError: 'Failed to get assets.',
     unknownError: 'An unexpected error occurred.',
   ),

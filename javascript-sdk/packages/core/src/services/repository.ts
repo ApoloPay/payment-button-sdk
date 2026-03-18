@@ -52,8 +52,8 @@ export class Repository {
 
       if (!data.result) {
         throw new ClientError({
-          code: data.status || 'qr_fetch_error',
-          message: data.message || 'Error al obtener los detalles del código QR'
+          code: ClientCode.paymentProcessNotAvailable,
+          message: I18n.t.errors.paymentProcessNotAvailable
         });
       }
 

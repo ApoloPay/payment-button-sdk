@@ -68,6 +68,7 @@ export interface Dictionary {
     socketConnectionError: string;
     dataLoadError: string;
     qrFetchError: string;
+    paymentProcessNotAvailable: string;
     getAssetsError: string;
     unknownError: string;
   };

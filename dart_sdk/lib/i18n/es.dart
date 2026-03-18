@@ -77,6 +77,7 @@ const es = Dictionary(
     socketConnectionError: 'Error de conexión en el socket.',
     dataLoadError: 'No se pudo cargar los datos de pago.',
     qrFetchError: 'Fallo al obtener los detalles del código QR.',
+    paymentProcessNotAvailable: 'El proceso de pago no está disponible.',
     getAssetsError: 'Error al obtener los activos.',
     unknownError: 'Ocurrió un error inesperado.',
   ),

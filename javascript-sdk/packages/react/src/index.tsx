@@ -2,7 +2,7 @@ import '@apolopay-sdk/ui';
 import React, { useRef, useEffect } from 'react';
 
 // 2. Importa los tipos para las props
-import type { Locale, ClientResponse, ClientError, ApoloPayClient } from '@apolopay-sdk/ui';
+import type { Locale, ClientResponse, ClientError, ApoloPayClient, PaymentResponseData, PartialPaymentResponseData } from '@apolopay-sdk/ui';
 
 // 3. Re-exporta los tipos de 'core' para el usuario final
 //    (Nota: @core es una dependencia de @ui, que es una dependencia nuestra)
@@ -19,8 +19,10 @@ type ApoloPayButtonProps = {
   disabled?: boolean;
   loading?: boolean;
   label?: string;
-  onSuccess?: (response: ClientResponse) => void;
+  onSuccess?: (response: ClientResponse<PaymentResponseData>) => void;
+  onPartialPayment?: (response: ClientResponse<PartialPaymentResponseData>) => void;
   onError?: (error: ClientError) => void;
+  onExpired?: (error: ClientError) => void;
 };
 
 // 4. El componente de React ahora es un "ADAPTADOR"
@@ -35,7 +37,9 @@ export const ApoloPayButton: React.FC<ApoloPayButtonProps> = ({
   loading,
   label,
   onSuccess,
+  onPartialPayment,
   onError,
+  onExpired,
 }) => {
   const ref = useRef<HTMLElement>(null);
 
@@ -48,12 +52,20 @@ export const ApoloPayButton: React.FC<ApoloPayButtonProps> = ({
     const handleSuccess = (event: Event) => {
       onSuccess?.((event as CustomEvent).detail);
     };
+    const handlePartialPayment = (event: Event) => {
+      onPartialPayment?.((event as CustomEvent).detail);
+    };
     const handleError = (event: Event) => {
       onError?.((event as CustomEvent).detail);
     };
+    const handleExpired = (event: Event) => {
+      onExpired?.((event as CustomEvent).detail);
+    };
 
     node.addEventListener('success', handleSuccess);
+    node.addEventListener('partialPayment', handlePartialPayment);
     node.addEventListener('error', handleError);
+    node.addEventListener('expired', handleExpired);
 
     return () => {
       node.removeEventListener('success', handleSuccess);

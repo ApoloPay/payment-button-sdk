@@ -197,7 +197,6 @@ class PartialPaymentResponseData {
 class ApoloPayOptions {
   final ApoloPayClient client;
   final String processId;
-  final String productTitle;
   final Function(ClientResponse<QrResponseData>)? onSuccess;
   final Function(ClientResponse<PartialPaymentResponseData>)? onPartialPayment;
   final Function(ClientError)? onError;
@@ -205,7 +204,6 @@ class ApoloPayOptions {
   ApoloPayOptions({
     required this.client,
     required this.processId,
-    this.productTitle = '',
     this.onSuccess,
     this.onPartialPayment,
     this.onError,

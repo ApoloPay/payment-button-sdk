@@ -17,15 +17,29 @@ enum ModalStep { selectAsset, selectNetwork, showQr, processing, result }
 
 class ApoloPayModal extends StatefulWidget {
   final ApoloPayOptions options;
+  final String productTitle;
+  final Function(ClientError)? onExpired;
 
   const ApoloPayModal({
     super.key,
     required this.options,
+    this.productTitle = '',
+    this.onExpired,
   });
 
-  static Future<void> show(BuildContext context, ApoloPayOptions options,
-      {String? productTitle}) {
+  static Future<void> show(
+    BuildContext context,
+    ApoloPayOptions options, {
+    String productTitle = '',
+    Function(ClientError)? onExpired,
+  }) {
     final bool isDesktop = MediaQuery.of(context).size.width > 880;
+
+    final child = ApoloPayModal(
+      options: options,
+      productTitle: productTitle,
+      onExpired: onExpired,
+    );
 
     if (isDesktop) {
       return showDialog(
@@ -36,7 +50,7 @@ class ApoloPayModal extends StatefulWidget {
               const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 480, maxHeight: 800),
-            child: ApoloPayModal(options: options),
+            child: child,
           ),
         ),
       );
@@ -46,7 +60,7 @@ class ApoloPayModal extends StatefulWidget {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => ApoloPayModal(options: options),
+      builder: (context) => child,
     );
   }
 
@@ -83,23 +97,17 @@ class _ApoloPayModalState extends State<ApoloPayModal>
           _finalResult = res;
           _currentStep = ModalStep.result;
           if (mounted) setState(() {});
-
-          widget.options.onSuccess?.call(res);
         });
       },
       onPartialPayment: (res) {
         _finalResult = res;
         _currentStep = ModalStep.showQr;
         if (mounted) setState(() {});
-
-        widget.options.onPartialPayment?.call(res);
       },
       onError: (err) {
         _finalResult = err;
         _currentStep = ModalStep.result;
         if (mounted) setState(() {});
-
-        widget.options.onError?.call(err);
       },
     ));
     _loadAssets();
@@ -108,14 +116,13 @@ class _ApoloPayModalState extends State<ApoloPayModal>
   Future<void> _loadAssets() async {
     try {
       final assets = await _service.getAssets();
-      setState(() {
-        _assets = assets;
-        _isLoading = false;
-      });
-    } catch (e) {
-      debugPrint('Error loading assets: ${(e as ClientError).message}');
-      setState(() => _isLoading = false);
-      // Handle error
+      _assets = assets;
+      _isLoading = false;
+      if (mounted) setState(() {});
+    } on ClientError catch (err) {
+      debugPrint('Error loading assets: ${err.message}');
+      _isLoading = false;
+      if (mounted) setState(() {});
     }
   }
 
@@ -165,46 +172,56 @@ class _ApoloPayModalState extends State<ApoloPayModal>
     _timer?.cancel();
     _timerController.add('00 $minLabel : 00 $secLabel');
 
-    setState(() {
-      _currentStep = ModalStep.result;
-      _finalResult = ClientError(
-        code: ClientCode.paymentTimeout,
-        message: I18n.t.errors.timeout,
-      );
-    });
-
-    widget.options.onError?.call(_finalResult as ClientError);
+    _currentStep = ModalStep.result;
+    _finalResult = ClientError(
+      code: ClientCode.paymentTimeout,
+      message: I18n.t.errors.timeout,
+    );
+    if (mounted) setState(() {});
   }
 
-  Future<void> _handlePayFromDevice() async {
-    final url = _qrData?.paymentUrl;
-    final address = _qrData?.address;
-    final network = _selectedNetwork?.network;
+  void _handleClose([bool didPop = false]) {
+    if (!didPop) Navigator.pop(context);
 
-    String? targetUrl = url;
+    if (_finalResult is ClientResponse) {
+      switch (_finalResult?.code) {
+        case ClientCode.paymentPartial:
+          widget.options.onPartialPayment?.call(
+            _finalResult as ClientResponse<PartialPaymentResponseData>,
+          );
+          break;
 
-    // Fallback if no paymentUrl is provided, try to construct a URI scheme
-    if (targetUrl == null && address != null && network != null) {
-      if (network == 'ethereum' || network == 'polygon' || network == 'bsc') {
-        targetUrl = 'ethereum:$address';
-      } else if (network == 'bitcoin') {
-        targetUrl = 'bitcoin:$address';
-      } else if (network == 'solana') {
-        targetUrl = 'solana:$address';
-      } else if (network == 'near') {
-        targetUrl = 'near:$address';
-      } else if (network == 'tron') {
-        targetUrl = 'tron:$address';
+        default:
+          widget.options.onSuccess?.call(
+            _finalResult as ClientResponse<QrResponseData>,
+          );
+          break;
       }
     }
 
-    if (targetUrl != null) {
-      final uri = Uri.parse(targetUrl);
-      try {
-        await launchUrl(uri);
-      } catch (e) {
-        debugPrint('Error launching URL: $e');
+    if (_finalResult is ClientError) {
+      switch (_finalResult?.code) {
+        case ClientCode.paymentTimeout:
+          widget.onExpired?.call(_finalResult as ClientError);
+          break;
+
+        default:
+          widget.options.onError?.call(_finalResult as ClientError);
+          break;
       }
+    }
+  }
+
+  Future<void> _handlePayFromDevice() async {
+    final targetUrl = _qrData?.paymentUrl;
+
+    if (targetUrl == null) return;
+
+    final uri = Uri.parse(targetUrl);
+    try {
+      await launchUrl(uri);
+    } catch (e) {
+      debugPrint('Error launching URL: $e');
     }
   }
 
@@ -257,27 +274,30 @@ class _ApoloPayModalState extends State<ApoloPayModal>
   Widget build(BuildContext context) {
     final bool isDesktop = MediaQuery.of(context).size.width > 880;
 
-    return Container(
-      height: isDesktop ? null : MediaQuery.of(context).size.height * 0.9,
-      decoration: BoxDecoration(
-        color: const Color(0xFFF6F2EC),
-        borderRadius: isDesktop
-            ? BorderRadius.circular(24)
-            : const BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      child: Column(
-        children: [
-          _buildHeader(),
-          Expanded(
-            child: AnimatedSwitcher(
-              duration: const Duration(milliseconds: 300),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: _buildCurrentStep(),
+    return PopScope(
+      onPopInvokedWithResult: (didPop, result) => _handleClose(didPop),
+      child: Container(
+        height: isDesktop ? null : MediaQuery.of(context).size.height * 0.9,
+        decoration: BoxDecoration(
+          color: const Color(0xFFF6F2EC),
+          borderRadius: isDesktop
+              ? BorderRadius.circular(24)
+              : const BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        child: Column(
+          children: [
+            _buildHeader(),
+            Expanded(
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 300),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: _buildCurrentStep(),
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -306,7 +326,7 @@ class _ApoloPayModalState extends State<ApoloPayModal>
               : const SizedBox(width: 48),
           IconButton(
             icon: const Icon(Icons.close, color: Color(0xFF9CA3AF)),
-            onPressed: () => Navigator.pop(context),
+            onPressed: _handleClose,
           ),
         ],
       ),
@@ -439,9 +459,8 @@ class _ApoloPayModalState extends State<ApoloPayModal>
                 I18n.t.modal.titles.scanQr,
                 {'symbol': _selectedAsset?.symbol ?? ''},
               ),
-              subtitle: widget.options.productTitle.isNotEmpty
-                  ? widget.options.productTitle
-                  : null,
+              subtitle:
+                  widget.productTitle.isNotEmpty ? widget.productTitle : null,
             ),
             Expanded(child: _buildQrView()),
           ],
@@ -569,17 +588,26 @@ class _ApoloPayModalState extends State<ApoloPayModal>
                   assetId: _selectedAsset!.id,
                   networkId: network.id,
                 );
-                setState(() {
-                  _qrData = qrData;
-                  _selectedNetwork = network;
-                  _currentStep = ModalStep.showQr;
-                  _isLoading = false;
-                });
+                _qrData = qrData;
+                _selectedNetwork = network;
+                _currentStep = ModalStep.showQr;
+                _isLoading = false;
+
+                if (mounted) setState(() {});
                 _startTimer(qrData.expiresAtMs);
-              } catch (e) {
-                debugPrint(
-                    'Error fetching QR details: ${e is ClientError ? e.message : e}');
-                setState(() => _isLoading = false);
+              } on ClientError catch (err) {
+                if (err.code == ClientCode.paymentProcessNotAvailable) {
+                  _finalResult = err;
+                  _currentStep = ModalStep.result;
+                  _isLoading = false;
+                  if (mounted) setState(() {});
+                  return;
+                }
+
+                debugPrint('Error fetching QR details: ${err.message}');
+
+                _isLoading = false;
+                if (mounted) setState(() {});
               }
             });
       },
@@ -601,9 +629,9 @@ class _ApoloPayModalState extends State<ApoloPayModal>
 
     final String symbol = _selectedAsset?.symbol ?? '';
 
-    final double currentAmountPaid = partialPaymentResponseData != null
-        ? partialPaymentResponseData.amountPaid.toDouble()
-        : 0;
+    final double currentAmountPaid =
+        (partialPaymentResponseData?.amountPaid ?? _qrData?.amountPaid ?? 0)
+            .toDouble();
     final double remainingAmount =
         (partialPaymentResponseData?.amount ?? _qrData?.amount ?? 0).toDouble();
     final double remainingAmountForPay = remainingAmount - currentAmountPaid;
@@ -646,124 +674,177 @@ class _ApoloPayModalState extends State<ApoloPayModal>
     }
 
     return SingleChildScrollView(
-      child: Column(
-        children: [
-          StreamBuilder<String>(
-            stream: _timerController.stream,
-            initialData: '-- min : -- seg',
-            builder: (context, snapshot) {
-              return Text(
-                snapshot.data!,
-                style: const TextStyle(
-                  color: Color(0xFFEA580C),
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                  letterSpacing: 1.0,
-                  fontFeatures: [FontFeature.tabularFigures()],
-                ),
-              );
-            },
-          ),
-
-          // --- BALANCE CARD (PAGO PARCIAL) ---
-          if (currentAmountPaid > 0) ...[
-            const SizedBox(height: 16),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              decoration: BoxDecoration(
-                color: const Color(0xFFFFF7ED), // Fondo naranja muy suave
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: const Color(0xFFEA580C).withOpacity(0.5),
-                  width: 1,
-                ),
+      child: Column(children: [
+        StreamBuilder<String>(
+          stream: _timerController.stream,
+          initialData: '-- min : -- seg',
+          builder: (context, snapshot) {
+            return Text(
+              snapshot.data!,
+              style: const TextStyle(
+                color: Color(0xFFEA580C),
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+                letterSpacing: 1.0,
+                fontFeatures: [FontFeature.tabularFigures()],
               ),
-              child: Column(children: [
-                buildBalanceRow(
-                  "${I18n.t.modal.labels.paid}:",
-                  "$currentAmountPaid $symbol",
-                  isHighlight: false,
-                ),
-                const SizedBox(height: 4),
-                buildBalanceRow(
-                  "${I18n.t.modal.labels.remainingToPay}:",
-                  "$remainingAmount $symbol",
-                  isHighlight: true,
-                ),
-              ]),
-            ),
-          ],
+            );
+          },
+        ),
 
+        // --- BALANCE CARD (PAGO PARCIAL) ---
+        if (currentAmountPaid > 0) ...[
           const SizedBox(height: 16),
-          Stack(
-            clipBehavior: Clip.none,
-            alignment: Alignment.center,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(16),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            decoration: BoxDecoration(
+              color: const Color(0xFFFFF7ED), // Fondo naranja muy suave
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: const Color(0xFFEA580C).withOpacity(0.5),
+                width: 1,
+              ),
+            ),
+            child: Column(children: [
+              buildBalanceRow(
+                "${I18n.t.modal.labels.paid}:",
+                "$currentAmountPaid $symbol",
+                isHighlight: false,
+              ),
+              const SizedBox(height: 4),
+              buildBalanceRow(
+                "${I18n.t.modal.labels.remainingToPay}:",
+                "$remainingAmount $symbol",
+                isHighlight: true,
+              ),
+            ]),
+          ),
+        ],
+
+        const SizedBox(height: 16),
+        Stack(
+          clipBehavior: Clip.none,
+          alignment: Alignment.center,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(24),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 15,
+                    offset: const Offset(0, 5),
+                  ),
+                ],
+              ),
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  QrImageView(data: _qrData!.address, size: 180),
+                  Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    padding: const EdgeInsets.all(4),
+                    child: isApoloPay
+                        ? Image.memory(base64Decode(logoApolo),
+                            filterQuality: FilterQuality.high)
+                        : (_selectedNetwork?.image != null
+                            ? Image.network(_selectedNetwork!.image,
+                                filterQuality: FilterQuality.high)
+                            : const Icon(Icons.qr_code,
+                                color: Color(0xFF1C315C))),
+                  ),
+                ],
+              ),
+            ),
+            Positioned(
+              bottom: -12,
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(24),
+                  borderRadius: BorderRadius.circular(20),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
-                      blurRadius: 15,
-                      offset: const Offset(0, 5),
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 4,
+                      offset: const Offset(0, 2),
                     ),
                   ],
                 ),
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    QrImageView(data: _qrData!.address, size: 180),
-                    Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      padding: const EdgeInsets.all(4),
-                      child: isApoloPay
-                          ? Image.memory(base64Decode(logoApolo),
-                              filterQuality: FilterQuality.high)
-                          : (_selectedNetwork?.image != null
-                              ? Image.network(_selectedNetwork!.image,
-                                  filterQuality: FilterQuality.high)
-                              : const Icon(Icons.qr_code,
-                                  color: Color(0xFF1C315C))),
-                    ),
-                  ],
+                child: Text(
+                  '$remainingAmountForPay $symbol',
+                  style: const TextStyle(
+                      color: Color(0xFFEA580C),
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold),
                 ),
               ),
-              Positioned(
-                bottom: -12,
-                child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(20),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
-                        blurRadius: 4,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: Text(
-                    '$remainingAmountForPay $symbol',
-                    style: const TextStyle(
-                        color: Color(0xFFEA580C),
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ),
-            ],
+            ),
+          ],
+        ),
+        const SizedBox(height: 32),
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: const Color(0xFF041C4C),
+            borderRadius: BorderRadius.circular(12),
           ),
-          const SizedBox(height: 32),
+          child: Column(children: [
+            _buildRichText(
+              I18n.t.modal.info.noReloadPageTitle,
+              textAlign: TextAlign.center,
+              baseStyle: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              I18n.t.modal.info.noReloadPageSubTitle,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.normal,
+                  fontSize: 14),
+            ),
+          ]),
+        ),
+        SizedBox(height: isApoloPay ? 12 : 24),
+        if (!isApoloPay) ...[
+          _buildInfoField(
+              label: I18n.t.modal.labels.network,
+              value: _selectedNetwork?.name ?? ''),
+          _buildInfoField(
+              label: I18n.t.modal.labels.address,
+              value: _qrData!.address,
+              hasCopy: true),
+          const SizedBox(height: 12),
+        ],
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (!isApoloPay) ...[
+              _buildWarningItem(I18n.t.modal.warnings.networkMatch),
+              _buildWarningItem(I18n.t.modal.warnings.noNFT),
+              _buildWarningItem(warningToken),
+            ],
+            const SizedBox(height: 12),
+            _buildRichText(warningTimer,
+                baseStyle:
+                    const TextStyle(color: Color(0xFF1C315C), fontSize: 12)),
+          ],
+        ),
+        const SizedBox(height: 24),
+        if (isApoloPay)
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(16),
@@ -771,89 +852,26 @@ class _ApoloPayModalState extends State<ApoloPayModal>
               color: const Color(0xFF041C4C),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Column(children: [
-              _buildRichText(
-                I18n.t.modal.info.noReloadPageTitle,
-                textAlign: TextAlign.center,
-                baseStyle: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                I18n.t.modal.info.noReloadPageSubTitle,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.normal,
-                    fontSize: 14),
-              ),
-            ]),
-          ),
-          SizedBox(height: isApoloPay ? 12 : 24),
-          if (!isApoloPay) ...[
-            _buildInfoField(
-                label: I18n.t.modal.labels.network,
-                value: _selectedNetwork?.name ?? ''),
-            _buildInfoField(
-                label: I18n.t.modal.labels.address,
-                value: _qrData!.address,
-                hasCopy: true),
-            const SizedBox(height: 12),
-          ],
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              if (!isApoloPay) ...[
-                _buildWarningItem(I18n.t.modal.warnings.networkMatch),
-                _buildWarningItem(I18n.t.modal.warnings.noNFT),
-                _buildWarningItem(warningToken),
-              ],
-              const SizedBox(height: 12),
-              _buildRichText(warningTimer,
-                  baseStyle:
-                      const TextStyle(color: Color(0xFF1C315C), fontSize: 12)),
-            ],
-          ),
-          const SizedBox(height: 24),
-          if (isApoloPay)
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: const Color(0xFF041C4C),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: _buildRichText(
-                I18n.t.modal.actions.scanApp,
-                textAlign: TextAlign.center,
-                baseStyle: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.normal,
-                    fontSize: 14),
-              ),
+            child: _buildRichText(
+              I18n.t.modal.actions.scanApp,
+              textAlign: TextAlign.center,
+              baseStyle: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.normal,
+                  fontSize: 14),
             ),
-          if (_qrData?.paymentUrl != null || _canConstructPayUrl()) ...[
-            const SizedBox(height: 16),
-            _buildPayFromDeviceButton(),
-          ],
+          ),
+        if (_qrData?.paymentUrl != null) ...[
+          const SizedBox(height: 16),
+          _buildPayFromDeviceButton(),
         ],
-      ),
+      ]),
     );
   }
 
-  bool _canConstructPayUrl() {
-    final address = _qrData?.address;
-    final network = _selectedNetwork?.network;
-    if (address == null || network == null) return false;
-
-    return ['ethereum', 'polygon', 'bsc', 'bitcoin', 'solana', 'near', 'tron']
-        .contains(network.toLowerCase());
-  }
-
   Widget _buildPayFromDeviceButton() {
-    return SizedBox(
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
       width: double.infinity,
       child: ElevatedButton(
         onPressed: _handlePayFromDevice,
@@ -933,10 +951,9 @@ class _ApoloPayModalState extends State<ApoloPayModal>
             ),
           ),
           const SizedBox(height: 24),
-          if (widget.options.productTitle.isNotEmpty)
+          if (widget.productTitle.isNotEmpty)
             _buildInfoField(
-                label: I18n.t.modal.labels.product,
-                value: widget.options.productTitle),
+                label: I18n.t.modal.labels.product, value: widget.productTitle),
           _buildInfoField(
               label: I18n.t.modal.labels.amount,
               value:
@@ -945,7 +962,7 @@ class _ApoloPayModalState extends State<ApoloPayModal>
         const SizedBox(height: 32),
         if (!isSuccess)
           ElevatedButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: _handleClose,
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFFEA580C),
               foregroundColor: Colors.white,

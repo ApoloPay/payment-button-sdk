@@ -6,10 +6,18 @@ import '../models/client_response.dart';
 
 enum SocketEvents {
   fundsReceived('funds_received'),
-  partialPayment('partial_payment');
+  partialPayment('partial_payment'),
+  unknownEvent('unknown_event');
 
   const SocketEvents(this.value);
   final String value;
+
+  static SocketEvents fromValue(String value) {
+    return SocketEvents.values.firstWhere(
+      (e) => e.value == value,
+      orElse: () => SocketEvents.unknownEvent,
+    );
+  }
 }
 
 class _SocketResponse<T> {
@@ -35,7 +43,7 @@ class _SocketResponse<T> {
   factory _SocketResponse.fromJson(Map<String, dynamic> json) {
     return _SocketResponse(
       success: json['success'],
-      event: json['event'],
+      event: SocketEvents.fromValue(json['event']),
       message: json['message'],
       result: json['result'],
     );
@@ -52,16 +60,17 @@ class SocketService {
 
     _socket = io.io(
       socketURL,
-      io.OptionBuilder().setTransports(['polling']).setExtraHeaders(
-          {'x-public-key': options.client.getPublicKey()}).build(),
+      io.OptionBuilder()
+          .setTransports(['websocket', 'polling']).setExtraHeaders(
+              {'x-public-key': options.client.getPublicKey()}).build(),
     );
 
-    _socket!.onConnect((_) {
+    _socket?.onConnect((_) {
       debugPrint('Socket.io Conectado.');
-      _socket!.emit('process:connect', {'processId': processId});
+      _socket?.emit('process:connect', {'processId': processId});
     });
 
-    _socket!.on('process:message', (data) {
+    _socket?.on('process:message', (data) {
       final response = _SocketResponse.fromJson(data);
 
       if (!response.success) {
@@ -85,7 +94,7 @@ class SocketService {
       }
     });
 
-    _socket!.onConnectError((error) {
+    _socket?.onConnectError((error) {
       options.onError?.call(ClientError.fromError(
         error,
         code: ClientCode.socketConnectionError,
@@ -94,7 +103,7 @@ class SocketService {
       disconnect();
     });
 
-    _socket!.onDisconnect((reason) {
+    _socket?.onDisconnect((reason) {
       debugPrint('Socket.io Desconectado: $reason');
       _socket = null;
     });
@@ -102,7 +111,7 @@ class SocketService {
 
   void disconnect() {
     if (_socket != null) {
-      _socket!.disconnect();
+      _socket?.disconnect();
       _socket = null;
     }
   }

@@ -56,10 +56,9 @@ class Repository {
       final data = jsonDecode(response.body);
 
       if (data['result'] == null) {
-        throw ClientError.fromError(
-          data,
-          code: ClientCode.qrFetchError,
-          message: data['message'] ?? I18n.t.errors.qrFetchError,
+        throw ClientError(
+          code: ClientCode.paymentProcessNotAvailable,
+          message: I18n.t.errors.paymentProcessNotAvailable,
         );
       }
 

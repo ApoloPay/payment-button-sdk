@@ -44,9 +44,12 @@ import ApoloPayButton from "@apolopay-sdk/astro/ApoloPayButton.astro";
   }
 
   btn?.addEventListener("success", (e: CustomEvent<ClientResponse>) => {
-    // console.log("¡Éxito (Astro)!", e.detail.message);
+    console.log("¡Éxito (Astro)!", e.detail.message);
   });
   btn?.addEventListener("error", (e: CustomEvent<ClientError>) => {
-    // console.error("Error (Astro):", e.detail.message);
+    console.error("Error (Astro):", e.detail.message);
+  });
+  btn?.addEventListener("expired", (e: CustomEvent<ClientError>) => {
+    console.error("Expirado (Astro):", e.detail.message);
   });
 </script>
