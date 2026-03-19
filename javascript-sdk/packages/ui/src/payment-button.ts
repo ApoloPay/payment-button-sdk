@@ -10,10 +10,10 @@ import {
   type QrRequestDetails,
   ClientResponse,
   ClientCode,
-  PartialPaymentResponseData,
-  PaymentResponseData,
+  type PartialPaymentResponseData,
+  type PaymentResponseData,
 } from '@apolopay-sdk/core';
-import { ModalStatus } from './types/status.type.js';
+import type { ModalStatus } from './types/status.type.js';
 
 // Import child components
 import './components/trigger-button.js';

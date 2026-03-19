@@ -11,7 +11,7 @@ import { qrBaseStyles } from '../styles/qr-base';
 import { handleImageError } from '../utils/image_error';
 import { spinnerStyles } from '../styles/spinner-styles';
 import './payment-timer.js';
-import { ModalStatus } from '../types/status.type';
+import type { ModalStatus } from '../types/status.type';
 
 @customElement('payment-modal')
 export class PaymentModal extends LitElement {
