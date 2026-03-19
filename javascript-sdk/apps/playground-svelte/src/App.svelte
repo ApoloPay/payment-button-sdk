@@ -21,6 +21,11 @@
     console.error("Error en el pago (Svelte):", event.detail.message);
     alert("Error: " + event.detail.message);
   }
+
+  function handleExpired(event: any) {
+    console.error("Expirado (Svelte):", event.detail.message);
+    alert("Expirado: " + event.detail.message);
+  }
 </script>
 
 <main>
@@ -32,6 +37,7 @@
     barrierDismissible
     on:success={handleSuccess}
     on:error={handleError}
+    on:expired={handleExpired}
   ></ApoloPayButton>
 </main>
 

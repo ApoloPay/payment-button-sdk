@@ -20,10 +20,13 @@ class MyApp extends StatelessWidget {
           child: ApoloPayButton(
             client: ApoloPayClient(publicKey: 'publicKey'),
             processId: 'processId',
-            onSuccess: (response) {
+            onSuccess: (context, response) {
               print('Pago exitoso: ${response.message}');
             },
-            onError: (error) {
+            onExpired: (context, error) {
+              print('Pago expirado: ${error.message}');
+            },
+            onError: (context, error) {
               print('Error en pago: ${error.message}');
             },
           ),

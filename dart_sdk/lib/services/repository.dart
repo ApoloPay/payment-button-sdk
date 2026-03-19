@@ -1,12 +1,11 @@
 import 'dart:convert';
+import 'package:apolopay_sdk/apolopay_sdk.dart';
+import 'package:apolopay_sdk/utils/variables.dart';
 import 'package:http/http.dart' as http;
 import 'package:apolopay_sdk/models/client_response.dart';
 import 'package:apolopay_sdk/models/asset.dart';
-import 'package:apolopay_sdk/models/apolopay_models.dart';
 
 class Repository {
-  static const String apiUrl = "https://pb-test-api.apolopay.app";
-
   static Map<String, String> getHeaders(String? publicKey) {
     final headers = {'Content-Type': 'application/json'};
 
@@ -20,7 +19,7 @@ class Repository {
   static Future<ClientResponse<List<Asset>>> getAssets() async {
     try {
       final response = await http.get(
-            Uri.parse('$apiUrl/payment-button/assets'),
+            Uri.parse('$apiURL/payment-button/assets'),
             headers: getHeaders(null),
           ),
           data = jsonDecode(response.body);
@@ -32,8 +31,8 @@ class Repository {
     } catch (error) {
       throw ClientError.fromError(
         error,
-        code: 'assets_error',
-        message: 'Error al obtener los assets',
+        code: ClientCode.getAssetsError,
+        message: I18n.t.errors.getAssetsError,
       );
     }
   }
@@ -46,7 +45,7 @@ class Repository {
   }) async {
     try {
       final response = await http.post(
-        Uri.parse('$apiUrl/payment-button/process/confirm'),
+        Uri.parse('$apiURL/payment-button/process/confirm'),
         headers: getHeaders(publicKey),
         body: jsonEncode({
           'processId': processId,
@@ -57,10 +56,9 @@ class Repository {
       final data = jsonDecode(response.body);
 
       if (data['result'] == null) {
-        throw ClientError.fromError(
-          data,
-          code: data['status'] ?? 'qr_fetch_error',
-          message: data['message'] ?? 'Error al obtener el código QR',
+        throw ClientError(
+          code: ClientCode.paymentProcessNotAvailable,
+          message: I18n.t.errors.paymentProcessNotAvailable,
         );
       }
 
@@ -70,7 +68,7 @@ class Repository {
       final networkName = result['network'];
 
       final String address = networkName == "apolopay"
-          ? "https://p2p.apolopay.app/payment-process/$processId"
+          ? "$appURL/payment-process/$processId"
           : wallet;
 
       return ClientResponse.fromJson(
@@ -89,8 +87,8 @@ class Repository {
     } catch (error) {
       throw ClientError.fromError(
         error,
-        code: 'qr_error',
-        message: 'Error al obtener el QR',
+        code: ClientCode.qrFetchError,
+        message: I18n.t.errors.qrFetchError,
       );
     }
   }

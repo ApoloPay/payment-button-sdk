@@ -11,8 +11,16 @@ class ApoloPayButton extends StatefulWidget {
   final ApoloPayClient? client;
   final String? processId;
   final String? productTitle;
-  final void Function(ClientResponse<QrResponseData> response) onSuccess;
-  final void Function(ClientError error) onError;
+  final void Function(
+    BuildContext context,
+    ClientResponse<QrResponseData> response,
+  )? onSuccess;
+  final void Function(
+    BuildContext context,
+    ClientResponse<PartialPaymentResponseData> response,
+  )? onPartialPayment;
+  final void Function(BuildContext context, ClientError error)? onError;
+  final void Function(BuildContext context, ClientError error)? onExpired;
   final Widget Function(BuildContext context, void Function() handlePress)?
       builder;
   final String label;
@@ -25,8 +33,10 @@ class ApoloPayButton extends StatefulWidget {
     this.client,
     this.processId,
     this.productTitle,
-    required this.onSuccess,
-    required this.onError,
+    this.onSuccess,
+    this.onPartialPayment,
+    this.onError,
+    this.onExpired,
     this.builder,
     this.label = 'Apolo Pay',
     this.loading = false,
@@ -86,11 +96,12 @@ class _ApoloPayButtonState extends State<ApoloPayButton> {
       ApoloPayOptions(
         client: widget.client!,
         processId: widget.processId!,
-        productTitle: widget.productTitle ?? '',
-        onSuccess: widget.onSuccess,
-        onError: widget.onError,
+        onSuccess: (res) => widget.onSuccess?.call(context, res),
+        onPartialPayment: (res) => widget.onPartialPayment?.call(context, res),
+        onError: (err) => widget.onError?.call(context, err),
       ),
-      productTitle: widget.productTitle,
+      productTitle: widget.productTitle ?? '',
+      onExpired: (err) => widget.onExpired?.call(context, err),
     );
   }
 
@@ -164,9 +175,7 @@ class _ApoloPayButtonState extends State<ApoloPayButton> {
                   child: Text(
                     _hasConfigError
                         ? 'Config Error'
-                        : (isLoading
-                            ? I18n.t['trigger']['loading']
-                            : widget.label),
+                        : (isLoading ? I18n.t.trigger.loading : widget.label),
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: _hasConfigError ? Colors.red : Colors.white,

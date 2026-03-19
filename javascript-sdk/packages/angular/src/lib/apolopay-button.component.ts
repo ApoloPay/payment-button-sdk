@@ -1,5 +1,5 @@
 import { Component, Input, Output, EventEmitter, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import type { ClientResponse, ClientError, Locale, ApoloPayClient } from '@apolopay-sdk/ui';
+import type { ClientResponse, ClientError, Locale, ApoloPayClient, PaymentResponseData, PartialPaymentResponseData } from '@apolopay-sdk/ui';
 
 @Component({
   selector: 'apolopay-button-component',
@@ -15,7 +15,9 @@ import type { ClientResponse, ClientError, Locale, ApoloPayClient } from '@apolo
       [disabled]="disabled"
       [attr.barrier-dismissible]="barrierDismissible ? '' : null"
       (success)="onSuccess($event)"
+      (partialPayment)="onPartialPayment($event)"
       (error)="onError($event)"
+      (expired)="onExpired($event)"
     >
       <ng-content></ng-content>
     </apolopay-button>
@@ -42,16 +44,27 @@ export class ApoloPayButtonComponent {
   @Input() barrierDismissible?: boolean;
 
   // 6. Define los Outputs (eventos)
-  @Output() success = new EventEmitter<ClientResponse>();
+  @Output() success = new EventEmitter<ClientResponse<PaymentResponseData>>();
+  @Output() partialPayment = new EventEmitter<ClientResponse<PartialPaymentResponseData>>();
   @Output() error = new EventEmitter<ClientError>();
+  @Output() expired = new EventEmitter<ClientError>();
 
   // 7. Traduce el CustomEvent ($event) a un EventEmitter de Angular
   onSuccess(event: Event) {
     // $event.detail contiene los datos del evento del Web Component
-    this.success.emit((event as CustomEvent<ClientResponse>).detail);
+    this.success.emit((event as CustomEvent<ClientResponse<PaymentResponseData>>).detail);
+  }
+
+  onPartialPayment(event: Event) {
+    // $event.detail contiene los datos del evento del Web Component
+    this.partialPayment.emit((event as CustomEvent<ClientResponse<PartialPaymentResponseData>>).detail);
   }
 
   onError(event: Event) {
     this.error.emit((event as CustomEvent<ClientError>).detail);
+  }
+
+  onExpired(event: Event) {
+    this.expired.emit((event as CustomEvent<ClientError>).detail);
   }
 }

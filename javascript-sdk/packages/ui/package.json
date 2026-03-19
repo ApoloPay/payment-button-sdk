@@ -7,15 +7,15 @@
     "provenance": true
   },
   "type": "module",
-  "main": "dist/index.js",
-  "module": "dist/index.js",
+  "main": "./dist/apolopay-sdk.umd.js",
+  "module": "./dist/apolopay-sdk.es.js",
   "types": "dist/index.d.ts",
   "files": [
     "dist"
   ],
   "scripts": {
-    "build": "tsc",
-    "dev": "tsc --watch"
+    "build": "tsc --emitDeclarationOnly && vite build",
+    "dev": "vite build --watch"
   },
   "dependencies": {
     "@apolopay-sdk/core": "workspace:*",
@@ -25,11 +25,13 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "default": "./dist/index.js"
+      "import": "./dist/apolopay-sdk.es.js",
+      "require": "./dist/apolopay-sdk.umd.js"
     }
   },
   "devDependencies": {
-    "typescript": "5.4.5"
+    "@types/node": "^25.2.3",
+    "typescript": "5.4.5",
+    "vite": "^7.3.1"
   }
 }

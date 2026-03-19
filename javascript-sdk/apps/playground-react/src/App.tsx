@@ -28,6 +28,7 @@ function App() {
         barrierDismissible
         onSuccess={handleSuccess}
         onError={(error) => { console.error(error); }}
+        onExpired={(error) => { console.error(error); }}
       ></ApoloPayButton>
     </div>
   );

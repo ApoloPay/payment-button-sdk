@@ -39,6 +39,13 @@ if (miBoton) {
     alert('Error: ' + error.message);
   });
 
+  miBoton.addEventListener('expired', (event: Event) => {
+    const error = (event as CustomEvent<ClientError>).detail;
+
+    console.error('Expirado (Vanilla JS):', error.message);
+    alert('Expirado: ' + error.message);
+  });
+
 } else {
   console.error('No se pudo encontrar el #btn-pago');
 }
