@@ -43,12 +43,17 @@ export const ApoloPayButton: React.FC<ApoloPayButtonProps> = ({
 }) => {
   const ref = useRef<HTMLElement>(null);
 
-  // 5. Esconde la "fricción" de los eventos aquí
+  // 5. Esconde la "fricción" de los eventos y propiedades aqui
   useEffect(() => {
     const node = ref.current;
     if (!node) return;
 
-    // Escucha el evento del Web Component y lo "traduce" al prop de React
+    // 5.1 Sincronizamos las propiedades manuales (React 18 no lo hace solo para objetos)
+    if (client) {
+      (node as any).client = client;
+    }
+
+    // 5.2 Escucha el evento del Web Component y lo "traduce" al prop de React
     const handleSuccess = (event: Event) => {
       onSuccess?.((event as CustomEvent).detail);
     };
@@ -69,9 +74,11 @@ export const ApoloPayButton: React.FC<ApoloPayButtonProps> = ({
 
     return () => {
       node.removeEventListener('success', handleSuccess);
+      node.removeEventListener('partialPayment', handlePartialPayment);
       node.removeEventListener('error', handleError);
+      node.removeEventListener('expired', handleExpired);
     };
-  }, [onSuccess, onError]);
+  }, [client, onSuccess, onPartialPayment, onError, onExpired]);
 
   // 6. Renderiza el Web Component, pasando props de React (camelCase)
   //    a atributos HTML (kebab-case)
@@ -79,7 +86,6 @@ export const ApoloPayButton: React.FC<ApoloPayButtonProps> = ({
     'apolopay-button',
     {
       ref,
-      client,
       'process-id': processId,
       'product-title': productTitle,
       lang,
