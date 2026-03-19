@@ -52,6 +52,7 @@ jobs:
           cwd: javascript-sdk
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_CONFIG_PROVENANCE: true
 
       - name: Generate WordPress Plugin ZIP
         if: steps.changesets.outputs.published == 'true'
