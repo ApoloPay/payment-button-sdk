@@ -3,7 +3,7 @@
   "private": true,
   "repository": {
     "type": "git",
-    "url": "https://github.com/ApoloPay/payment-button-sdk"
+    "url": "git+https://github.com/ApoloPay/payment-button-sdk.git"
   },
   "scripts": {
     "build": "turbo run build",

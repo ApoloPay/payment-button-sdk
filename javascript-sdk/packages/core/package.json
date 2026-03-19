@@ -6,7 +6,7 @@
   "description": "Core SDK for Apolo Pay",
   "repository": {
     "type": "git",
-    "url": "https://github.com/ApoloPay/payment-button-sdk"
+    "url": "git+https://github.com/ApoloPay/payment-button-sdk.git"
   },
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
