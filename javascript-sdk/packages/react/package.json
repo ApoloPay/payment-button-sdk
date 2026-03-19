@@ -2,6 +2,11 @@
   "name": "@apolopay-sdk/react",
   "version": "1.2.0",
   "description": "React Payment Button Adapter",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ApoloPay/payment-button-sdk.git",
+    "directory": "javascript-sdk/packages/react"
+  },
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
