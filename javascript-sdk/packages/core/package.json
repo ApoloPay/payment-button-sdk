@@ -16,8 +16,7 @@
   ],
   "publishConfig": {
     "access": "public",
-    "provenance": true,
-    "registry": "https://registry.npmjs.org/"
+    "provenance": true
   },
   "scripts": {
     "build": "tsup src/index.ts --format esm,cjs --dts --clean",

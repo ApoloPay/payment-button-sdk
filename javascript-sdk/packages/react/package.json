@@ -27,8 +27,7 @@
   ],
   "publishConfig": {
     "access": "public",
-    "provenance": true,
-    "registry": "https://registry.npmjs.org/"
+    "provenance": true
   },
   "peerDependencies": {
     "react": ">=16.8.0"

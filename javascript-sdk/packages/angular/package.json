@@ -8,8 +8,7 @@
   },
   "publishConfig": {
     "access": "public",
-    "provenance": true,
-    "registry": "https://registry.npmjs.org/"
+    "provenance": true
   },
   "main": "./dist/index.js",
   "module": "./dist/index.js",
