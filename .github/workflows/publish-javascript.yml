@@ -44,12 +44,11 @@ jobs:
       - name: Install Dependencies
         run: pnpm install
 
-      - name: Create Release Pull Request or Publish to npm
-        id: changesets
-        uses: changesets/action@v1.4.1
-        with:
-          publish: pnpm run release
-          cwd: javascript-sdk
+      - name: Debug Publish with npm
+        run: |
+          cd javascript-sdk/packages/astro
+          pnpm run build
+          npm publish --access public --provenance --verbose
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_CONFIG_PROVENANCE: true
