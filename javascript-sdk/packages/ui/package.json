@@ -4,8 +4,7 @@
   "description": "UI Components (Web Components) for payment button",
   "repository": {
     "type": "git",
-    "url": "https://github.com/ApoloPay/payment-button-sdk.git",
-    "directory": "javascript-sdk/packages/ui"
+    "url": "https://github.com/ApoloPay/payment-button-sdk"
   },
   "publishConfig": {
     "access": "public",

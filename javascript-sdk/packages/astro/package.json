@@ -4,8 +4,7 @@
   "description": "Astro Payment Button Adapter",
   "repository": {
     "type": "git",
-    "url": "https://github.com/ApoloPay/payment-button-sdk.git",
-    "directory": "javascript-sdk/packages/astro"
+    "url": "https://github.com/ApoloPay/payment-button-sdk"
   },
   "publishConfig": {
     "access": "public",
