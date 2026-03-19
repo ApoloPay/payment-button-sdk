@@ -4,8 +4,7 @@
   "description": "Angular Payment Button Adapter",
   "repository": {
     "type": "git",
-    "url": "https://github.com/ApoloPay/payment-button-sdk.git",
-    "directory": "javascript-sdk/packages/angular"
+    "url": "https://github.com/ApoloPay/payment-button-sdk"
   },
   "publishConfig": {
     "access": "public",

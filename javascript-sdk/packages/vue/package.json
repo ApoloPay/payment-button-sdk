@@ -4,8 +4,7 @@
   "description": "Vue Payment Button Adapter",
   "repository": {
     "type": "git",
-    "url": "https://github.com/ApoloPay/payment-button-sdk.git",
-    "directory": "javascript-sdk/packages/vue"
+    "url": "https://github.com/ApoloPay/payment-button-sdk"
   },
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
