@@ -46,8 +46,8 @@ jobs:
 
       - name: Debug Publish with npm
         run: |
+          pnpm exec turbo build --filter=@apolopay-sdk/astro
           cd packages/astro
-          pnpm run build
           npm publish --access public --provenance --verbose
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
