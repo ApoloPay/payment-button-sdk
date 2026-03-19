@@ -17,7 +17,7 @@
     "check-types": "turbo run check-types",
     "changeset": "changeset",
     "version-packages": "changeset version",
-    "release": "turbo run build && changeset publish --access public"
+    "release": "turbo run build && changeset publish"
   },
   "devDependencies": {
     "@changesets/cli": "2.27.1",
