@@ -29,6 +29,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          token: ${{ secrets.CHANGESET_TOKEN }}
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v3
@@ -51,7 +52,7 @@ jobs:
           publish: pnpm run release
           cwd: javascript-sdk
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.CHANGESET_TOKEN }}
 
       - name: Generate WordPress Plugin ZIP
         if: steps.changesets.outputs.published == 'true'
@@ -75,4 +76,4 @@ jobs:
             - **Plugin Version:** v${{ env.WP_VERSION }}
             - **Installation:** Download the `apolo-pay-plugin-v${{ env.WP_VERSION }}.zip` below and upload it to your WordPress admin panel.
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.CHANGESET_TOKEN }}
