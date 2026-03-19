@@ -1,6 +1,6 @@
 import { LitElement, html, css } from 'lit';
 import { customElement, property, query, state } from 'lit/decorators.js';
-import { I18n, ModalStep } from '@apolopay-sdk/core';
+import { ClientCode, I18n, ModalStep } from '@apolopay-sdk/core';
 import type { Locale, Asset, Network, Dictionary, ClientError } from '@apolopay-sdk/core';
 import { modalBaseStyles } from '../styles/modal-base';
 import { sharedStyles } from '../styles/shared-styles';
@@ -11,6 +11,7 @@ import { qrBaseStyles } from '../styles/qr-base';
 import { handleImageError } from '../utils/image_error';
 import { spinnerStyles } from '../styles/spinner-styles';
 import './payment-timer.js';
+import type { ModalStatus } from '../types/status.type';
 
 @customElement('payment-modal')
 export class PaymentModal extends LitElement {
@@ -20,7 +21,7 @@ export class PaymentModal extends LitElement {
   @property({ type: String }) override lang: Locale = 'es';
   @property({ type: String }) productTitle = '';
   @property({ type: Number }) currentStep: ModalStep = ModalStep.SELECT_ASSET;
-  @property({ type: String }) status: 'idle' | 'success' | 'error' = 'idle';
+  @property({ type: String }) status: ModalStatus = 'idle';
   @property({ type: Object }) error: ClientError | null = null;
   @property({ type: Boolean }) isLoadingData = true; // For initial asset/network load
   @property({ type: Array }) assets: Asset[] = [];
@@ -29,6 +30,7 @@ export class PaymentModal extends LitElement {
   @property({ type: String }) qrCodeUrl: string | null = null;
   @property({ type: String }) paymentAddress: string | null = null;
   @property({ type: Number }) amount = 0;
+  @property({ type: Number }) amountPaid?: number = undefined;
   @property({ type: String }) email = '';
   @property({ type: Number }) qrCodeExpiresAt: number | null = null;
   @property({ type: String }) paymentUrl: string | null = null;
@@ -139,7 +141,7 @@ export class PaymentModal extends LitElement {
   private handleTimerExpired() {
     this.status = 'error';
     this.error = {
-      code: 'PAYMENT_TIMEOUT',
+      code: ClientCode.payment_timeout,
       message: I18n.t.errors.timeout
     };
     this.changeStep(ModalStep.RESULT);
@@ -405,6 +407,78 @@ export class PaymentModal extends LitElement {
       
       /* Estilo Error */
       .error-icon { font-size: 4rem; margin-bottom: 1rem; }
+
+      /* Estilo Processing */
+      .processing-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1.5rem;
+        padding-top: 1rem;
+      }
+
+      /* Animación de puntos */
+      .dots-loader {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+        height: 40px;
+      }
+
+      .dot {
+        width: 12px;
+        height: 12px;
+        background-color: var(--apolo-accent);
+        border-radius: 50%;
+        display: inline-block;
+        animation: dot-pulse 1.5s infinite ease-in-out;
+      }
+
+      .dot:nth-child(2) { animation-delay: 0.2s; width: 16px; height: 16px; }
+      .dot:nth-child(3) { animation-delay: 0.4s; width: 20px; height: 20px; }
+      .dot:nth-child(4) { animation-delay: 0.6s; width: 16px; height: 16px; }
+      .dot:nth-child(5) { animation-delay: 0.8s; }
+
+      @keyframes dot-pulse {
+        0%, 100% { transform: scale(0.7); opacity: 0.5; }
+        50% { transform: scale(1.1); opacity: 1; }
+      }
+
+      .processing-title {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: var(--apolo-primary-darkest);
+        margin: 0;
+      }
+
+      /* Balance Card */
+      .balance-card {
+        background-color: #fff7ed; /* Un naranja muy claro de fondo */
+        border: 1px dashed var(--apolo-accent);
+        border-radius: 12px;
+        padding: 0.8rem;
+        margin-bottom: 1.5rem;
+        animation: slideDown 0.4s ease-out;
+      }
+
+      .balance-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.85rem;
+        margin-bottom: 0.25rem;
+      }
+
+      .balance-row:last-child { margin-bottom: 0; }
+
+      .balance-label { color: #6b7280; }
+      .balance-value { font-weight: 700; color: var(--apolo-primary-darkest); }
+
+      @keyframes slideDown {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
     `
   ];
 
@@ -420,28 +494,41 @@ export class PaymentModal extends LitElement {
     });
 
     const network = this.currentNetwork;
+    const symbol = this.currentAsset?.symbol || '';
+    const remainingForPay = this.amount - (this.amountPaid || 0);
 
     // 1. Caso Apolo Pay
     if (network?.network === 'apolopay') {
       return html`
         <payment-timer class="timer" .expiresAt=${this.qrCodeExpiresAt} @expired=${this.handleTimerExpired}></payment-timer>
-        
+
+        ${this.amountPaid && this.amountPaid > 0 ? html`
+          <div class="balance-card">
+            <div class="balance-row">
+              <span class="balance-label">${I18n.t.modal.labels.paid}:</span>
+              <span class="balance-value">${this.amountPaid} ${symbol}</span>
+            </div>
+            <div class="balance-row">
+              <span class="balance-label">${I18n.t.modal.labels.remainingToPay}:</span>
+              <span class="balance-value highlight">${this.amount} ${symbol}</span>
+            </div>
+          </div>
+        ` : ''}
+
         <div class="qr-frame">
           <div class="qr-wrapper">
-            <img src="${this.qrCodeUrl}" class="qr-code-img" alt="QR Apolo Pay" @error=${handleImageError} />
-            
-            <img src="${logoApolo}" class="qr-overlay-icon" alt="Network Icon" style="padding: 4px;" />
+            <img src="${this.qrCodeUrl}" class="qr-code-img" alt="QR Apolo Pay" />
+            <img src="${logoApolo}" class="qr-overlay-icon" style="padding: 4px;" />
           </div>
+          <span class="qr-badge">${remainingForPay} ${symbol}</span>
+        </div>
 
-          <span class="qr-badge">${this.amount} ${this.currentAsset?.symbol}</span>
+        <div class="btn-dark">
+          <h4 style="margin-top: 0; margin-bottom: .1rem;">${unsafeHTML(t.modal.info.noReloadPageTitle)}</h4>
+          <span style="font-size: .8rem;">${t.modal.info.noReloadPageSubTitle}</span>
         </div>
 
         <div class="warning-text">
-          <ul>
-            <li>${unsafeHTML(t.modal.warnings.networkMatch)}</li>
-            <li>${unsafeHTML(t.modal.warnings.noNFT)}</li>
-            <li>${unsafeHTML(warningTokenHTML)}</li>
-          </ul>
           <p>${unsafeHTML(warningTimerHTML)}</p>
         </div>
 
@@ -457,7 +544,20 @@ export class PaymentModal extends LitElement {
     // 2. Caso Red Externa
     return html`
       <payment-timer class="timer" .expiresAt=${this.qrCodeExpiresAt} @expired=${this.handleTimerExpired}></payment-timer>
-      
+
+      ${this.amountPaid && this.amountPaid > 0 ? html`
+        <div class="balance-card">
+          <div class="balance-row">
+            <span class="balance-label">${I18n.t.modal.labels.paid}:</span>
+            <span class="balance-value">${this.amountPaid} ${symbol}</span>
+          </div>
+          <div class="balance-row">
+            <span class="balance-label">${I18n.t.modal.labels.remainingToPay}:</span>
+            <span class="balance-value highlight">${this.amount} ${symbol}</span>
+          </div>
+        </div>
+      ` : ''}
+
       <div class="qr-frame">
         <div class="qr-wrapper">
           <img src="${this.qrCodeUrl}" class="qr-code-img" alt="QR Wallet" @error=${handleImageError} />
@@ -467,7 +567,12 @@ export class PaymentModal extends LitElement {
         : ''
       }
         </div>
-        <span class="qr-badge">${this.amount} ${this.currentAsset?.symbol}</span>
+        <span class="qr-badge">${remainingForPay} ${this.currentAsset?.symbol}</span>
+      </div>
+
+      <div class="btn-dark">
+        <h4 style="margin-top: 0; margin-bottom: .1rem;">${unsafeHTML(t.modal.info.noReloadPageTitle)}</h4>
+        <span style="font-size: .8rem;">${t.modal.info.noReloadPageSubTitle}</span>
       </div>
 
       <div class="text-field">
@@ -533,7 +638,7 @@ export class PaymentModal extends LitElement {
           `)}
         </div>
         <p class="warning-text" style="font-size: 0.9rem; text-align: center; margin-top: 1.5rem">
-          ${t.modal.warnings.selectNetworkLater}
+          ${t.modal.info.selectNetworkLater}
         </p>
       `;
     }
@@ -607,6 +712,31 @@ export class PaymentModal extends LitElement {
             <p class="result-desc">${this.error?.message || t.errors.generic}</p>
             <button class="btn-primary" @click=${this.requestClose}>${t.modal.actions.close}</button>
           </div>
+        `;
+      } else if (this.status === 'processing') {
+        content = html`
+          <div class="processing-container">
+            <div class="dots-loader">
+              <div class="dot"></div>
+              <div class="dot"></div>
+              <div class="dot"></div>
+              <div class="dot"></div>
+              <div class="dot"></div>
+            </div>
+
+            <h2 class="processing-title">${unsafeHTML(t.modal.titles.processing)}</h2>
+
+            <div class="btn-dark" style="margin-bottom: 0">
+              <h4 style="margin-top: 0; margin-bottom: .1rem;">${unsafeHTML(t.modal.info.noReloadPageTitle)}</h4>
+              <span style="font-size: .8rem;">${t.modal.info.noReloadPageSubTitle}</span>
+            </div>
+
+            <div class="text-field" style="width: 100%;">
+              <label class="text-field-label">${t.modal.labels.amountSent} (${this.currentAsset?.symbol})</label>
+              <input class="text-field-input" readonly value="${this.amount} ${this.currentAsset?.symbol}" />
+            </div>
+          </div>
+        </div>
         `;
       } else {
         content = html`

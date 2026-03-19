@@ -35,4 +35,9 @@ export class App {
     console.error('Error en pago (Angular):', error);
     alert('Error: ' + error.message);
   }
+
+  onExpired(expired: ClientError) {
+    console.error('Error en pago (Angular):', expired);
+    alert('Error: ' + expired.message);
+  }
 }

@@ -28,7 +28,7 @@ export const ApoloPayButton = defineComponent({
   },
 
   // 2. Define los eventos que emite (onSuccess -> @success)
-  emits: ['success', 'error'],
+  emits: ['success', 'partialPayment', 'error', 'expired'],
 
   setup(props, { emit, slots }) {
     // 3. Crea una ref para el elemento del DOM
@@ -43,12 +43,20 @@ export const ApoloPayButton = defineComponent({
       const handleSuccess = (event: Event) => {
         emit('success', (event as CustomEvent).detail);
       };
+      const handlePartialPayment = (event: Event) => {
+        emit('partialPayment', (event as CustomEvent).detail);
+      };
       const handleError = (event: Event) => {
         emit('error', (event as CustomEvent).detail);
       };
+      const handleExpired = (event: Event) => {
+        emit('expired', (event as CustomEvent).detail);
+      };
 
       node.addEventListener('success', handleSuccess);
+      node.addEventListener('partialPayment', handlePartialPayment);
       node.addEventListener('error', handleError);
+      node.addEventListener('expired', handleExpired);
 
       // (En Vue, los listeners se limpian automáticamente cuando el componente se desmonta)
     });

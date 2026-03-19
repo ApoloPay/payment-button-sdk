@@ -2,7 +2,7 @@ import '@apolopay-sdk/ui';
 import React, { useRef, useEffect } from 'react';
 
 // 2. Importa los tipos para las props
-import type { Locale, ClientResponse, ClientError, ApoloPayClient } from '@apolopay-sdk/ui';
+import type { Locale, ClientResponse, ClientError, ApoloPayClient, PaymentResponseData, PartialPaymentResponseData } from '@apolopay-sdk/ui';
 
 // 3. Re-exporta los tipos de 'core' para el usuario final
 //    (Nota: @core es una dependencia de @ui, que es una dependencia nuestra)
@@ -19,8 +19,10 @@ type ApoloPayButtonProps = {
   disabled?: boolean;
   loading?: boolean;
   label?: string;
-  onSuccess?: (response: ClientResponse) => void;
+  onSuccess?: (response: ClientResponse<PaymentResponseData>) => void;
+  onPartialPayment?: (response: ClientResponse<PartialPaymentResponseData>) => void;
   onError?: (error: ClientError) => void;
+  onExpired?: (error: ClientError) => void;
 };
 
 // 4. El componente de React ahora es un "ADAPTADOR"
@@ -35,31 +37,48 @@ export const ApoloPayButton: React.FC<ApoloPayButtonProps> = ({
   loading,
   label,
   onSuccess,
+  onPartialPayment,
   onError,
+  onExpired,
 }) => {
   const ref = useRef<HTMLElement>(null);
 
-  // 5. Esconde la "fricción" de los eventos aquí
+  // 5. Esconde la "fricción" de los eventos y propiedades aqui
   useEffect(() => {
     const node = ref.current;
     if (!node) return;
 
-    // Escucha el evento del Web Component y lo "traduce" al prop de React
+    // 5.1 Sincronizamos las propiedades manuales (React 18 no lo hace solo para objetos)
+    if (client) {
+      (node as any).client = client;
+    }
+
+    // 5.2 Escucha el evento del Web Component y lo "traduce" al prop de React
     const handleSuccess = (event: Event) => {
       onSuccess?.((event as CustomEvent).detail);
+    };
+    const handlePartialPayment = (event: Event) => {
+      onPartialPayment?.((event as CustomEvent).detail);
     };
     const handleError = (event: Event) => {
       onError?.((event as CustomEvent).detail);
     };
+    const handleExpired = (event: Event) => {
+      onExpired?.((event as CustomEvent).detail);
+    };
 
     node.addEventListener('success', handleSuccess);
+    node.addEventListener('partialPayment', handlePartialPayment);
     node.addEventListener('error', handleError);
+    node.addEventListener('expired', handleExpired);
 
     return () => {
       node.removeEventListener('success', handleSuccess);
+      node.removeEventListener('partialPayment', handlePartialPayment);
       node.removeEventListener('error', handleError);
+      node.removeEventListener('expired', handleExpired);
     };
-  }, [onSuccess, onError]);
+  }, [client, onSuccess, onPartialPayment, onError, onExpired]);
 
   // 6. Renderiza el Web Component, pasando props de React (camelCase)
   //    a atributos HTML (kebab-case)
@@ -67,7 +86,6 @@ export const ApoloPayButton: React.FC<ApoloPayButtonProps> = ({
     'apolopay-button',
     {
       ref,
-      client,
       'process-id': processId,
       'product-title': productTitle,
       lang,

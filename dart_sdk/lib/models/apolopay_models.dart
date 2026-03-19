@@ -28,6 +28,7 @@ class QrResponseData {
   final String network;
   final String asset;
   final num amount;
+  final num amountPaid;
   final String address;
   final String qrCodeUrl;
   final int expiresAtMs;
@@ -38,6 +39,7 @@ class QrResponseData {
     required this.network,
     required this.asset,
     required this.amount,
+    required this.amountPaid,
     required this.address,
     required this.qrCodeUrl,
     required this.expiresAtMs,
@@ -49,80 +51,161 @@ class QrResponseData {
         'network': network,
         'asset': asset,
         'amount': amount,
+        'amountPaid': amountPaid,
         'address': address,
         'qrCodeUrl': qrCodeUrl,
         'expiresAtMs': expiresAtMs,
         'paymentUrl': paymentUrl,
       };
 
-  factory QrResponseData.fromJson(Map<String, dynamic> json) => QrResponseData(
-        id: json['id']?.toString() ?? '',
-        network: json['network']?.toString() ?? '',
-        asset: json['asset']?.toString() ?? '',
-        amount: json['amount'] is String
-            ? num.tryParse(json['amount']) ?? 0
-            : (json['amount'] ?? 0),
-        address: json['address']?.toString() ?? '',
-        qrCodeUrl: json['qrCodeUrl']?.toString() ?? '',
-        expiresAtMs: (() {
-          dynamic val = json['expiresAtMs'] ?? json['expiresAt'];
+  factory QrResponseData.fromJson(Map<String, dynamic> json) {
+    final expiresAt = (() {
+      final val = json['expiresAtMs'] ?? json['expiresAt'];
 
-          if (val == null) {
-            return DateTime.now().millisecondsSinceEpoch + 30 * 60 * 1000;
-          }
+      final defaultMilliseconds =
+          DateTime.now().millisecondsSinceEpoch + 10 * 60 * 1000;
 
-          int milliseconds = 0;
-          if (val is String) {
-            final parsedDate = DateTime.tryParse(val);
-            if (parsedDate != null) {
-              milliseconds = parsedDate.millisecondsSinceEpoch;
-            } else {
-              milliseconds = int.tryParse(val) ?? 0;
-            }
-          } else if (val is num) {
-            milliseconds = val.toInt();
-          }
+      if (val == null) {
+        return defaultMilliseconds;
+      }
 
-          if (milliseconds == 0) {
-            return DateTime.now().millisecondsSinceEpoch + 30 * 60 * 1000;
-          }
+      int ms = 0;
 
-          // Normalize:
-          // 1. Seconds (10 digits)? Multiply by 1000
-          if (milliseconds < 10000000000) {
-            milliseconds *= 1000;
-          }
-          // 2. Nanoseconds/Microseconds (> 10^13)? Divide by 1000
-          else if (milliseconds > 10000000000000) {
-            while (milliseconds > 2000000000000) {
-              milliseconds ~/= 1000;
-            }
-          }
+      final num? parsedNum = num.tryParse(val.toString());
 
-          final int now = DateTime.now().millisecondsSinceEpoch;
+      if (parsedNum != null) {
+        ms = parsedNum.toInt();
+      } else {
+        final date = DateTime.tryParse(val.toString());
+        if (date != null) {
+          ms = date.millisecondsSinceEpoch;
+        }
+      }
 
-          // Safety fallback: If expiration is in the past or too close (less than 1 min),
-          // assume clock skew and add 30 mins.
-          if (milliseconds - now < 60000) return now + 30 * 60 * 1000;
+      if (ms == 0) {
+        return defaultMilliseconds;
+      }
 
-          return milliseconds;
-        })(),
-        paymentUrl: json['paymentUrl']?.toString(),
-      );
+      if (ms < 10000000000) {
+        ms *= 1000;
+      } else if (ms > 10000000000000) {
+        ms = ms ~/ 1000;
+        if (ms > 10000000000000) {
+          ms = ms ~/ 1000;
+        }
+      }
+
+      return ms;
+    })();
+
+    return QrResponseData(
+      id: json['id']?.toString() ?? '',
+      network: json['network']?.toString() ?? '',
+      asset: json['asset']?.toString() ?? '',
+      amount: json['amount'] is String
+          ? num.tryParse(json['amount']) ?? 0
+          : (json['amount'] ?? 0),
+      amountPaid: json['amountPaid'] is String
+          ? num.tryParse(json['amountPaid']) ?? 0
+          : (json['amountPaid'] ?? 0),
+      address: json['address']?.toString() ?? '',
+      qrCodeUrl: json['qrCodeUrl']?.toString() ?? '',
+      expiresAtMs: expiresAt,
+      paymentUrl: json['paymentUrl']?.toString(),
+    );
+  }
+}
+
+class PaymentResponseData {
+  final String id;
+  final String network;
+  final String asset;
+  final num amount;
+  final String status;
+
+  PaymentResponseData({
+    required this.id,
+    required this.network,
+    required this.asset,
+    required this.amount,
+    required this.status,
+  });
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'network': network,
+        'asset': asset,
+        'amount': amount,
+        'status': status,
+      };
+
+  factory PaymentResponseData.fromJson(Map<String, dynamic> json) {
+    return PaymentResponseData(
+      id: json['id']?.toString() ?? '',
+      network: json['network']?.toString() ?? '',
+      asset: json['asset']?.toString() ?? '',
+      amount: json['amount'] is String
+          ? num.tryParse(json['amount']) ?? 0
+          : (json['amount'] ?? 0),
+      status: json['status']?.toString() ?? '',
+    );
+  }
+}
+
+class PartialPaymentResponseData {
+  final String id;
+  final String network;
+  final String asset;
+  final num amount;
+  final num amountPaid;
+  final String status;
+
+  PartialPaymentResponseData({
+    required this.id,
+    required this.network,
+    required this.asset,
+    required this.amount,
+    required this.amountPaid,
+    required this.status,
+  });
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'network': network,
+        'asset': asset,
+        'amount': amount,
+        'amountPaid': amountPaid,
+        'status': status,
+      };
+
+  factory PartialPaymentResponseData.fromJson(Map<String, dynamic> json) {
+    return PartialPaymentResponseData(
+      id: json['id']?.toString() ?? '',
+      network: json['network']?.toString() ?? '',
+      asset: json['asset']?.toString() ?? '',
+      amount: json['amount'] is String
+          ? num.tryParse(json['amount']) ?? 0
+          : (json['amount'] ?? 0),
+      amountPaid: json['amountPaid'] is String
+          ? num.tryParse(json['amountPaid']) ?? 0
+          : (json['amountPaid'] ?? 0),
+      status: json['status']?.toString() ?? '',
+    );
+  }
 }
 
 class ApoloPayOptions {
   final ApoloPayClient client;
   final String processId;
-  final String productTitle;
-  final Function(ClientResponse<QrResponseData>) onSuccess;
-  final Function(ClientError) onError;
+  final Function(ClientResponse<QrResponseData>)? onSuccess;
+  final Function(ClientResponse<PartialPaymentResponseData>)? onPartialPayment;
+  final Function(ClientError)? onError;
 
   ApoloPayOptions({
     required this.client,
     required this.processId,
-    this.productTitle = '',
-    required this.onSuccess,
-    required this.onError,
+    this.onSuccess,
+    this.onPartialPayment,
+    this.onError,
   });
 }
