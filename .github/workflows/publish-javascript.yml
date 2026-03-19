@@ -46,7 +46,7 @@ jobs:
 
       - name: Debug Publish with npm
         run: |
-          cd javascript-sdk/packages/astro
+          cd packages/astro
           pnpm run build
           npm publish --access public --provenance --verbose
         env:
