@@ -44,11 +44,12 @@ jobs:
       - name: Install Dependencies
         run: pnpm install
 
-      - name: Debug Publish with npm
-        run: |
-          pnpm exec turbo build --filter=@apolopay-sdk/astro
-          cd packages/astro
-          npm publish --access public --provenance --verbose
+      - name: Create Release Pull Request or Publish to npm
+        id: changesets
+        uses: changesets/action@v1.4.1
+        with:
+          publish: pnpm run release
+          cwd: javascript-sdk
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_CONFIG_PROVENANCE: true

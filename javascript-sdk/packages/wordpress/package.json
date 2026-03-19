@@ -5,7 +5,7 @@
   "description": "WooCommerce Payment Gateway for Apolo Pay",
   "repository": {
     "type": "git",
-    "url": "https://github.com/ApoloPay/payment-button-sdk"
+    "url": "git+https://github.com/ApoloPay/payment-button-sdk.git"
   },
   "main": "apolo-pay.php",
   "scripts": {
