@@ -1,5 +1,11 @@
 # @apolopay-sdk/astro
 
+## 1.2.1
+
+### Patch Changes
+
+- @apolopay-sdk/ui@1.2.1
+
 ## 1.1.0
 
 ### Patch Changes
