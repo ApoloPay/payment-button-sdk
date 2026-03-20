@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:math';
+import 'package:apolopay_sdk/utils/amount_formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:apolopay_sdk/i18n/i18n.dart';
@@ -408,7 +409,10 @@ class _ApoloPayModalState extends State<ApoloPayModal>
           _buildInfoField(
             label:
                 "${I18n.t.modal.labels.amountSent} (${_selectedAsset?.symbol})",
-            value: "${_qrData?.amount} ${_selectedAsset?.symbol}",
+            value: amountFormatter(
+              _qrData?.amount,
+              symbol: _selectedAsset?.symbol,
+            ),
           ),
           const SizedBox(height: 20),
         ],
@@ -708,13 +712,13 @@ class _ApoloPayModalState extends State<ApoloPayModal>
             child: Column(children: [
               buildBalanceRow(
                 "${I18n.t.modal.labels.paid}:",
-                "$currentAmountPaid $symbol",
+                amountFormatter(currentAmountPaid, symbol: symbol),
                 isHighlight: false,
               ),
               const SizedBox(height: 4),
               buildBalanceRow(
                 "${I18n.t.modal.labels.remainingToPay}:",
-                "$remainingAmount $symbol",
+                amountFormatter(remainingAmount, symbol: symbol),
                 isHighlight: true,
               ),
             ]),
@@ -780,7 +784,7 @@ class _ApoloPayModalState extends State<ApoloPayModal>
                   ],
                 ),
                 child: Text(
-                  '$remainingAmountForPay $symbol',
+                  amountFormatter(remainingAmountForPay, symbol: symbol),
                   style: const TextStyle(
                       color: Color(0xFFEA580C),
                       fontSize: 16,
@@ -955,9 +959,12 @@ class _ApoloPayModalState extends State<ApoloPayModal>
             _buildInfoField(
                 label: I18n.t.modal.labels.product, value: widget.productTitle),
           _buildInfoField(
-              label: I18n.t.modal.labels.amount,
-              value:
-                  '${_qrData?.amount ?? ""} ${_selectedAsset?.symbol ?? ""}'),
+            label: I18n.t.modal.labels.amount,
+            value: amountFormatter(
+              _qrData?.amount,
+              symbol: _selectedAsset?.symbol,
+            ),
+          ),
         ],
         const SizedBox(height: 32),
         if (!isSuccess)

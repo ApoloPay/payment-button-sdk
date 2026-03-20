@@ -3,20 +3,25 @@ import { css } from 'lit';
 export const qrBaseStyles = css`
   .qr-frame {
     background: white;
-    padding: 10px;
-    padding-bottom: 14px;
+    padding: 16px;
     border-radius: var(--apolo-radius);
     box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-    display: inline-block;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
     margin-bottom: 1rem;
+    max-width: 90%;
+    box-sizing: border-box;
   }
   
   .qr-badge {
     color: var(--apolo-accent);
     font-weight: 700;
-    font-size: 1.2rem;
-    display: inline-block;
-    margin-top: 10px;
+    font-size: 1.1rem;
+    margin-top: 12px;
+    text-align: center;
+    word-break: break-all;
+    max-width: 100%;
   }
 
   .qr-wrapper {

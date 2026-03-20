@@ -12,6 +12,7 @@ import { handleImageError } from '../utils/image_error';
 import { spinnerStyles } from '../styles/spinner-styles';
 import './payment-timer.js';
 import type { ModalStatus } from '../types/status.type';
+import { amountFormatter } from '../utils/amount-formatter';
 
 @customElement('payment-modal')
 export class PaymentModal extends LitElement {
@@ -506,11 +507,11 @@ export class PaymentModal extends LitElement {
           <div class="balance-card">
             <div class="balance-row">
               <span class="balance-label">${I18n.t.modal.labels.paid}:</span>
-              <span class="balance-value">${this.amountPaid} ${symbol}</span>
+              <span class="balance-value">${amountFormatter(this.amountPaid, { symbol })}</span>
             </div>
             <div class="balance-row">
               <span class="balance-label">${I18n.t.modal.labels.remainingToPay}:</span>
-              <span class="balance-value highlight">${this.amount} ${symbol}</span>
+              <span class="balance-value highlight">${amountFormatter(this.amount, { symbol })}</span>
             </div>
           </div>
         ` : ''}
@@ -520,7 +521,7 @@ export class PaymentModal extends LitElement {
             <img src="${this.qrCodeUrl}" class="qr-code-img" alt="QR Apolo Pay" />
             <img src="${logoApolo}" class="qr-overlay-icon" style="padding: 4px;" />
           </div>
-          <span class="qr-badge">${remainingForPay} ${symbol}</span>
+          <span class="qr-badge">${amountFormatter(remainingForPay, { symbol })}</span>
         </div>
 
         <div class="btn-dark">
@@ -549,11 +550,11 @@ export class PaymentModal extends LitElement {
         <div class="balance-card">
           <div class="balance-row">
             <span class="balance-label">${I18n.t.modal.labels.paid}:</span>
-            <span class="balance-value">${this.amountPaid} ${symbol}</span>
+            <span class="balance-value">${amountFormatter(this.amountPaid, { symbol })}</span>
           </div>
           <div class="balance-row">
             <span class="balance-label">${I18n.t.modal.labels.remainingToPay}:</span>
-            <span class="balance-value highlight">${this.amount} ${symbol}</span>
+            <span class="balance-value highlight">${amountFormatter(this.amount, { symbol })}</span>
           </div>
         </div>
       ` : ''}
@@ -567,7 +568,7 @@ export class PaymentModal extends LitElement {
         : ''
       }
         </div>
-        <span class="qr-badge">${remainingForPay} ${this.currentAsset?.symbol}</span>
+        <span class="qr-badge">${amountFormatter(remainingForPay, { symbol })}</span>
       </div>
 
       <div class="btn-dark">
@@ -699,7 +700,7 @@ export class PaymentModal extends LitElement {
 
               <div class="text-field">
                 <label class="text-field-label">${t.modal.labels.amount}</label>
-                <input class="text-field-input" readonly value="${this.amount} ${this.currentAsset?.symbol || ''}" />
+                <input class="text-field-input" readonly value="${amountFormatter(this.amount, { symbol: this.currentAsset?.symbol || '' })}" />
               </div>
             </div>
           </div>
@@ -733,7 +734,7 @@ export class PaymentModal extends LitElement {
 
             <div class="text-field" style="width: 100%;">
               <label class="text-field-label">${t.modal.labels.amountSent} (${this.currentAsset?.symbol})</label>
-              <input class="text-field-input" readonly value="${this.amount} ${this.currentAsset?.symbol}" />
+              <input class="text-field-input" readonly value="${amountFormatter(this.amount, { symbol: this.currentAsset?.symbol || '' })}" />
             </div>
           </div>
         </div>
