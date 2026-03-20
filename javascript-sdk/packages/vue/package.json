@@ -1,6 +1,6 @@
 {
   "name": "@apolopay-sdk/vue",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Vue Payment Button Adapter",
   "repository": {
     "type": "git",

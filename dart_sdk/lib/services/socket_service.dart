@@ -60,9 +60,8 @@ class SocketService {
 
     _socket = io.io(
       socketURL,
-      io.OptionBuilder()
-          .setTransports(['websocket', 'polling']).setExtraHeaders(
-              {'x-public-key': options.client.getPublicKey()}).build(),
+      io.OptionBuilder().setTransports(['polling']).setExtraHeaders(
+          {'x-public-key': options.client.getPublicKey()}).build(),
     );
 
     _socket?.onConnect((_) {

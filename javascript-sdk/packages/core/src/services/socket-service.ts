@@ -32,7 +32,7 @@ export class SocketService {
       extraHeaders: {
         "x-public-key": this.client.getPublicKey()
       },
-      transports: ['websocket', 'polling']
+      transports: ['polling']
     });
 
     const { processId } = session;
@@ -43,7 +43,7 @@ export class SocketService {
     this.socket.on('process:message', (response: _SocketResponse) => this.handleWebSocketMessage(response));
 
     this.socket.on('connect_error', (error: Error) => {
-      console.error('Error en conexión Socket.io:', error);
+      console.error('Error en conexión Socket.io:', error); 
       this.sessionOptions?.onError?.({ code: ClientCode.connect_error, message: I18n.t.errors.connectError, error });
       this.disconnect();
     });
