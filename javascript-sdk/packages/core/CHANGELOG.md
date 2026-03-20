@@ -1,5 +1,11 @@
 # @apolopay-sdk/core
 
+## 1.2.1
+
+### Patch Changes
+
+- **Reliability**: Enhanced WebSocket connection stability and error logging for transaction status monitoring.
+
 ## 1.2.0
 
 ### Patch Changes

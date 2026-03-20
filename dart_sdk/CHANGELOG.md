@@ -11,3 +11,7 @@
 *   **Web Component Integration**: Internal improvements to the custom element bridge for better compatibility with the latest `<apolopay-button>`.
 *   **Reliability**: Enhanced WebSocket connection stability and error logging for transaction status monitoring.
 *   **Styling**: Updated default theme and styles to match the latest design system of the checkout modal.
+
+## 1.1.1
+
+*   **Reliability**: Enhanced WebSocket connection stability and error logging for transaction status monitoring.
