@@ -1,12 +1,19 @@
+import type { Locale } from "@apolopay-sdk/core";
+
 export function amountFormatter(
   amount?: number | string | null,
   options: {
     decimals?: number,
     symbol?: string,
-    locale?: string
+    lang?: Locale
   } = {}
 ): string {
-  const { decimals = 8, symbol, locale = 'es-ES' } = options;
+  const { decimals = 8, symbol, lang = 'es' } = options;
+  const locale = {
+    'es': 'es-ES',
+    'en': 'en-US',
+    'pt': 'pt-BR'
+  }[lang];
 
   if (amount === undefined || amount === null || amount === "") {
     amount = 0;

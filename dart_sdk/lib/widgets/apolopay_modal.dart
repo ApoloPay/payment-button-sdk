@@ -18,12 +18,14 @@ enum ModalStep { selectAsset, selectNetwork, showQr, processing, result }
 
 class ApoloPayModal extends StatefulWidget {
   final ApoloPayOptions options;
+  final I18nLocale? locale;
   final String productTitle;
   final Function(ClientError)? onExpired;
 
   const ApoloPayModal({
     super.key,
     required this.options,
+    this.locale,
     this.productTitle = '',
     this.onExpired,
   });
@@ -31,6 +33,7 @@ class ApoloPayModal extends StatefulWidget {
   static Future<void> show(
     BuildContext context,
     ApoloPayOptions options, {
+    I18nLocale? locale,
     String productTitle = '',
     Function(ClientError)? onExpired,
   }) {
@@ -38,6 +41,7 @@ class ApoloPayModal extends StatefulWidget {
 
     final child = ApoloPayModal(
       options: options,
+      locale: locale,
       productTitle: productTitle,
       onExpired: onExpired,
     );
@@ -412,6 +416,7 @@ class _ApoloPayModalState extends State<ApoloPayModal>
             value: amountFormatter(
               _qrData?.amount,
               symbol: _selectedAsset?.symbol,
+              locale: widget.locale,
             ),
           ),
           const SizedBox(height: 20),
@@ -712,13 +717,21 @@ class _ApoloPayModalState extends State<ApoloPayModal>
             child: Column(children: [
               buildBalanceRow(
                 "${I18n.t.modal.labels.paid}:",
-                amountFormatter(currentAmountPaid, symbol: symbol),
+                amountFormatter(
+                  currentAmountPaid,
+                  symbol: symbol,
+                  locale: widget.locale,
+                ),
                 isHighlight: false,
               ),
               const SizedBox(height: 4),
               buildBalanceRow(
                 "${I18n.t.modal.labels.remainingToPay}:",
-                amountFormatter(remainingAmount, symbol: symbol),
+                amountFormatter(
+                  remainingAmount,
+                  symbol: symbol,
+                  locale: widget.locale,
+                ),
                 isHighlight: true,
               ),
             ]),
@@ -784,7 +797,11 @@ class _ApoloPayModalState extends State<ApoloPayModal>
                   ],
                 ),
                 child: Text(
-                  amountFormatter(remainingAmountForPay, symbol: symbol),
+                  amountFormatter(
+                    remainingAmountForPay,
+                    symbol: symbol,
+                    locale: widget.locale,
+                  ),
                   style: const TextStyle(
                       color: Color(0xFFEA580C),
                       fontSize: 16,
@@ -963,6 +980,7 @@ class _ApoloPayModalState extends State<ApoloPayModal>
             value: amountFormatter(
               _qrData?.amount,
               symbol: _selectedAsset?.symbol,
+              locale: widget.locale,
             ),
           ),
         ],

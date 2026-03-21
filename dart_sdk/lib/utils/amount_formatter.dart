@@ -1,11 +1,17 @@
+import 'package:apolopay_sdk/apolopay_sdk.dart';
 import 'package:intl/intl.dart';
 
 String amountFormatter(
   dynamic amount, {
   String? symbol,
   int decimals = 8,
-  String locale = 'es_ES',
+  I18nLocale? locale,
 }) {
+  final language = {
+    I18nLocale.es: 'es_ES',
+    I18nLocale.en: 'en_US',
+  }[locale ?? I18nLocale.es];
+
   if (amount == null || amount == "") {
     amount = 0;
   }
@@ -38,7 +44,7 @@ String amountFormatter(
 
   final finalAmount = double.parse("$sign$truncatedStr");
 
-  final formatter = NumberFormat.decimalPattern(locale);
+  final formatter = NumberFormat.decimalPattern(language);
   formatter.maximumFractionDigits = decimals;
   formatter.minimumFractionDigits = 0;
 

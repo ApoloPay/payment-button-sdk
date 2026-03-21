@@ -100,6 +100,7 @@ class _ApoloPayButtonState extends State<ApoloPayButton> {
         onPartialPayment: (res) => widget.onPartialPayment?.call(context, res),
         onError: (err) => widget.onError?.call(context, err),
       ),
+      locale: widget.locale,
       productTitle: widget.productTitle ?? '',
       onExpired: (err) => widget.onExpired?.call(context, err),
     );
