@@ -177,6 +177,8 @@ export class ApoloPayButton extends LitElement {
 
     if (this.loading) return;
 
+    document.body.style.overflow = 'hidden';
+
     if (this.alreadyShownInfoModal) return this.isOpen = true;
 
     const response = await InfoModal.show({
@@ -193,6 +195,8 @@ export class ApoloPayButton extends LitElement {
   // Triggered by <payment-modal> requesting to close (X, backdrop, Escape)
   private handleCloseRequest() {
     this.isOpen = false;
+    document.body.style.overflow = 'auto';
+
     // Disconnect WebSocket if the user cancels before payment completion
     if (this.currentStep === ModalStep.SHOW_QR && this.status !== 'success' && this.status !== 'error') {
       this._service?.disconnectWebSocket();
