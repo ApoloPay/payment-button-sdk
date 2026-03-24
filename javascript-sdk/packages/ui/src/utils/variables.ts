@@ -1,0 +1,1 @@
+export const termsURL = "https://www.apolopay.app/term-conditions/TerminosApoloPay"

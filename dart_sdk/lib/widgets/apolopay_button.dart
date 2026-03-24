@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'package:apolopay_sdk/utils/build_rich_text.dart';
+import 'package:apolopay_sdk/widgets/info_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:apolopay_sdk/assets/logo_apolo.dart';
 import 'package:apolopay_sdk/i18n/i18n.dart';
@@ -21,8 +23,8 @@ class ApoloPayButton extends StatefulWidget {
   )? onPartialPayment;
   final void Function(BuildContext context, ClientError error)? onError;
   final void Function(BuildContext context, ClientError error)? onExpired;
-  final Widget Function(BuildContext context, void Function() handlePress)?
-      builder;
+  final Widget Function(
+      BuildContext context, Future<void> Function() handlePress)? builder;
   final String label;
   final bool loading;
   final bool disabled;
@@ -83,7 +85,7 @@ class _ApoloPayButtonState extends State<ApoloPayButton> {
     }
   }
 
-  void handlePress(BuildContext context) {
+  Future<void> handlePress(BuildContext context) async {
     if (_hasConfigError ||
         widget.processId == null ||
         widget.processId!.isEmpty ||
@@ -91,7 +93,20 @@ class _ApoloPayButtonState extends State<ApoloPayButton> {
       return;
     }
 
-    ApoloPayModal.show(
+    final response = await InfoModal.show(
+      context,
+      title: I18n.t.modal.info.disclaimerTitle,
+      subtitle: I18n.t.modal.info.disclaimerSubtitle,
+      content: (context, style) {
+        return buildRichText(
+          I18n.t.modal.info.disclaimerBody,
+          baseStyle: style,
+        );
+      },
+    );
+
+    if (response != true || !context.mounted) return;
+    await ApoloPayModal.show(
       context,
       ApoloPayOptions(
         client: widget.client!,

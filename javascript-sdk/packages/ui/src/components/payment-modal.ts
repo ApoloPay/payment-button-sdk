@@ -155,8 +155,8 @@ export class PaymentModal extends LitElement {
   }
 
   // Emit event when a network is selected
-  private selectNetwork(networkId: string) {
-    this.dispatchEvent(new CustomEvent('networkSelect', { detail: { networkId } }));
+  private selectNetwork(network: Network) {
+    this.dispatchEvent(new CustomEvent('networkSelect', { detail: { network } }));
   }
 
   // Emit event to request changing step (for "Back" buttons)
@@ -304,47 +304,6 @@ export class PaymentModal extends LitElement {
         margin-bottom: 1rem;
         display: block;
       }
-
-      /* Botón Naranja Grande */
-      .btn-primary {
-        background-color: var(--apolo-accent); /* Naranja Apolo */
-        color: white;
-        padding: 0.5rem 1.5rem;
-        border-radius: var(--apolo-radius-lg); /* Pill shape */
-        border: none;
-        font-weight: 400;
-        font-size: .9rem;
-        cursor: pointer;
-        box-shadow: 0 4px 10px rgba(234, 88, 12, 0.3);
-        transition: transform 0.1s, box-shadow 0.1s;
-      }
-      .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 15px rgba(234, 88, 12, 0.4); }
-      
-      /* Botón Azul Oscuro (Apolo Pay QR) */
-      .btn-dark {
-        background-color: var(--apolo-primary-darkest);
-        color: white;
-        width: 100%;
-        padding: 1rem;
-        border-radius: var(--apolo-radius);
-        border: none;
-        font-weight: 600;
-        cursor: pointer;
-        margin-block: 0.25rem 1.25rem;
-      }
-
-      .warning-text {
-        font-size: 0.75rem;
-        text-align: left;
-        margin-top: 1.5rem;
-        line-height: 1.5;
-      }
-      .warning-text strong { color: var(--apolo-accent); }
-
-      .warning-text ul {
-        padding-left: 1.5rem;
-      }
-
 
       /* --- PANTALLA DE RESULTADO --- */
       .result-container {
@@ -651,7 +610,7 @@ export class PaymentModal extends LitElement {
 
         <div class="selection-list">
           ${this.currentAsset?.networks.map((network: Network) => html`
-            <div class="selection-card" @click=${() => this.selectNetwork(network.id)}>
+            <div class="selection-card" @click=${() => this.selectNetwork(network)}>
               <img src="${network.network === 'apolopay' ? logoApolo : network.image}" class="coin-icon" @error=${handleImageError} />
               <div class="card-text">
                 <span class="card-title">${network.name}</span>
@@ -711,7 +670,7 @@ export class PaymentModal extends LitElement {
             <div class="error-icon">❌</div>
             <h2 class="result-title">${t.modal.titles.error}</h2>
             <p class="result-desc">${this.error?.message || t.errors.generic}</p>
-            <button class="btn-primary" @click=${this.requestClose}>${t.modal.actions.close}</button>
+            <button class="btn-primary" style="width: 100%;" @click=${this.requestClose}>${t.modal.actions.close}</button>
           </div>
         `;
       } else if (this.status === 'processing') {
@@ -745,7 +704,7 @@ export class PaymentModal extends LitElement {
             <div class="error-icon">⏳</div>
             <h2 class="result-title">${t.modal.titles.idle}</h2>
             <p class="result-desc">${t.modal.subtitles.idle}</p>
-            <button class="btn-primary" @click=${this.requestClose}>${t.modal.actions.close}</button>
+            <button class="btn-primary" style="width: 100%;" @click=${this.requestClose}>${t.modal.actions.close}</button>
           </div>
         `;
       }

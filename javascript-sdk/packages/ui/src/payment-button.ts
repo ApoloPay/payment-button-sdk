@@ -12,12 +12,15 @@ import {
   ClientCode,
   type PartialPaymentResponseData,
   type PaymentResponseData,
+  Network,
 } from '@apolopay-sdk/core';
 import type { ModalStatus } from './types/status.type.js';
 
 // Import child components
 import './components/trigger-button.js';
 import './components/payment-modal.js';
+import { InfoModal } from './components/info-modal.js';
+import { termsURL } from './utils/variables.js';
 
 
 @customElement('apolopay-button')
@@ -163,7 +166,7 @@ export class ApoloPayButton extends LitElement {
 
   // --- Event Handlers (Triggered by Child Components) ---
   // Triggered by <trigger-button> when clicked
-  private handleOpen() {
+  private async handleOpen() {
     this.resetState();
 
     if (this.hasConfigError || !this.client || !this.processId) {
@@ -173,7 +176,15 @@ export class ApoloPayButton extends LitElement {
 
     if (this.loading) return;
 
-    this.isOpen = true;
+    const response = await InfoModal.show({
+      title: I18n.t.modal.info.disclaimerTitle,
+      subtitle: I18n.t.modal.info.disclaimerSubtitle,
+      content: I18n.t.modal.info.disclaimerBody
+    })
+
+    if (response !== true) return;
+
+    this.isOpen = true
   }
 
   // Triggered by <payment-modal> requesting to close (X, backdrop, Escape)
@@ -222,10 +233,18 @@ export class ApoloPayButton extends LitElement {
   }
 
   // Triggered by <payment-modal> when a network is selected
-  private async handleInitiatePayment(event: CustomEvent<{ networkId: string }>) {
+  private async handleInitiatePayment(event: CustomEvent<{ network: Network }>) {
     if (!this.client || !this.processId) return;
-    this.selectedNetwork = event.detail.networkId;
+    this.selectedNetwork = event.detail.network.id;
     if (!this.selectedAsset || !this.selectedNetwork) return;
+
+    if (event.detail.network.network !== 'apolopay') {
+      const response = await InfoModal.show({
+        title: I18n.t.modal.info.disclaimerTitle,
+        content: I18n.t.modal.info.disclaimerConfirmation.replace('$termsURL', termsURL)
+      })
+      if (response !== true) return;
+    }
 
     const detail: QrRequestDetails = {
       assetId: this.selectedAsset,

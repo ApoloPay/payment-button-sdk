@@ -1,6 +1,6 @@
 import 'package:apolopay_sdk/apolopay_sdk.dart';
 import 'package:apolopay_sdk/utils/variables.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 import '../models/client_response.dart';
 
@@ -60,8 +60,11 @@ class SocketService {
 
     _socket = io.io(
       socketURL,
-      io.OptionBuilder().setTransports(['polling']).setExtraHeaders(
-          {'x-public-key': options.client.getPublicKey()}).build(),
+      io.OptionBuilder()
+          .setTransports([kIsWeb ? 'polling' : 'websocket'])
+          .disableAutoConnect()
+          .setExtraHeaders({'x-public-key': options.client.getPublicKey()})
+          .build(),
     );
 
     _socket?.onConnect((_) {
@@ -97,15 +100,16 @@ class SocketService {
       options.onError?.call(ClientError.fromError(
         error,
         code: ClientCode.socketConnectionError,
-        message: I18n.t.errors.socketConnectionError,
+        message: 'Error de conexión con el servidor en tiempo real.',
       ));
       disconnect();
     });
 
     _socket?.onDisconnect((reason) {
       debugPrint('Socket.io Desconectado: $reason');
-      _socket = null;
     });
+
+    _socket?.connect();
   }
 
   void disconnect() {

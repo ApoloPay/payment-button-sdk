@@ -25,6 +25,7 @@ export interface Dictionary {
       copy: string;
       copied: string;
       payFromDevice: string;
+      understood: string;
     };
     labels: {
       network: string;
@@ -41,6 +42,10 @@ export interface Dictionary {
       noReloadPageTitle: string;
       noReloadPageSubTitle: string;
       selectNetworkLater: string;
+      disclaimerTitle: string;
+      disclaimerSubtitle: string;
+      disclaimerBody: string;
+      disclaimerConfirmation: string;
     };
     warnings: {
       networkMatch: string;
