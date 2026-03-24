@@ -81,6 +81,7 @@ export class ApoloPayButton extends LitElement {
   @state() private amountPaid?: number | undefined = undefined;
   @state() private hasConfigError = false; // Invalid publicKey or missing client
   @state() private email: string | null = null; // TODO set email from socket response
+  @state() private alreadyShownInfoModal: boolean = false;
   @state() private _service: PaymentService | null = null; // Internal business logic manager
 
   // --- API Client Instance ---
@@ -176,6 +177,8 @@ export class ApoloPayButton extends LitElement {
 
     if (this.loading) return;
 
+    if (this.alreadyShownInfoModal) return this.isOpen = true;
+
     const response = await InfoModal.show({
       title: I18n.t.modal.info.disclaimerTitle,
       subtitle: I18n.t.modal.info.disclaimerSubtitle,
@@ -183,8 +186,8 @@ export class ApoloPayButton extends LitElement {
     })
 
     if (response !== true) return;
-
     this.isOpen = true
+    this.alreadyShownInfoModal = true;
   }
 
   // Triggered by <payment-modal> requesting to close (X, backdrop, Escape)

@@ -52,6 +52,7 @@ class ApoloPayButton extends StatefulWidget {
 
 class _ApoloPayButtonState extends State<ApoloPayButton> {
   bool _hasConfigError = false;
+  bool _alreadyShownInfoModal = false;
 
   @override
   void initState() {
@@ -93,19 +94,22 @@ class _ApoloPayButtonState extends State<ApoloPayButton> {
       return;
     }
 
-    final response = await InfoModal.show(
-      context,
-      title: I18n.t.modal.info.disclaimerTitle,
-      subtitle: I18n.t.modal.info.disclaimerSubtitle,
-      content: (context, style) {
-        return buildRichText(
-          I18n.t.modal.info.disclaimerBody,
-          baseStyle: style,
-        );
-      },
-    );
+    if (!_alreadyShownInfoModal) {
+      final response = await InfoModal.show(
+        context,
+        title: I18n.t.modal.info.disclaimerTitle,
+        subtitle: I18n.t.modal.info.disclaimerSubtitle,
+        content: (context, style) {
+          return buildRichText(
+            I18n.t.modal.info.disclaimerBody,
+            baseStyle: style,
+          );
+        },
+      );
+      if (response != true || !context.mounted) return;
+      _alreadyShownInfoModal = true;
+    }
 
-    if (response != true || !context.mounted) return;
     await ApoloPayModal.show(
       context,
       ApoloPayOptions(
