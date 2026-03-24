@@ -78,15 +78,15 @@ class WC_Gateway_Apolo_Pay extends WC_Payment_Gateway {
         $plugin_url = plugin_dir_url( dirname( __FILE__, 2 ) . '/apolo-pay.php' );
 
         wp_enqueue_script( 'apolopay-sdk', $plugin_url . 'assets/apolopay-sdk.js', array(), '1.1.0', true );
-        wp_register_script( 'apolopay-checkout', $plugin_url . 'assets/apolopay-checkout.js', array( 'jquery', 'apolopay-sdk' ), '1.0.0', true );
+        wp_register_script( 'checkout', $plugin_url . 'assets/checkout.js', array( 'jquery', 'apolopay-sdk' ), '1.0.0', true );
 
-        wp_localize_script( 'apolopay-checkout', 'apolo_params', array(
+        wp_localize_script( 'checkout', 'apolo_params', array(
             'ajax_url'   => admin_url( 'admin-ajax.php' ),
             'nonce'      => wp_create_nonce( 'apolo_pay_nonce' ),
             'public_key' => $this->public_key,
         ));
 
-        wp_enqueue_script( 'apolopay-checkout' );
+        wp_enqueue_script( 'checkout' );
     }
 
     public function payment_fields() {

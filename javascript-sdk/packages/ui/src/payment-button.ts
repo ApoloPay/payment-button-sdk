@@ -217,8 +217,6 @@ export class ApoloPayButton extends LitElement {
     }
 
     this.closeTimeoutId = setTimeout(() => {
-      this.resetState();
-      
       // Dispatch final event if it exists
       if (this.successResult) {
         switch (this.successResult.code) {
@@ -244,6 +242,8 @@ export class ApoloPayButton extends LitElement {
           composed: true
         }));
       }
+
+      this.resetState();
     }, 300);
   }
 
@@ -307,7 +307,6 @@ export class ApoloPayButton extends LitElement {
         onError: (error: ClientError) => {
           if (!this.isOpen) return;
           this.status = 'error';
-          this.error = error;
           this.currentStep = ModalStep.RESULT;
           this.error = error;
         }
