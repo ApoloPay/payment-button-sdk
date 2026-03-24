@@ -9,8 +9,7 @@ if ( window.wc && window.wc.wcBlocksRegistry && window.wp && window.wp.element )
 
     const BlockContent = ( props ) => {
         const { eventRegistration } = props;
-        
-        // Usamos onPaymentSetup en lugar del obsoleto onPaymentProcessing
+
         const { onPaymentSetup } = eventRegistration; 
         const apoloPayRef = useRef( null );
 
@@ -58,10 +57,8 @@ if ( window.wc && window.wc.wcBlocksRegistry && window.wp && window.wp.element )
                                 resolve({ type: 'error', message: 'El tiempo para pagar ha expirado.' });
                             };
 
-                            // ✅ ESCUCHAMOS EL NUEVO EVENTO 'dismissed' DE TU COMPONENTE
                             const handleDismissed = () => {
                                 cleanupEvents();
-                                // Devolver un error detiene el spinner de WooCommerce y le permite al usuario volver a intentar
                                 resolve({ type: 'error', message: 'Cancelaste el proceso de pago. Puedes intentar de nuevo.' });
                             };
 
@@ -108,10 +105,9 @@ if ( window.wc && window.wc.wcBlocksRegistry && window.wp && window.wp.element )
             'div',
             { className: 'apolo-pay-block-content' },
             createElement( 'p', null, settings.description || 'Paga de forma segura con Apolo Pay.' ),
-            createElement( 'apolopay-button', { 
-                ref: apoloPayRef, 
-                // Mantenemos el truco de CSS para que el navegador lo dibuje sin ocupar espacio
-                style: { position: 'absolute', width: '0', height: '0', overflow: 'hidden' } 
+            createElement( 'apolopay-button', {
+                ref: apoloPayRef,
+                style: { position: 'absolute', width: '0', height: '0', overflow: 'hidden' }
             }, createElement('span', { slot: '' }) )
         );
     };

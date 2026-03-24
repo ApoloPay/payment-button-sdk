@@ -2,24 +2,36 @@
 jQuery(function ($) {
     'use strict';
 
-    const checkout_form = $('form.checkout');
+    const formSelector = 'form.checkout';
     const componentSelector = 'apolopay-button';
 
     const blockUI = () => {
-        checkout_form.addClass('processing').block({
+        $(formSelector).addClass('processing').block({
             message: null,
             overlayCSS: { background: '#fff', opacity: 0.6 }
         });
     };
 
     const unblockUI = () => {
-        checkout_form.removeClass('processing').unblock();
+        $(formSelector).removeClass('processing').unblock();
     };
 
-    function iniciarFlujoApoloPay() {
-        if (!$('#payment_method_apolo_pay').is(':checked')) return true; 
-        if ($('#apolo_transaction_id').val() !== '') return true; 
+    document.addEventListener('submit', function(e) {
+        const form = e.target;
 
+        if (form && form.matches && form.matches(formSelector)) {
+            const isApoloPay = document.querySelector('#payment_method_apolo_pay')?.checked;
+            const txIdInput = document.querySelector('#apolo_transaction_id');
+
+            if (isApoloPay && txIdInput && txIdInput.value === '') {
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                iniciarFlujoApoloPay();
+            }
+        }
+    }, true); 
+
+    function iniciarFlujoApoloPay() {
         blockUI();
 
         $.ajax({
@@ -49,21 +61,27 @@ jQuery(function ($) {
 
                         const handleSuccess = (e) => {
                             cleanupEvents();
+                            
                             const txId = e.detail?.result?.id || e.detail?.id;
-                            $('#apolo_transaction_id').val(txId);
-                            checkout_form[0].submit(); 
+                            document.querySelector('#apolo_transaction_id').value = txId;
+
+                            if (!document.querySelector('input[name="woocommerce_checkout_place_order"]')) {
+                                $(formSelector).append('<input type="hidden" name="woocommerce_checkout_place_order" value="1" />');
+                            }
+
+                            HTMLFormElement.prototype.submit.call(document.querySelector(formSelector));
                         };
 
                         const handleError = (e) => {
                             cleanupEvents();
                             unblockUI();
-                            alert('Error en el pago: ' + (e.detail?.message || 'Por favor, intenta de nuevo.'));
+                            alert('Error en el pago: ' + (e.detail?.message || 'Intenta de nuevo.'));
                         };
 
                         const handleExpired = () => {
                             cleanupEvents();
                             unblockUI();
-                            alert('El tiempo para realizar el pago ha expirado.');
+                            alert('El tiempo para pagar ha expirado.');
                         };
 
                         const handleDismissed = () => {
@@ -88,40 +106,17 @@ jQuery(function ($) {
 
                     } else {
                         unblockUI();
-                        alert('Error interno: No se pudo cargar la interfaz de pago.');
+                        alert('Error interno: No se pudo cargar la pasarela.');
                     }
                 } else {
                     unblockUI();
-                    alert('Error del servidor: No se pudo generar la intención de pago.');
+                    alert('Error al conectar con Apolo Pay.');
                 }
             },
             error: function () {
                 unblockUI();
-                alert('Error de conexión. Por favor, revisa tu internet e intenta de nuevo.');
+                alert('Error de conexión con el servidor.');
             }
         });
-
-        return false; 
     }
-
-    // Intercepción 1: Evento oficial de WooCommerce
-    checkout_form.on('checkout_place_order', function () {
-        return iniciarFlujoApoloPay();
-    });
-
-    // Intercepción 2: Submit nativo del formulario HTML
-    checkout_form.on('submit', function (e) {
-        if ($('#payment_method_apolo_pay').is(':checked') && $('#apolo_transaction_id').val() === '') {
-            e.preventDefault(); 
-            iniciarFlujoApoloPay();
-            return false;
-        }
-    });
-
-    // Intercepción 3: Clic directo en el botón (prevención pasiva)
-    $(document.body).on('click', '#place_order', function(e) {
-        // Permitimos que el clic fluya para que el HTML5 valide campos obligatorios,
-        // confiaremos en la Intercepción 2 para frenar el envío real.
-    });
-
 });
