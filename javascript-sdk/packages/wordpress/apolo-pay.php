@@ -40,6 +40,22 @@ function init_apolo_pay_gateway_loader() {
 }
 
 /**
+ * Registrar la pasarela en WooCommerce Blocks
+ */
+add_action( 'woocommerce_blocks_payment_method_type_registration', 'register_apolo_pay_blocks_integration' );
+
+function register_apolo_pay_blocks_integration( $payment_method_registry ) {
+    // Si la clase base de Blocks no existe, salimos (por compatibilidad con WC antiguos)
+    if ( ! class_exists( '\Automattic\WooCommerce\Blocks\Payments\Integrations\AbstractPaymentMethodType' ) ) {
+        return;
+    }
+
+    require_once plugin_dir_path( __FILE__ ) . 'includes/class-wc-apolo-pay-blocks-integration.php';
+    
+    $payment_method_registry->register( new WC_Apolo_Pay_Blocks_Integration() );
+}
+
+/**
  * Agrega la clase a la lista de métodos de pago de WooCommerce
  */
 function add_apolo_pay_to_woocommerce( $gateways ) {
@@ -58,9 +74,3 @@ function apolo_pay_action_links( $links ) {
     );
     return array_merge( $settings_link, $links );
 }
-
-add_action( 'wp_enqueue_scripts', function() {
-    if ( is_checkout() ) {
-        wp_enqueue_script( 'apolopay-sdk', plugin_dir_url( __FILE__ ) . 'assets/apolopay-sdk.js', array(), '1.1.0', true );
-    }
-});

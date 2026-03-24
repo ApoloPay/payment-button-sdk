@@ -23,6 +23,7 @@ class ApoloPayButton extends StatefulWidget {
   )? onPartialPayment;
   final void Function(BuildContext context, ClientError error)? onError;
   final void Function(BuildContext context, ClientError error)? onExpired;
+  final VoidCallback? onDismissed;
   final Widget Function(
       BuildContext context, Future<void> Function() handlePress)? builder;
   final String label;
@@ -39,6 +40,7 @@ class ApoloPayButton extends StatefulWidget {
     this.onPartialPayment,
     this.onError,
     this.onExpired,
+    this.onDismissed,
     this.builder,
     this.label = 'Apolo Pay',
     this.loading = false,
@@ -106,10 +108,11 @@ class _ApoloPayButtonState extends State<ApoloPayButton> {
           );
         },
       );
-      if (response != true || !context.mounted) return;
+      if (response != true) return widget.onDismissed?.call();
       _alreadyShownInfoModal = true;
     }
 
+    if (!context.mounted) return;
     await ApoloPayModal.show(
       context,
       ApoloPayOptions(
@@ -122,6 +125,7 @@ class _ApoloPayButtonState extends State<ApoloPayButton> {
       locale: widget.locale,
       productTitle: widget.productTitle ?? '',
       onExpired: (err) => widget.onExpired?.call(context, err),
+      onDismissed: widget.onDismissed,
     );
   }
 

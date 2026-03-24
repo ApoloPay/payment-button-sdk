@@ -187,10 +187,19 @@ export class ApoloPayButton extends LitElement {
       content: I18n.t.modal.info.disclaimerBody
     })
 
-    if (response !== true) return;
+    if (response !== true) {
+      document.body.style.overflow = 'auto';
+      return this.dispatchEvent(new CustomEvent('dismissed', {
+        bubbles: true,
+        composed: true
+      }));
+    }
+
     this.isOpen = true
     this.alreadyShownInfoModal = true;
   }
+
+  private closeTimeoutId?: ReturnType<typeof setTimeout>;
 
   // Triggered by <payment-modal> requesting to close (X, backdrop, Escape)
   private handleCloseRequest() {
@@ -202,30 +211,40 @@ export class ApoloPayButton extends LitElement {
       this._service?.disconnectWebSocket();
     }
 
-    setTimeout(() => this.resetState(), 300);
-
-    // Dispatch final event if it exists
-    if (this.successResult) {
-      switch (this.successResult.code) {
-        case ClientCode.payment_partial:
-          this.dispatchEvent(new CustomEvent('partialPayment', { detail: this.successResult }));
-          break;
-
-        default:
-          this.dispatchEvent(new CustomEvent('success', { detail: this.successResult }));
-          break;
-      }
-    } else if (this.error) {
-      switch (this.error.code) {
-        case ClientCode.payment_timeout:
-          this.dispatchEvent(new CustomEvent('expired', { detail: this.error }));
-          break;
-
-        default:
-          this.dispatchEvent(new CustomEvent('error', { detail: this.error }));
-          break;
-      }
+    // 🛡️ Limpiamos cualquier timeout anterior
+    if (this.closeTimeoutId) {
+      clearTimeout(this.closeTimeoutId);
     }
+
+    this.closeTimeoutId = setTimeout(() => {
+      this.resetState();
+      
+      // Dispatch final event if it exists
+      if (this.successResult) {
+        switch (this.successResult.code) {
+          case ClientCode.payment_partial:
+            this.dispatchEvent(new CustomEvent('partialPayment', { detail: this.successResult }));
+            break;
+          default:
+            this.dispatchEvent(new CustomEvent('success', { detail: this.successResult }));
+            break;
+        }
+      } else if (this.error) {
+        switch (this.error.code) {
+          case ClientCode.payment_timeout:
+            this.dispatchEvent(new CustomEvent('expired', { detail: this.error }));
+            break;
+          default:
+            this.dispatchEvent(new CustomEvent('error', { detail: this.error }));
+            break;
+        }
+      } else {
+        this.dispatchEvent(new CustomEvent('dismissed', {
+          bubbles: true,
+          composed: true
+        }));
+      }
+    }, 300);
   }
 
   // Triggered by <payment-modal> when an asset is selected

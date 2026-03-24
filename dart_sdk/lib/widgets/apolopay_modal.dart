@@ -24,6 +24,7 @@ class ApoloPayModal extends StatefulWidget {
   final I18nLocale? locale;
   final String productTitle;
   final Function(ClientError)? onExpired;
+  final VoidCallback? onDismissed;
 
   const ApoloPayModal({
     super.key,
@@ -31,6 +32,7 @@ class ApoloPayModal extends StatefulWidget {
     this.locale,
     this.productTitle = '',
     this.onExpired,
+    this.onDismissed,
   });
 
   static Future<void> show(
@@ -39,6 +41,7 @@ class ApoloPayModal extends StatefulWidget {
     I18nLocale? locale,
     String productTitle = '',
     Function(ClientError)? onExpired,
+    Function()? onDismissed,
   }) {
     final bool isDesktop = MediaQuery.of(context).size.width > 880;
 
@@ -47,6 +50,7 @@ class ApoloPayModal extends StatefulWidget {
       locale: locale,
       productTitle: productTitle,
       onExpired: onExpired,
+      onDismissed: onDismissed,
     );
 
     if (isDesktop) {
@@ -192,8 +196,8 @@ class _ApoloPayModalState extends State<ApoloPayModal>
     if (mounted) setState(() {});
   }
 
-  void _handleClose([bool didPop = false]) {
-    if (!didPop) Navigator.pop(context);
+  void onPopInvokedWithResult(bool didPop, dynamic result) {
+    if (!didPop) return;
 
     if (_finalResult is ClientResponse) {
       switch (_finalResult?.code) {
@@ -209,9 +213,7 @@ class _ApoloPayModalState extends State<ApoloPayModal>
           );
           break;
       }
-    }
-
-    if (_finalResult is ClientError) {
+    } else if (_finalResult is ClientError) {
       switch (_finalResult?.code) {
         case ClientCode.paymentTimeout:
           widget.onExpired?.call(_finalResult as ClientError);
@@ -221,6 +223,8 @@ class _ApoloPayModalState extends State<ApoloPayModal>
           widget.options.onError?.call(_finalResult as ClientError);
           break;
       }
+    } else {
+      widget.onDismissed?.call();
     }
   }
 
@@ -332,7 +336,7 @@ class _ApoloPayModalState extends State<ApoloPayModal>
     final bool isDesktop = MediaQuery.of(context).size.width > 880;
 
     return PopScope(
-      onPopInvokedWithResult: (didPop, result) => _handleClose(didPop),
+      onPopInvokedWithResult: onPopInvokedWithResult,
       child: Container(
         height: isDesktop ? null : MediaQuery.of(context).size.height * 0.9,
         decoration: BoxDecoration(
@@ -382,7 +386,7 @@ class _ApoloPayModalState extends State<ApoloPayModal>
               : const SizedBox(width: 48),
           IconButton(
             icon: const Icon(Icons.close, color: Color(0xFF9CA3AF)),
-            onPressed: _handleClose,
+            onPressed: () => Navigator.pop(context),
           ),
         ],
       ),
@@ -1019,7 +1023,7 @@ class _ApoloPayModalState extends State<ApoloPayModal>
           SizedBox(
             width: 350,
             child: ElevatedButton(
-              onPressed: _handleClose,
+              onPressed: () => Navigator.pop(context),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFFEA580C),
                 foregroundColor: Colors.white,

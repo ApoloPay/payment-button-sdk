@@ -135,8 +135,9 @@ export class PaymentModal extends LitElement {
 
   // Handle the native 'close' event (fired by Escape key)
   private handleDialogNativeClose(event: Event) {
-    event.preventDefault(); // Prevent the default immediate close
-    this.requestClose(); // Trigger our animated close flow
+    event.preventDefault();
+    if (!this.isOpen) return;
+    this.requestClose();
   }
 
   private handleTimerExpired() {

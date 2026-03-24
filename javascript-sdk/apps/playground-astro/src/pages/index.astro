@@ -31,8 +31,7 @@ import ApoloPayButton from "@apolopay-sdk/astro/ApoloPayButton.astro";
 </html>
 
 <script>
-  import { ApoloPayClient } from "@apolopay-sdk/core";
-  import type { ClientResponse, ClientError } from "@apolopay-sdk/ui";
+  import { ApoloPayClient, type ClientResponse, type ClientError } from "@apolopay-sdk/astro";
 
   const apolo = new ApoloPayClient({
     publicKey: "publicKey",
@@ -51,5 +50,8 @@ import ApoloPayButton from "@apolopay-sdk/astro/ApoloPayButton.astro";
   });
   btn?.addEventListener("expired", (e: CustomEvent<ClientError>) => {
     console.error("Expirado (Astro):", e.detail.message);
+  });
+  btn?.addEventListener("dismissed", () => {
+    console.error("Dismissed (Astro)");
   });
 </script>
