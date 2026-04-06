@@ -12,6 +12,7 @@ import { handleImageError } from '../utils/image_error';
 import { spinnerStyles } from '../styles/spinner-styles';
 import './payment-timer.js';
 import type { ModalStatus } from '../types/status.type';
+import { amountFormatter } from '../utils/amount-formatter';
 
 @customElement('payment-modal')
 export class PaymentModal extends LitElement {
@@ -134,8 +135,9 @@ export class PaymentModal extends LitElement {
 
   // Handle the native 'close' event (fired by Escape key)
   private handleDialogNativeClose(event: Event) {
-    event.preventDefault(); // Prevent the default immediate close
-    this.requestClose(); // Trigger our animated close flow
+    event.preventDefault();
+    if (!this.isOpen) return;
+    this.requestClose();
   }
 
   private handleTimerExpired() {
@@ -154,8 +156,8 @@ export class PaymentModal extends LitElement {
   }
 
   // Emit event when a network is selected
-  private selectNetwork(networkId: string) {
-    this.dispatchEvent(new CustomEvent('networkSelect', { detail: { networkId } }));
+  private selectNetwork(network: Network) {
+    this.dispatchEvent(new CustomEvent('networkSelect', { detail: { network } }));
   }
 
   // Emit event to request changing step (for "Back" buttons)
@@ -303,47 +305,6 @@ export class PaymentModal extends LitElement {
         margin-bottom: 1rem;
         display: block;
       }
-
-      /* Botón Naranja Grande */
-      .btn-primary {
-        background-color: var(--apolo-accent); /* Naranja Apolo */
-        color: white;
-        padding: 0.5rem 1.5rem;
-        border-radius: var(--apolo-radius-lg); /* Pill shape */
-        border: none;
-        font-weight: 400;
-        font-size: .9rem;
-        cursor: pointer;
-        box-shadow: 0 4px 10px rgba(234, 88, 12, 0.3);
-        transition: transform 0.1s, box-shadow 0.1s;
-      }
-      .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 15px rgba(234, 88, 12, 0.4); }
-      
-      /* Botón Azul Oscuro (Apolo Pay QR) */
-      .btn-dark {
-        background-color: var(--apolo-primary-darkest);
-        color: white;
-        width: 100%;
-        padding: 1rem;
-        border-radius: var(--apolo-radius);
-        border: none;
-        font-weight: 600;
-        cursor: pointer;
-        margin-block: 0.25rem 1.25rem;
-      }
-
-      .warning-text {
-        font-size: 0.75rem;
-        text-align: left;
-        margin-top: 1.5rem;
-        line-height: 1.5;
-      }
-      .warning-text strong { color: var(--apolo-accent); }
-
-      .warning-text ul {
-        padding-left: 1.5rem;
-      }
-
 
       /* --- PANTALLA DE RESULTADO --- */
       .result-container {
@@ -506,11 +467,11 @@ export class PaymentModal extends LitElement {
           <div class="balance-card">
             <div class="balance-row">
               <span class="balance-label">${I18n.t.modal.labels.paid}:</span>
-              <span class="balance-value">${this.amountPaid} ${symbol}</span>
+              <span class="balance-value">${amountFormatter(this.amountPaid, { symbol, lang: this.lang })}</span>
             </div>
             <div class="balance-row">
               <span class="balance-label">${I18n.t.modal.labels.remainingToPay}:</span>
-              <span class="balance-value highlight">${this.amount} ${symbol}</span>
+              <span class="balance-value highlight">${amountFormatter(this.amount, { symbol, lang: this.lang })}</span>
             </div>
           </div>
         ` : ''}
@@ -520,7 +481,7 @@ export class PaymentModal extends LitElement {
             <img src="${this.qrCodeUrl}" class="qr-code-img" alt="QR Apolo Pay" />
             <img src="${logoApolo}" class="qr-overlay-icon" style="padding: 4px;" />
           </div>
-          <span class="qr-badge">${remainingForPay} ${symbol}</span>
+          <span class="qr-badge">${amountFormatter(remainingForPay, { symbol, lang: this.lang })}</span>
         </div>
 
         <div class="btn-dark">
@@ -549,11 +510,11 @@ export class PaymentModal extends LitElement {
         <div class="balance-card">
           <div class="balance-row">
             <span class="balance-label">${I18n.t.modal.labels.paid}:</span>
-            <span class="balance-value">${this.amountPaid} ${symbol}</span>
+            <span class="balance-value">${amountFormatter(this.amountPaid, { symbol, lang: this.lang })}</span>
           </div>
           <div class="balance-row">
             <span class="balance-label">${I18n.t.modal.labels.remainingToPay}:</span>
-            <span class="balance-value highlight">${this.amount} ${symbol}</span>
+            <span class="balance-value highlight">${amountFormatter(this.amount, { symbol, lang: this.lang })}</span>
           </div>
         </div>
       ` : ''}
@@ -567,7 +528,7 @@ export class PaymentModal extends LitElement {
         : ''
       }
         </div>
-        <span class="qr-badge">${remainingForPay} ${this.currentAsset?.symbol}</span>
+        <span class="qr-badge">${amountFormatter(remainingForPay, { symbol, lang: this.lang })}</span>
       </div>
 
       <div class="btn-dark">
@@ -650,7 +611,7 @@ export class PaymentModal extends LitElement {
 
         <div class="selection-list">
           ${this.currentAsset?.networks.map((network: Network) => html`
-            <div class="selection-card" @click=${() => this.selectNetwork(network.id)}>
+            <div class="selection-card" @click=${() => this.selectNetwork(network)}>
               <img src="${network.network === 'apolopay' ? logoApolo : network.image}" class="coin-icon" @error=${handleImageError} />
               <div class="card-text">
                 <span class="card-title">${network.name}</span>
@@ -699,7 +660,7 @@ export class PaymentModal extends LitElement {
 
               <div class="text-field">
                 <label class="text-field-label">${t.modal.labels.amount}</label>
-                <input class="text-field-input" readonly value="${this.amount} ${this.currentAsset?.symbol || ''}" />
+                <input class="text-field-input" readonly value="${amountFormatter(this.amount, { symbol: this.currentAsset?.symbol || '', lang: this.lang })}" />
               </div>
             </div>
           </div>
@@ -710,7 +671,7 @@ export class PaymentModal extends LitElement {
             <div class="error-icon">❌</div>
             <h2 class="result-title">${t.modal.titles.error}</h2>
             <p class="result-desc">${this.error?.message || t.errors.generic}</p>
-            <button class="btn-primary" @click=${this.requestClose}>${t.modal.actions.close}</button>
+            <button class="btn-primary" style="width: 100%;" @click=${this.requestClose}>${t.modal.actions.close}</button>
           </div>
         `;
       } else if (this.status === 'processing') {
@@ -733,7 +694,7 @@ export class PaymentModal extends LitElement {
 
             <div class="text-field" style="width: 100%;">
               <label class="text-field-label">${t.modal.labels.amountSent} (${this.currentAsset?.symbol})</label>
-              <input class="text-field-input" readonly value="${this.amount} ${this.currentAsset?.symbol}" />
+              <input class="text-field-input" readonly value="${amountFormatter(this.amount, { symbol: this.currentAsset?.symbol || '', lang: this.lang })}" />
             </div>
           </div>
         </div>
@@ -744,7 +705,7 @@ export class PaymentModal extends LitElement {
             <div class="error-icon">⏳</div>
             <h2 class="result-title">${t.modal.titles.idle}</h2>
             <p class="result-desc">${t.modal.subtitles.idle}</p>
-            <button class="btn-primary" @click=${this.requestClose}>${t.modal.actions.close}</button>
+            <button class="btn-primary" style="width: 100%;" @click=${this.requestClose}>${t.modal.actions.close}</button>
           </div>
         `;
       }
