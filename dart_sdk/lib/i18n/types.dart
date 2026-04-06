@@ -76,6 +76,7 @@ class DictionaryModalActions {
     required this.copy,
     required this.copied,
     required this.payFromDevice,
+    required this.understood,
   });
   final String back;
   final String close;
@@ -84,6 +85,7 @@ class DictionaryModalActions {
   final String copy;
   final String copied;
   final String payFromDevice;
+  final String understood;
 }
 
 class DictionaryModalLabels {
@@ -114,10 +116,18 @@ class DictionaryModalInfo {
     required this.noReloadPageTitle,
     required this.noReloadPageSubTitle,
     required this.selectNetworkLater,
+    required this.disclaimerTitle,
+    required this.disclaimerSubtitle,
+    required this.disclaimerBody,
+    required this.disclaimerConfirmation,
   });
   final String noReloadPageTitle;
   final String noReloadPageSubTitle;
   final String selectNetworkLater;
+  final String disclaimerTitle;
+  final String disclaimerSubtitle;
+  final String disclaimerBody;
+  final String disclaimerConfirmation;
 }
 
 class DictionaryModalWarnings {

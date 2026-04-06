@@ -79,9 +79,10 @@ class ClientError extends ClientResponseBase {
         error: error['error'] ?? error,
       );
     }
+
     return ClientError(
       code: code ?? ClientCode.unknownError,
-      message: error?.toString() ?? message ?? I18n.t.errors.unknownError,
+      message: message ?? error?.toString() ?? I18n.t.errors.unknownError,
       error: error,
     );
   }

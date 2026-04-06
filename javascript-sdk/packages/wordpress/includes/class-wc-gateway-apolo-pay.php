@@ -75,16 +75,18 @@ class WC_Gateway_Apolo_Pay extends WC_Payment_Gateway {
         if ( ! is_checkout() && ! is_wc_endpoint_url( 'order-pay' ) ) return;
         if ( 'no' === $this->enabled ) return;
 
-        wp_enqueue_script( 'apolopay-sdk', plugin_dir_url( __DIR__ ) . 'assets/apolopay-sdk.js', array(), '1.1.0', true );
-        wp_register_script( 'apolopay-checkout', plugin_dir_url( __DIR__ ) . 'assets/apolopay-checkout.js', array( 'jquery', 'apolopay-sdk' ), '1.0.0', true );
+        $plugin_url = plugin_dir_url( dirname( __FILE__, 2 ) . '/apolo-pay.php' );
 
-        wp_localize_script( 'apolopay-checkout', 'apolo_params', array(
+        wp_enqueue_script( 'apolopay-sdk', $plugin_url . 'assets/apolopay-sdk.js', array(), '1.1.0', true );
+        wp_register_script( 'checkout', $plugin_url . 'assets/checkout.js', array( 'jquery', 'apolopay-sdk' ), '1.0.0', true );
+
+        wp_localize_script( 'checkout', 'apolo_params', array(
             'ajax_url'   => admin_url( 'admin-ajax.php' ),
             'nonce'      => wp_create_nonce( 'apolo_pay_nonce' ),
             'public_key' => $this->public_key,
         ));
 
-        wp_enqueue_script( 'apolopay-checkout' );
+        wp_enqueue_script( 'checkout' );
     }
 
     public function payment_fields() {
@@ -142,8 +144,10 @@ class WC_Gateway_Apolo_Pay extends WC_Payment_Gateway {
         $transaction_id = isset( $_POST['apolo_transaction_id'] ) ? sanitize_text_field( $_POST['apolo_transaction_id'] ) : '';
 
         if ( empty( $transaction_id ) ) {
-            wc_add_notice( __( 'Error en confirmación de pago.', 'apolo-pay' ), 'error' );
-            return;
+            return array(
+                'result'  => 'failure',
+                'message' => __( 'No se pudo verificar la transacción de Apolo Pay. Por favor, intenta de nuevo.', 'apolo-pay' ),
+            );
         }
 
         $order->payment_complete( $transaction_id );

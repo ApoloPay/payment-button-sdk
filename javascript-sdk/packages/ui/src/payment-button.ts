@@ -12,12 +12,15 @@ import {
   ClientCode,
   type PartialPaymentResponseData,
   type PaymentResponseData,
+  Network,
 } from '@apolopay-sdk/core';
 import type { ModalStatus } from './types/status.type.js';
 
 // Import child components
 import './components/trigger-button.js';
 import './components/payment-modal.js';
+import { InfoModal } from './components/info-modal.js';
+import { termsURL } from './utils/variables.js';
 
 
 @customElement('apolopay-button')
@@ -78,6 +81,7 @@ export class ApoloPayButton extends LitElement {
   @state() private amountPaid?: number | undefined = undefined;
   @state() private hasConfigError = false; // Invalid publicKey or missing client
   @state() private email: string | null = null; // TODO set email from socket response
+  @state() private alreadyShownInfoModal: boolean = false;
   @state() private _service: PaymentService | null = null; // Internal business logic manager
 
   // --- API Client Instance ---
@@ -163,7 +167,7 @@ export class ApoloPayButton extends LitElement {
 
   // --- Event Handlers (Triggered by Child Components) ---
   // Triggered by <trigger-button> when clicked
-  private handleOpen() {
+  private async handleOpen() {
     this.resetState();
 
     if (this.hasConfigError || !this.client || !this.processId) {
@@ -173,41 +177,74 @@ export class ApoloPayButton extends LitElement {
 
     if (this.loading) return;
 
-    this.isOpen = true;
+    document.body.style.overflow = 'hidden';
+
+    if (this.alreadyShownInfoModal) return this.isOpen = true;
+
+    const response = await InfoModal.show({
+      title: I18n.t.modal.info.disclaimerTitle,
+      subtitle: I18n.t.modal.info.disclaimerSubtitle,
+      content: I18n.t.modal.info.disclaimerBody
+    })
+
+    if (response !== true) {
+      document.body.style.overflow = 'auto';
+      return this.dispatchEvent(new CustomEvent('dismissed', {
+        bubbles: true,
+        composed: true
+      }));
+    }
+
+    this.isOpen = true
+    this.alreadyShownInfoModal = true;
   }
+
+  private closeTimeoutId?: ReturnType<typeof setTimeout>;
 
   // Triggered by <payment-modal> requesting to close (X, backdrop, Escape)
   private handleCloseRequest() {
     this.isOpen = false;
+    document.body.style.overflow = 'auto';
+
     // Disconnect WebSocket if the user cancels before payment completion
     if (this.currentStep === ModalStep.SHOW_QR && this.status !== 'success' && this.status !== 'error') {
       this._service?.disconnectWebSocket();
     }
 
-    setTimeout(() => this.resetState(), 300);
-
-    // Dispatch final event if it exists
-    if (this.successResult) {
-      switch (this.successResult.code) {
-        case ClientCode.payment_partial:
-          this.dispatchEvent(new CustomEvent('partialPayment', { detail: this.successResult }));
-          break;
-
-        default:
-          this.dispatchEvent(new CustomEvent('success', { detail: this.successResult }));
-          break;
-      }
-    } else if (this.error) {
-      switch (this.error.code) {
-        case ClientCode.payment_timeout:
-          this.dispatchEvent(new CustomEvent('expired', { detail: this.error }));
-          break;
-
-        default:
-          this.dispatchEvent(new CustomEvent('error', { detail: this.error }));
-          break;
-      }
+    // 🛡️ Limpiamos cualquier timeout anterior
+    if (this.closeTimeoutId) {
+      clearTimeout(this.closeTimeoutId);
     }
+
+    this.closeTimeoutId = setTimeout(() => {
+      // Dispatch final event if it exists
+      if (this.successResult) {
+        switch (this.successResult.code) {
+          case ClientCode.payment_partial:
+            this.dispatchEvent(new CustomEvent('partialPayment', { detail: this.successResult }));
+            break;
+          default:
+            this.dispatchEvent(new CustomEvent('success', { detail: this.successResult }));
+            break;
+        }
+      } else if (this.error) {
+        switch (this.error.code) {
+          case ClientCode.payment_timeout:
+            this.dispatchEvent(new CustomEvent('expired', { detail: this.error }));
+            break;
+          default:
+            this.dispatchEvent(new CustomEvent('error', { detail: this.error }));
+            break;
+        }
+      } else {
+        this.dispatchEvent(new CustomEvent('dismissed', {
+          bubbles: true,
+          composed: true
+        }));
+      }
+
+      this.resetState();
+    }, 300);
   }
 
   // Triggered by <payment-modal> when an asset is selected
@@ -222,10 +259,18 @@ export class ApoloPayButton extends LitElement {
   }
 
   // Triggered by <payment-modal> when a network is selected
-  private async handleInitiatePayment(event: CustomEvent<{ networkId: string }>) {
+  private async handleInitiatePayment(event: CustomEvent<{ network: Network }>) {
     if (!this.client || !this.processId) return;
-    this.selectedNetwork = event.detail.networkId;
+    this.selectedNetwork = event.detail.network.id;
     if (!this.selectedAsset || !this.selectedNetwork) return;
+
+    if (event.detail.network.network !== 'apolopay') {
+      const response = await InfoModal.show({
+        title: I18n.t.modal.info.disclaimerTitle,
+        content: I18n.t.modal.info.disclaimerConfirmation.replace('$termsURL', termsURL)
+      })
+      if (response !== true) return;
+    }
 
     const detail: QrRequestDetails = {
       assetId: this.selectedAsset,
@@ -262,7 +307,6 @@ export class ApoloPayButton extends LitElement {
         onError: (error: ClientError) => {
           if (!this.isOpen) return;
           this.status = 'error';
-          this.error = error;
           this.currentStep = ModalStep.RESULT;
           this.error = error;
         }
