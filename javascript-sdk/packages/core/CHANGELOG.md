@@ -1,5 +1,13 @@
 # @apolopay-sdk/core
 
+## 1.3.0
+
+### Minor Changes
+
+- **Flexible Typings**: Updated interfaces (`QrResponseData`, `PaymentResponseData`, `PartialPaymentResponseData`) to support amounts in `string` or `number` format.
+
+- **Internationalization**: New translations (EN/ES) for the payment system terms and conditions.
+
 ## 1.2.1
 
 ### Patch Changes

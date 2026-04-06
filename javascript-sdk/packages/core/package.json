@@ -1,6 +1,6 @@
 {
   "name": "@apolopay-sdk/core",
-  "version": "1.2.1",
+  "version": "1.3.0",
   "license": "MIT",
   "sideEffects": false,
   "description": "Core SDK for Apolo Pay",

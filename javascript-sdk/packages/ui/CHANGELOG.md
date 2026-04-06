@@ -1,5 +1,20 @@
 # @apolopay-sdk/ui
 
+## 1.3.0
+
+### Minor Changes
+
+- **New Disclaimer Modals**: Implemented mandatory consent before initiating payment and warnings when selecting external (non-native) networks.
+
+- **`InfoModal` Component**: Created a reusable component for legal notices and confirmations.
+
+- **Amount Robustness**: Improved handling of `amount` and `amountPaid` types, ensuring they are correctly processed as numbers.
+
+### Patch Changes
+
+- Updated dependencies
+  - @apolopay-sdk/core@1.3.0
+
 ## 1.2.1
 
 ### Patch Changes
