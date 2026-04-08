@@ -15,3 +15,12 @@
 ## 1.1.1
 
 *   **Reliability**: Enhanced WebSocket connection stability and error logging for transaction status monitoring.
+
+## 1.2.0
+
+*   **Disclaimer Modals**: Implemented the `InfoModal` component to show mandatory terms and conditions and network-specific warnings.
+*   **Rich Text Support**: Added a utility to render HTML-like tags (bold, highlight, line breaks) within the UI for better message formatting.
+*   **Improved Amount Handling**: Enhanced precision when processing `amount` and `amountPaid` values, ensuring they are correctly handled as doubles.
+*   **New Processing State**: Introduced a dedicated UI state for when a payment is being processed, improving user feedback.
+*   **Event Synchronization**: Updated modal navigation logic to ensure events are dispatched only when the modal is fully closed, matching the JS SDK behavior.
+

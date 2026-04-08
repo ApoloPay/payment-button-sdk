@@ -16,20 +16,31 @@ jQuery(function ($) {
         $(formSelector).removeClass('processing').unblock();
     };
 
-    document.addEventListener('submit', function(e) {
-        const form = e.target;
+    /**
+     * Hook into WooCommerce's own event: checkout_place_order_{gateway_id}
+     * This event fires AFTER WooCommerce has validated all required checkout
+     * fields (name, email, address, postal code, etc.).
+     *
+     * IMPORTANT: WooCommerce uses jQuery.triggerHandler() which does NOT
+     * bubble up the DOM. The handler MUST be bound directly on the form
+     * element, not on document.body.
+     *
+     * Returning false  → prevents WooCommerce from submitting the order.
+     * Returning true   → lets WooCommerce proceed normally.
+     */
+    $(formSelector).on('checkout_place_order_apolo_pay', function () {
+        const txIdInput = document.querySelector('#apolo_transaction_id');
 
-        if (form && form.matches && form.matches(formSelector)) {
-            const isApoloPay = document.querySelector('#payment_method_apolo_pay')?.checked;
-            const txIdInput = document.querySelector('#apolo_transaction_id');
-
-            if (isApoloPay && txIdInput && txIdInput.value === '') {
-                e.preventDefault();
-                e.stopImmediatePropagation();
-                iniciarFlujoApoloPay();
-            }
+        // If the transaction ID is already set (payment completed),
+        // let WooCommerce proceed with order processing.
+        if (txIdInput && txIdInput.value !== '') {
+            return true;
         }
-    }, true); 
+
+        // No transaction yet → start the Apolo Pay flow and block WooCommerce.
+        iniciarFlujoApoloPay();
+        return false;
+    });
 
     function iniciarFlujoApoloPay() {
         blockUI();
@@ -65,11 +76,16 @@ jQuery(function ($) {
                             const txId = e.detail?.result?.id || e.detail?.id;
                             document.querySelector('#apolo_transaction_id').value = txId;
 
-                            if (!document.querySelector('input[name="woocommerce_checkout_place_order"]')) {
-                                $(formSelector).append('<input type="hidden" name="woocommerce_checkout_place_order" value="1" />');
-                            }
+                            // Remove .processing class and unblock BEFORE re-triggering
+                            // submit. WooCommerce's submit handler checks for .processing
+                            // and silently aborts if it's present.
+                            unblockUI();
 
-                            HTMLFormElement.prototype.submit.call(document.querySelector(formSelector));
+                            // Re-trigger WooCommerce's submit flow.
+                            // This time txIdInput.value is set, so our handler
+                            // will return true and WooCommerce will process the order
+                            // via its normal AJAX checkout.
+                            $(formSelector).trigger('submit');
                         };
 
                         const handleError = (e) => {
