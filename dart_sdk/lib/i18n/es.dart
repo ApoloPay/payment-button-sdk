@@ -63,7 +63,7 @@ const es = Dictionary(
           "que se muestra en pantalla. Si envías los fondos desde un Exchange centralizado (como Binance, KuCoin, etc.), "
           "asegúrate de agregar la comisión de retiro (withdrawal fee) al total. <strong>Los pagos parciales no completarán "
           "tu orden</strong> y deberás contactar al comercio para resolverlo.<br><br>"
-          "<strong>4. Tiempo Límite:</strong> Tienes <strong>30 minutos</strong> para realizar la transferencia. "
+          "<strong>4. Tiempo Límite:</strong> Tienes <strong>un plazo de tiempo</strong> para realizar la transferencia. "
           "Si envías el pago después de que el tiempo haya expirado, la transacción no se procesará automáticamente y "
           "deberás contactar al soporte del comercio.<br><br>"
           "<strong>5. Comisiones de Red (Gas Fees):</strong> Tú eres responsable de pagar las comisiones de red "
