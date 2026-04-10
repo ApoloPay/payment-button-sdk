@@ -64,7 +64,7 @@ const en = Dictionary(
           "shown on the screen. If you are sending funds from a centralized Exchange (like Binance, KuCoin, etc.), "
           "make sure to add the withdrawal fee to the total. <strong>Partial payments will not complete "
           "your order</strong> and you will need to contact the merchant to resolve it.<br><br>"
-          "<strong>4. Time Limit:</strong> You have <strong>30 minutes</strong> to make the transfer. "
+          "<strong>4. Time Limit:</strong> You have <strong>a period of time</strong> to make the transfer. "
           "If you send the payment after the time has expired, the transaction will not be processed automatically and "
           "you will need to contact the merchant's support.<br><br>"
           "<strong>5. Network Fees (Gas Fees):</strong> You are responsible for paying the network fees "
