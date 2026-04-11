@@ -41,18 +41,23 @@ export const ApoloPayButton = defineComponent({
 
       // Escucha el evento del Web Component y lo "traduce" a un evento de Vue
       const handleSuccess = (event: Event) => {
+        event.stopPropagation();
         emit('success', (event as CustomEvent).detail);
       };
       const handlePartialPayment = (event: Event) => {
+        event.stopPropagation();
         emit('partialPayment', (event as CustomEvent).detail);
       };
       const handleError = (event: Event) => {
+        event.stopPropagation();
         emit('error', (event as CustomEvent).detail);
       };
       const handleExpired = (event: Event) => {
+        event.stopPropagation();
         emit('expired', (event as CustomEvent).detail);
       };
-      const handleDismissed = () => {
+      const handleDismissed = (event: Event) => {
+        event.stopPropagation();
         emit('dismissed');
       };
 

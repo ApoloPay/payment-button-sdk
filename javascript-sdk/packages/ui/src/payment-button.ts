@@ -189,10 +189,7 @@ export class ApoloPayButton extends LitElement {
 
     if (response !== true) {
       document.body.style.overflow = 'auto';
-      return this.dispatchEvent(new CustomEvent('dismissed', {
-        bubbles: true,
-        composed: true
-      }));
+      return this.dispatchEvent(new CustomEvent('dismissed'));
     }
 
     this.isOpen = true
@@ -237,10 +234,7 @@ export class ApoloPayButton extends LitElement {
             break;
         }
       } else {
-        this.dispatchEvent(new CustomEvent('dismissed', {
-          bubbles: true,
-          composed: true
-        }));
+        this.dispatchEvent(new CustomEvent('dismissed'));
       }
 
       this.resetState();
@@ -318,25 +312,6 @@ export class ApoloPayButton extends LitElement {
       this.amount = typeof qrData.amount === 'string' ? parseFloat(qrData.amount) : qrData.amount;
       if (qrData.amountPaid) this.amountPaid = typeof qrData.amountPaid === 'string' ? parseFloat(qrData.amountPaid) : qrData.amountPaid;
       this.status = 'idle';
-
-      setTimeout(() => {
-        this.status = 'processing';
-        this.currentStep = ModalStep.RESULT;
-        this.successResult = {
-          code: ClientCode.success,
-          message: "Payment successful",
-          result: {
-            amount: "1",
-            amountPaid: "1",
-            assetId: "1",
-            networkId: "1",
-          },
-        };
-    
-        setTimeout(() => {
-          this.status = 'success';
-        }, 2000);
-      }, 2000)
     } catch (e) {
       const error = e as ClientError
       this.error = error;

@@ -38,26 +38,31 @@
 
   // 4. Manejadores para re-despachar eventos con sus tipos
   function handleSuccess(e: CustomEvent<ClientResponse>) {
+    e.stopPropagation();
     dispatch('success', e.detail);
     onSuccess?.(e.detail);
   }
 
   function handlePartialPayment(e: CustomEvent<ClientResponse<PartialPaymentResponseData>>) {
+    e.stopPropagation();
     dispatch('partialPayment', e.detail);
     onPartialPayment?.(e.detail);
   }
 
   function handleError(e: CustomEvent<ClientError>) {
+    e.stopPropagation();
     dispatch('error', e.detail);
     onError?.(e.detail);
   }
 
   function handleExpired(e: CustomEvent<ClientError>) {
+    e.stopPropagation();
     dispatch('expired', e.detail);
     onExpired?.(e.detail);
   }
 
-  function handleDismissed() {
+  function handleDismissed(e: CustomEvent<void>) {
+    e.stopPropagation();
     dispatch('dismissed');
     onDismissed?.();
   }
