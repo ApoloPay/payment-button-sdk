@@ -1,1 +1,28 @@
-/* You can add global styles to this file, and also import other style files */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
+
+:root {
+  --bg-dark: #0a0a0b;
+  --sidebar-bg: #121214;
+  --card-bg: #1a1a1e;
+  --accent: #0070f3;
+  --accent-hover: #0056b3;
+  --text-main: #ffffff;
+  --text-muted: #a1a1a1;
+  --border: #2d2d33;
+  --input-bg: #0a0a0b;
+  --success: #00c853;
+  --error: #ff3d00;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Outfit', system-ui, -apple-system, sans-serif;
+  background-color: var(--bg-dark);
+  color: var(--text-main);
+  overflow: hidden;
+}
