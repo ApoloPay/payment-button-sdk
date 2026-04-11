@@ -18,6 +18,7 @@ import type { ClientResponse, ClientError, Locale, ApoloPayClient, PaymentRespon
       (partialPayment)="onPartialPayment($event)"
       (error)="onError($event)"
       (expired)="onExpired($event)"
+      (dismissed)="onDismissed()"
     >
       <ng-content></ng-content>
     </apolopay-button>
@@ -48,6 +49,7 @@ export class ApoloPayButtonComponent {
   @Output() partialPayment = new EventEmitter<ClientResponse<PartialPaymentResponseData>>();
   @Output() error = new EventEmitter<ClientError>();
   @Output() expired = new EventEmitter<ClientError>();
+  @Output() dismissed = new EventEmitter<void>();
 
   // 7. Traduce el CustomEvent ($event) a un EventEmitter de Angular
   onSuccess(event: Event) {
@@ -66,5 +68,9 @@ export class ApoloPayButtonComponent {
 
   onExpired(event: Event) {
     this.expired.emit((event as CustomEvent<ClientError>).detail);
+  }
+
+  onDismissed() {
+    this.dismissed.emit();
   }
 }

@@ -1,7 +1,104 @@
-<div style="text-align: center; padding: 50px;">
-  <h1>Mi Playground de Angular (v17) ❤️</h1>
+<div class="app-container">
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="logo">
+        <span class="logo-accent">Apolo</span> Pay
+      </div>
+      <h1>Playground Angular</h1>
+    </div>
 
-  <apolopay-button-component [client]="client" [processId]="processId" [barrierDismissible]="true"
-    (success)="onSuccess($event)" (error)="onError($event)" (expired)="onExpired($event)"></apolopay-button-component>
+    <div class="config-section">
+      <div class="input-group">
+        <label for="publicKey">Public Key (pk_...)</label>
+        <input 
+          type="text" 
+          id="publicKey" 
+          placeholder="pk_..." 
+          [ngModel]="pubKey()"
+          (ngModelChange)="pubKey.set($event)"
+        />
+      </div>
 
-</div>
+      <div class="input-group">
+        <label for="privateKey">Private Key (Secret Key)</label>
+        <input 
+          type="password" 
+          id="privateKey" 
+          placeholder="sk_..." 
+          [ngModel]="privKey()"
+          (ngModelChange)="privKey.set($event)"
+        />
+        <small>Solo para uso local en este playground</small>
+      </div>
+
+      <div class="input-group">
+        <label for="amount">Monto (Amount)</label>
+        <input 
+          type="number" 
+          id="amount" 
+          [ngModel]="amount()"
+          (ngModelChange)="amount.set($event)"
+          step="0.01" 
+        />
+      </div>
+
+      <button 
+        id="update-btn" 
+        class="primary-btn" 
+        (click)="handleUpdate()"
+        [disabled]="isLoading()"
+      >
+        <span class="btn-text" [class.hidden]="isLoading()">Configurar Botón</span>
+        <span class="loader" [class.hidden]="!isLoading()"></span>
+      </button>
+    </div>
+
+    <div class="status-panel">
+      <div class="status-item">
+        <span class="status-label">Estado:</span>
+        <span class="status-value">{{ status() }}</span>
+      </div>
+      <div *ngIf="processId()" class="status-item">
+        <span class="status-label">Process ID:</span>
+        <span class="status-value code">{{ processId() }}</span>
+      </div>
+    </div>
+  </aside>
+
+  <main class="preview-area">
+    <div class="preview-card">
+      <div class="preview-header">
+        <h2>Vista Previa</h2>
+        <p>Aquí es donde aparecerá tu botón de pago configurado</p>
+      </div>
+      <div class="button-preview-container">
+        <div *ngIf="!processId() || !client()" class="placeholder">
+          Configura las llaves para ver el botón
+        </div>
+        <div *ngIf="processId() && client()">
+          <apolopay-button-component
+            [client]="client()"
+            [processId]="processId()!"
+            [barrierDismissible]="true"
+            (success)="handleSuccess($event)"
+            (error)="handleError($event)"
+            (expired)="handleExpired($event)"
+            (dismissed)="handleDismissed()"
+          ></apolopay-button-component>
+        </div>
+      </div>
+    </div>
+
+    <div class="events-log">
+      <div class="log-header">
+        <h3>Registro de Eventos</h3>
+        <button (click)="clearLogs()">Limpiar</button>
+      </div>
+      <div class="logs-content">
+        <div *ngFor="let log of logs()" [class]="'log-entry ' + log.type">
+          [{{ log.time }}] {{ log.message }}
+        </div>
+      </div>
+    </div>
+  </main>
+</div>

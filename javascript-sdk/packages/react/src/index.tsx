@@ -23,6 +23,7 @@ type ApoloPayButtonProps = {
   onPartialPayment?: (response: ClientResponse<PartialPaymentResponseData>) => void;
   onError?: (error: ClientError) => void;
   onExpired?: (error: ClientError) => void;
+  onDismissed?: () => void;
 };
 
 // 4. El componente de React ahora es un "ADAPTADOR"
@@ -40,6 +41,7 @@ export const ApoloPayButton: React.FC<ApoloPayButtonProps> = ({
   onPartialPayment,
   onError,
   onExpired,
+  onDismissed,
 }) => {
   const ref = useRef<HTMLElement>(null);
 
@@ -66,19 +68,24 @@ export const ApoloPayButton: React.FC<ApoloPayButtonProps> = ({
     const handleExpired = (event: Event) => {
       onExpired?.((event as CustomEvent).detail);
     };
+    const handleDismissed = () => {
+      onDismissed?.();
+    };
 
     node.addEventListener('success', handleSuccess);
     node.addEventListener('partialPayment', handlePartialPayment);
     node.addEventListener('error', handleError);
     node.addEventListener('expired', handleExpired);
+    node.addEventListener('dismissed', handleDismissed);
 
     return () => {
       node.removeEventListener('success', handleSuccess);
       node.removeEventListener('partialPayment', handlePartialPayment);
       node.removeEventListener('error', handleError);
       node.removeEventListener('expired', handleExpired);
+      node.removeEventListener('dismissed', handleDismissed);
     };
-  }, [client, onSuccess, onPartialPayment, onError, onExpired]);
+  }, [client, onSuccess, onPartialPayment, onError, onExpired, onDismissed]);
 
   // 6. Renderiza el Web Component, pasando props de React (camelCase)
   //    a atributos HTML (kebab-case)

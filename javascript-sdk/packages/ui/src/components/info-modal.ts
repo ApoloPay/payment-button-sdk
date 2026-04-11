@@ -1,4 +1,4 @@
-import { LitElement, html, css, TemplateResult } from 'lit';
+import { LitElement, html, css, type TemplateResult } from 'lit';
 import { customElement, property, query } from 'lit/decorators.js';
 import { I18n, type Locale } from '@apolopay-sdk/core';
 import { modalBaseStyles } from '../styles/modal-base';

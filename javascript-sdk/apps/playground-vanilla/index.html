@@ -3,15 +3,366 @@
 
 <head>
   <meta charset="UTF-8" />
-  <title>Playground Vanilla JS</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Apolo Pay | Vanilla Playground</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #0a0a0b;
+      --sidebar-bg: #121214;
+      --card-bg: #1a1a1e;
+      --accent: #0070f3;
+      --accent-hover: #0056b3;
+      --text-main: #ffffff;
+      --text-muted: #a1a1a1;
+      --border: #2d2d33;
+      --input-bg: #0a0a0b;
+      --success: #00c853;
+      --error: #ff3d00;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Outfit', system-ui, -apple-system, sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      overflow: hidden;
+    }
+
+    .app-container {
+      display: flex;
+      height: 100vh;
+      width: 100vw;
+    }
+
+    /* Sidebar Styles */
+    .sidebar {
+      width: 350px;
+      background-color: var(--sidebar-bg);
+      border-right: 1px solid var(--border);
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+      overflow-y: auto;
+    }
+
+    .sidebar-header .logo {
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+
+    .logo-accent {
+      color: var(--accent);
+    }
+
+    .sidebar-header h1 {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-top: 0.5rem;
+    }
+
+    .config-section {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .input-group label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .input-group input {
+      background-color: var(--input-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      color: white;
+      font-family: inherit;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .input-group input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(0, 112, 243, 0.2);
+    }
+
+    .input-group small {
+      font-size: 0.75rem;
+      color: #ffb300;
+      opacity: 0.8;
+    }
+
+    .primary-btn {
+      background-color: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.2s;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .primary-btn:hover {
+      background-color: var(--accent-hover);
+    }
+
+    .primary-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .status-panel {
+      background-color: rgba(255, 255, 255, 0.03);
+      border-radius: 12px;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .status-item {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+    }
+
+    .status-label {
+      color: var(--text-muted);
+    }
+
+    .status-value.code {
+      font-family: monospace;
+      font-size: 0.75rem;
+      background: rgba(0,0,0,0.3);
+      padding: 2px 6px;
+      border-radius: 4px;
+      word-break: break-all;
+      text-align: right;
+      max-width: 180px;
+    }
+
+    /* Main Content Styles */
+    .preview-area {
+      flex: 1;
+      padding: 3rem;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+      overflow-y: auto;
+      background: radial-gradient(circle at top right, rgba(0, 112, 243, 0.05), transparent 40%);
+    }
+
+    .preview-card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 3rem;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      gap: 2.5rem;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+
+    .preview-header h2 {
+      margin: 0;
+      font-size: 1.75rem;
+    }
+
+    .preview-header p {
+      color: var(--text-muted);
+      margin-top: 0.5rem;
+    }
+
+    .button-preview-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 120px;
+      padding: 2rem;
+      background: rgba(0,0,0,0.2);
+      border-radius: 12px;
+      border: 1px dashed var(--border);
+    }
+
+    .placeholder {
+      color: var(--text-muted);
+      font-style: italic;
+    }
+
+    /* Events Log */
+    .events-log {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      max-height: 400px;
+    }
+
+    .log-header {
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .log-header h3 {
+      margin: 0;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+    }
+
+    .log-header button {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 4px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.75rem;
+    }
+
+    .logs-content {
+      padding: 1rem;
+      overflow-y: auto;
+      font-family: monospace;
+      font-size: 0.85rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .log-entry {
+      padding: 2px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.02);
+    }
+
+    .log-entry.system { color: #888; }
+    .log-entry.success { color: var(--success); }
+    .log-entry.error { color: var(--error); }
+    .log-entry.info { color: var(--accent); }
+
+    /* Utils */
+    .hidden { display: none !important; }
+
+    .loader {
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-radius: 50%;
+      border-top-color: #fff;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
 </head>
 
 <body>
-  <h1>Playground de JavaScript Nativo 🍦</h1>
+  <div class="app-container">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo">
+          <span class="logo-accent">Apolo</span> Pay
+        </div>
+        <h1>Playground Vanilla</h1>
+      </div>
 
-  <apolopay-button id="btn-pago" barrier-dismissible></apolopay-button>
+      <div class="config-section">
+        <div class="input-group">
+          <label for="publicKey">Public Key (pk_...)</label>
+          <input type="text" id="publicKey" placeholder="pk_..." value="" />
+        </div>
+
+        <div class="input-group">
+          <label for="privateKey">Private Key (Secret Key)</label>
+          <input type="password" id="privateKey" placeholder="sk_..." value="" />
+          <small>Solo para uso local en este playground</small>
+        </div>
+
+        <div class="input-group">
+          <label for="amount">Monto (Amount)</label>
+          <input type="number" id="amount" value="1" step="0.01" />
+        </div>
+
+        <button id="update-btn" class="primary-btn">
+          <span class="btn-text">Configurar Botón</span>
+          <span class="loader hidden"></span>
+        </button>
+      </div>
+
+      <div class="status-panel" id="status-panel">
+        <div class="status-item">
+          <span class="status-label">Estado:</span>
+          <span class="status-value" id="current-status">Esperando configuración...</span>
+        </div>
+        <div class="status-item hidden" id="process-id-container">
+          <span class="status-label">Process ID:</span>
+          <span class="status-value code" id="display-process-id">-</span>
+        </div>
+      </div>
+    </aside>
+
+    <main class="preview-area">
+      <div class="preview-card">
+        <div class="preview-header">
+          <h2>Vista Previa</h2>
+          <p>Aquí es donde aparecerá tu botón de pago configurado</p>
+        </div>
+        <div class="button-preview-container">
+          <div id="button-placeholder" class="placeholder">
+            Configura las llaves para ver el botón
+          </div>
+          <div id="button-container" class="hidden">
+            <apolopay-button id="btn-pago" barrier-dismissible></apolopay-button>
+          </div>
+        </div>
+      </div>
+
+      <div class="events-log">
+        <div class="log-header">
+          <h3>Registro de Eventos</h3>
+          <button id="clear-logs">Limpiar</button>
+        </div>
+        <div id="logs-container" class="logs-content">
+          <div class="log-entry system">Playground iniciado...</div>
+        </div>
+      </div>
+    </main>
+  </div>
 
   <script type="module" src="/src/main.ts"></script>
 </body>
 
-</html>
+</html>

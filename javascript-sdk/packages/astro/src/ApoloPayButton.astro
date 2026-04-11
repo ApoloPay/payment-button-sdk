@@ -23,6 +23,7 @@ interface Props extends HTMLAttributes<"div"> {
   onPartialPayment?: (event: CustomEvent<ClientResponse<PartialPaymentResponseData>>) => void;
   onError?: (event: CustomEvent<ClientError>) => void;
   onExpired?: (event: CustomEvent<ClientError>) => void;
+  onDismissed?: (event: CustomEvent<void>) => void;
 }
 
 const {

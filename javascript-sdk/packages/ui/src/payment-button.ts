@@ -12,7 +12,7 @@ import {
   ClientCode,
   type PartialPaymentResponseData,
   type PaymentResponseData,
-  Network,
+  type Network,
 } from '@apolopay-sdk/core';
 import type { ModalStatus } from './types/status.type.js';
 
@@ -318,6 +318,25 @@ export class ApoloPayButton extends LitElement {
       this.amount = typeof qrData.amount === 'string' ? parseFloat(qrData.amount) : qrData.amount;
       if (qrData.amountPaid) this.amountPaid = typeof qrData.amountPaid === 'string' ? parseFloat(qrData.amountPaid) : qrData.amountPaid;
       this.status = 'idle';
+
+      setTimeout(() => {
+        this.status = 'processing';
+        this.currentStep = ModalStep.RESULT;
+        this.successResult = {
+          code: ClientCode.success,
+          message: "Payment successful",
+          result: {
+            amount: "1",
+            amountPaid: "1",
+            assetId: "1",
+            networkId: "1",
+          },
+        };
+    
+        setTimeout(() => {
+          this.status = 'success';
+        }, 2000);
+      }, 2000)
     } catch (e) {
       const error = e as ClientError
       this.error = error;
