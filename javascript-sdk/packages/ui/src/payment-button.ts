@@ -12,7 +12,7 @@ import {
   ClientCode,
   type PartialPaymentResponseData,
   type PaymentResponseData,
-  Network,
+  type Network,
 } from '@apolopay-sdk/core';
 import type { ModalStatus } from './types/status.type.js';
 
@@ -189,10 +189,7 @@ export class ApoloPayButton extends LitElement {
 
     if (response !== true) {
       document.body.style.overflow = 'auto';
-      return this.dispatchEvent(new CustomEvent('dismissed', {
-        bubbles: true,
-        composed: true
-      }));
+      return this.dispatchEvent(new CustomEvent('dismissed'));
     }
 
     this.isOpen = true
@@ -237,10 +234,7 @@ export class ApoloPayButton extends LitElement {
             break;
         }
       } else {
-        this.dispatchEvent(new CustomEvent('dismissed', {
-          bubbles: true,
-          composed: true
-        }));
+        this.dispatchEvent(new CustomEvent('dismissed'));
       }
 
       this.resetState();
