@@ -1,5 +1,5 @@
 if ( window.wc && window.wc.wcBlocksRegistry && window.wp && window.wp.element ) {
-    
+
     const { registerPaymentMethod } = window.wc.wcBlocksRegistry;
     const { getSetting } = window.wc.wcSettings;
     const { createElement, useEffect, useRef } = window.wp.element;
@@ -9,97 +9,119 @@ if ( window.wc && window.wc.wcBlocksRegistry && window.wp && window.wp.element )
 
     const BlockContent = ( props ) => {
         const { eventRegistration } = props;
-
-        const { onPaymentSetup } = eventRegistration; 
+        const { onPaymentSetup } = eventRegistration;
         const apoloPayRef = useRef( null );
 
         useEffect( () => {
             const unsubscribe = onPaymentSetup( async () => {
-                
+
                 const formData = new URLSearchParams();
-                formData.append('action', 'apolo_pay_create_process');
-                formData.append('security', settings.nonce);
+                formData.append( 'action', 'apolo_pay_create_process' );
+                formData.append( 'security', settings.nonce );
 
                 try {
                     const response = await fetch( settings.ajaxUrl, {
                         method: 'POST',
-                        body: formData
-                    });
+                        body: formData,
+                    } );
                     const result = await response.json();
 
                     if ( result.success && result.data.process_id ) {
-                        
+                        const processId = result.data.process_id;
                         const component = apoloPayRef.current;
-                        
-                        component.client = new window.ApoloPaySDK.ApoloPayClient({
-                            publicKey: settings.publicKey
-                        });
-                        component.setAttribute('process-id', result.data.process_id);
+
+                        component.client = new window.ApoloPaySDK.ApoloPayClient( {
+                            publicKey: settings.publicKey,
+                        } );
+                        component.setAttribute( 'process-id', processId );
 
                         return new Promise( ( resolve ) => {
-                            
-                            const handleSuccess = (e) => {
+
+                            const cleanupEvents = () => {
+                                component.removeEventListener( 'success', handleSuccess );
+                                component.removeEventListener( 'error', handleError );
+                                component.removeEventListener( 'expired', handleExpired );
+                                component.removeEventListener( 'dismissed', handleDismissed );
+                            };
+
+                            /**
+                             * WebSocket "success": customer has completed the crypto
+                             * payment. Pass the processId to WooCommerce so that
+                             * process_payment() can save it and set the order to
+                             * "on-hold", awaiting the ApoloPay webhook confirmation.
+                             */
+                            const handleSuccess = () => {
                                 cleanupEvents();
-                                const txId = e.detail?.result?.id || e.detail?.id;
-                                resolve({
+                                resolve( {
                                     type: 'success',
-                                    meta: { paymentMethodData: { apolo_transaction_id: txId } }
-                                });
+                                    meta: {
+                                        paymentMethodData: {
+                                            apolo_process_id: processId,
+                                        },
+                                    },
+                                } );
                             };
 
-                            const handleError = (e) => {
+                            const handleError = ( e ) => {
                                 cleanupEvents();
-                                resolve({ type: 'error', message: e.detail?.message || 'Error en el pago.' });
+                                resolve( {
+                                    type: 'error',
+                                    message: e.detail?.message || 'Error en el pago.',
+                                } );
                             };
 
-                            const handleExpired = (e) => {
+                            const handleExpired = () => {
                                 cleanupEvents();
-                                resolve({ type: 'error', message: 'El tiempo para pagar ha expirado.' });
+                                resolve( {
+                                    type: 'error',
+                                    message: 'El tiempo para pagar ha expirado.',
+                                } );
                             };
 
                             const handleDismissed = () => {
                                 cleanupEvents();
-                                resolve({ type: 'error', message: 'Cancelaste el proceso de pago. Puedes intentar de nuevo.' });
+                                resolve( {
+                                    type: 'error',
+                                    message: 'Cancelaste el proceso de pago. Puedes intentar de nuevo.',
+                                } );
                             };
 
-                            const cleanupEvents = () => {
-                                component.removeEventListener('success', handleSuccess);
-                                component.removeEventListener('error', handleError);
-                                component.removeEventListener('expired', handleExpired);
-                                component.removeEventListener('dismissed', handleDismissed);
-                            };
+                            component.addEventListener( 'success', handleSuccess );
+                            component.addEventListener( 'error', handleError );
+                            component.addEventListener( 'expired', handleExpired );
+                            component.addEventListener( 'dismissed', handleDismissed );
 
-                            component.addEventListener('success', handleSuccess);
-                            component.addEventListener('error', handleError);
-                            component.addEventListener('expired', handleExpired);
-                            component.addEventListener('dismissed', handleDismissed);
-
-                            setTimeout(() => {
+                            setTimeout( () => {
                                 try {
-                                    const wrapper = component.shadowRoot ? component.shadowRoot.getElementById('trigger-wrapper') : null;
-                                    if (wrapper) {
+                                    const wrapper = component.shadowRoot
+                                        ? component.shadowRoot.getElementById( 'trigger-wrapper' )
+                                        : null;
+                                    if ( wrapper ) {
                                         wrapper.click();
                                     } else {
                                         component.click();
                                     }
-                                } catch (err) {
+                                } catch ( err ) {
                                     component.click();
                                 }
-                            }, 150);
-                        });
+                            }, 150 );
+                        } );
 
                     } else {
-                        return { type: 'error', message: result.data?.message || 'Error al conectar con Apolo Pay.' };
+                        return {
+                            type: 'error',
+                            message: result.data?.message || 'Error al conectar con Apolo Pay.',
+                        };
                     }
-                } catch (error) {
+                } catch ( error ) {
                     return { type: 'error', message: 'Error de red.' };
                 }
-            });
+            } );
 
             return () => {
                 unsubscribe();
             };
-        }, [ onPaymentSetup ] ); 
+        }, [ onPaymentSetup ] );
 
         return createElement(
             'div',
@@ -107,8 +129,8 @@ if ( window.wc && window.wc.wcBlocksRegistry && window.wp && window.wp.element )
             createElement( 'p', null, settings.description || 'Paga de forma segura con Apolo Pay.' ),
             createElement( 'apolopay-button', {
                 ref: apoloPayRef,
-                style: { position: 'absolute', width: '0', height: '0', overflow: 'hidden' }
-            }, createElement('span', { slot: '' }) )
+                style: { position: 'absolute', width: '0', height: '0', overflow: 'hidden' },
+            }, createElement( 'span', { slot: '' } ) )
         );
     };
 

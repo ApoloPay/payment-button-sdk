@@ -2,7 +2,7 @@
 jQuery(function ($) {
     'use strict';
 
-    const formSelector = 'form.checkout';
+    const formSelector      = 'form.checkout';
     const componentSelector = 'apolopay-button';
 
     const blockUI = () => {
@@ -29,21 +29,25 @@ jQuery(function ($) {
      * Returning true   → lets WooCommerce proceed normally.
      */
     $(formSelector).on('checkout_place_order_apolo_pay', function () {
-        const txIdInput = document.querySelector('#apolo_transaction_id');
+        const processIdInput = document.querySelector('#apolo_process_id');
 
-        // If the transaction ID is already set (payment completed),
-        // let WooCommerce proceed with order processing.
-        if (txIdInput && txIdInput.value !== '') {
+        // If the process ID is already set (payment completed via WebSocket),
+        // let WooCommerce proceed with order creation.
+        if (processIdInput && processIdInput.value !== '') {
             return true;
         }
 
-        // No transaction yet → start the Apolo Pay flow and block WooCommerce.
+        // No process ID yet → start the Apolo Pay flow and block WooCommerce.
         iniciarFlujoApoloPay();
         return false;
     });
 
     function iniciarFlujoApoloPay() {
         blockUI();
+
+        // Clear any stale processId from a previous attempt.
+        const processIdInput = document.querySelector('#apolo_process_id');
+        if (processIdInput) processIdInput.value = '';
 
         $.ajax({
             type: 'POST',
@@ -55,13 +59,21 @@ jQuery(function ($) {
             },
             success: function (response) {
                 if (response.success && response.data.process_id) {
+                    const processId = response.data.process_id;
+
+                    // Store the processId immediately; it will be sent to
+                    // process_payment() on the server when WC submits the order.
+                    if (processIdInput) {
+                        processIdInput.value = processId;
+                    }
+
                     const component = document.querySelector(componentSelector);
 
                     if (component && window.ApoloPaySDK) {
                         component.client = new window.ApoloPaySDK.ApoloPayClient({
                             publicKey: apolo_params.public_key
                         });
-                        component.setAttribute('process-id', response.data.process_id);
+                        component.setAttribute('process-id', processId);
 
                         const cleanupEvents = () => {
                             component.removeEventListener('success', handleSuccess);
@@ -70,38 +82,42 @@ jQuery(function ($) {
                             component.removeEventListener('dismissed', handleDismissed);
                         };
 
-                        const handleSuccess = (e) => {
+                        /**
+                         * WebSocket "success" event: the customer has completed the
+                         * crypto payment. We put the order in "on-hold" via
+                         * process_payment() on the server; the order will be moved to
+                         * "processing" only after the ApoloPay webhook confirms it.
+                         */
+                        const handleSuccess = () => {
                             cleanupEvents();
-                            
-                            const txId = e.detail?.result?.id || e.detail?.id;
-                            document.querySelector('#apolo_transaction_id').value = txId;
-
-                            // Remove .processing class and unblock BEFORE re-triggering
-                            // submit. WooCommerce's submit handler checks for .processing
-                            // and silently aborts if it's present.
                             unblockUI();
 
-                            // Re-trigger WooCommerce's submit flow.
-                            // This time txIdInput.value is set, so our handler
-                            // will return true and WooCommerce will process the order
-                            // via its normal AJAX checkout.
+                            // processId is already set above; re-trigger WooCommerce's
+                            // AJAX checkout. process_payment() will set the order to
+                            // "on-hold" and save the processId for the webhook handler.
                             $(formSelector).trigger('submit');
                         };
 
                         const handleError = (e) => {
                             cleanupEvents();
+                            // Clear processId so a fresh attempt can be made.
+                            if (processIdInput) processIdInput.value = '';
                             unblockUI();
                             alert('Error en el pago: ' + (e.detail?.message || 'Intenta de nuevo.'));
                         };
 
                         const handleExpired = () => {
                             cleanupEvents();
+                            if (processIdInput) processIdInput.value = '';
                             unblockUI();
                             alert('El tiempo para pagar ha expirado.');
                         };
 
                         const handleDismissed = () => {
                             cleanupEvents();
+                            // Also clear processId when the user dismisses,
+                            // so next "Place Order" click starts a fresh preorder.
+                            if (processIdInput) processIdInput.value = '';
                             unblockUI();
                         };
 
@@ -112,7 +128,9 @@ jQuery(function ($) {
 
                         setTimeout(() => {
                             try {
-                                const wrapper = component.shadowRoot ? component.shadowRoot.getElementById('trigger-wrapper') : null;
+                                const wrapper = component.shadowRoot
+                                    ? component.shadowRoot.getElementById('trigger-wrapper')
+                                    : null;
                                 if (wrapper) wrapper.click();
                                 else component.click();
                             } catch (err) {
@@ -121,15 +139,18 @@ jQuery(function ($) {
                         }, 150);
 
                     } else {
+                        if (processIdInput) processIdInput.value = '';
                         unblockUI();
                         alert('Error interno: No se pudo cargar la pasarela.');
                     }
                 } else {
+                    if (processIdInput) processIdInput.value = '';
                     unblockUI();
                     alert('Error al conectar con Apolo Pay.');
                 }
             },
             error: function () {
+                if (processIdInput) processIdInput.value = '';
                 unblockUI();
                 alert('Error de conexión con el servidor.');
             }
