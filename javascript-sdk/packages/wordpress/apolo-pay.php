@@ -6,8 +6,11 @@
  * Version:     1.1.0
  * Author:      Apolo Pay
  * Author URI:  https://apolopay.app
- * Text Domain: apolo-pay
+ * Text Domain: apolo-pay-for-woocommerce
  * Domain Path: /languages
+ * License:     GPLv2 or later
+ * License URI: https://www.gnu.org/licenses/gpl-2.0.html
+ * Tested up to: 6.9
  * Requires at least: 5.0
  * Requires PHP: 7.4
  * WC requires at least: 3.0
@@ -25,8 +28,7 @@ add_action( 'plugins_loaded', 'init_apolo_pay_gateway_loader' );
 function init_apolo_pay_gateway_loader() {
     if ( ! class_exists( 'WC_Payment_Gateway' ) ) return;
 
-    // ✅ Cargamos traducciones ANTES de instanciar la clase
-    load_plugin_textdomain('apolo-pay', false, dirname(plugin_basename(__FILE__)) . '/languages');
+    // ✅ WordPress.org carga automáticamente las traducciones si el dominio coincide con el slug.
 
     require_once plugin_dir_path( __FILE__ ) . 'includes/class-wc-gateway-apolo-pay.php';
 
@@ -70,7 +72,7 @@ add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), 'apolo_pay_act
 
 function apolo_pay_action_links( $links ) {
     $settings_link = array(
-        '<a href="' . admin_url( 'admin.php?page=wc-settings&tab=checkout&section=apolo_pay' ) . '">' . __( 'Configuración', 'apolo-pay' ) . '</a>',
+        '<a href="' . admin_url( 'admin.php?page=wc-settings&tab=checkout&section=apolo_pay' ) . '">' . __( 'Configuración', 'apolo-pay-for-woocommerce' ) . '</a>',
     );
     return array_merge( $settings_link, $links );
 }

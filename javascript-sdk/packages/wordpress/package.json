@@ -10,7 +10,7 @@
   "main": "apolo-pay.php",
   "scripts": {
     "build": "node scripts/copy-build.js && npm run zip",
-    "zip": "bestzip dist/apolo-pay-plugin.zip apolo-pay.php includes/ assets/ README.md",
+    "zip": "bestzip dist/apolo-pay-for-woocommerce.zip apolo-pay.php includes/ assets/ languages/ README.md",
     "clean": "rimraf dist assets/apolopay-sdk.js"
   },
   "devDependencies": {
