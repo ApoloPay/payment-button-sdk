@@ -51,4 +51,4 @@ You can find your Public and Secret keys in the Apolo Pay Dashboard under the Pa
 == Development and Source Code ==
 
 The compiled `apolopay-sdk.js` file used in this plugin is built from our open-source SDK. You can find the unminified source code, build tools, and contribute to the development on our public GitHub repository:
-https://github.com/ApoloPay/payment-button-sdk/tree/develop
+https://github.com/ApoloPay/payment-button-sdk
