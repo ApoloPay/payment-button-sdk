@@ -35,7 +35,7 @@ Yes, the plugin is fully integrated with the new WooCommerce Blocks system.
 = Where can I find my API keys? =
 You can find your Public and Secret keys in the Apolo Pay Dashboard under the Payment Button settings.
 
-== Development and Source Code ==
+= Where can i find the source code? =
 
 The compiled `apolopay-sdk.js` file used in this plugin is built from our open-source SDK. You can find the unminified source code, build tools, and contribute to the development on our public GitHub repository:
 https://github.com/ApoloPay/payment-button-sdk
