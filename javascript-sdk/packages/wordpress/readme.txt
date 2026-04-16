@@ -2,7 +2,7 @@
 Contributors: apolopay
 Tags: woocommerce, payments, apolo pay, gateway, crypto, usdt
 Requires at least: 5.0
-Tested up to: 6.5
+Tested up to: 7.0
 Stable tag: 1.1.0
 Requires PHP: 7.4
 License: GPLv2 or later
@@ -34,19 +34,6 @@ Yes, the plugin is fully integrated with the new WooCommerce Blocks system.
 
 = Where can I find my API keys? =
 You can find your Public and Secret keys in the Apolo Pay Dashboard under the Payment Button settings.
-
-== Screenshots ==
-
-1. Apolo Pay settings in WooCommerce.
-2. Checkout page showing Apolo Pay as a payment method.
-3. The Apolo Pay payment modal in action.
-
-== Changelog ==
-
-= 1.1.0 =
-* Initial release on the WordPress.org repository.
-* Added support for WooCommerce Blocks.
-* Improved webhook security with signature verification.
 
 == Development and Source Code ==
 

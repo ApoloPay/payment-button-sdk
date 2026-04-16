@@ -1,7 +1,6 @@
 <?php
 /**
  * Plugin Name: Apolo Pay for WooCommerce
- * Plugin URI:  https://apolopay.app
  * Description: Accept payments with ease using the official Apolo Pay integration for WooCommerce. This plugin provides a seamless checkout experience for stablecoin transactions (USDT).
  * Version:     1.1.0
  * Author:      Apolo Pay
@@ -10,7 +9,7 @@
  * Domain Path: /languages
  * License:     GPLv2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
- * Tested up to: 6.9
+ * Tested up to: 7.0
  * Requires at least: 5.0
  * Requires PHP: 7.4
  * WC requires at least: 3.0
