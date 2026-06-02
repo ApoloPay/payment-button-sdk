@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: ApoloPay Checkout for WooCommerce
- * Plugin URI:  https://apolopay.app
+ * Plugin URI:  https://github.com/ApoloPay/payment-button-sdk
  * Description: Accept payments with ease using the official ApoloPay integration for WooCommerce. Provides a seamless checkout experience for stablecoin transactions (USDT).
  * Version:     1.2.0
  * Author:      ApoloPay
