@@ -2,7 +2,7 @@
   "name": "@apolo-pay/wordpress-plugin",
   "version": "1.2.0",
   "private": true,
-  "description": "WooCommerce Payment Gateway for Apolo Pay",
+  "description": "WooCommerce Payment Gateway for ApoloPay",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ApoloPay/payment-button-sdk.git"
@@ -10,7 +10,7 @@
   "main": "apolo-pay.php",
   "scripts": {
     "build": "node scripts/copy-build.js && npm run zip",
-    "zip": "bestzip dist/apolo-pay-for-woocommerce.zip apolo-pay.php includes/ assets/ languages/ README.md",
+    "zip": "bestzip dist/apolopay-checkout-for-woocommerce.zip apolo-pay.php includes/ assets/ languages/ readme.txt",
     "clean": "rimraf dist assets/apolopay-sdk.js"
   },
   "devDependencies": {

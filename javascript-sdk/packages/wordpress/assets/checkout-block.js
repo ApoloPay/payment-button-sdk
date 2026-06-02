@@ -16,7 +16,7 @@ if ( window.wc && window.wc.wcBlocksRegistry && window.wp && window.wp.element )
             const unsubscribe = onPaymentSetup( async () => {
 
                 const formData = new URLSearchParams();
-                formData.append( 'action', 'apolo_pay_create_process' );
+                formData.append( 'action', 'apolopay_create_process' );
                 formData.append( 'security', settings.nonce );
 
                 try {

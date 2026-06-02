@@ -54,7 +54,7 @@ jQuery(function ($) {
             url: apolo_params.ajax_url,
             dataType: 'json',
             data: {
-                action: 'apolo_pay_create_process',
+                action: 'apolopay_create_process',
                 security: apolo_params.nonce
             },
             success: function (response) {
