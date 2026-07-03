@@ -1,24 +1,29 @@
 <?php
 /**
- * Apolo Pay Payment Gateway Class
+ * ApoloPay Payment Gateway Class
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-class WC_Gateway_Apolo_Pay extends WC_Payment_Gateway {
+class ApoloPay_Gateway extends WC_Payment_Gateway {
 
+    /** @var string */
     public $public_key;
+
+    /** @var string */
     public $secret_key;
+
+    /** @var string */
     public $webhook_secret;
 
     public function __construct() {
         $this->id                 = 'apolo_pay';
-        $this->icon               = plugins_url( 'assets/icon.png', dirname( __FILE__, 2 ) . '/apolo-pay.php' );
+        $this->icon               = APOLOPAY_PLUGIN_URL . 'assets/icon.png';
         $this->has_fields         = true;
-        $this->method_title       = __( 'Apolo Pay', 'apolo-pay-for-woocommerce' );
-        $this->method_description = __( 'Accept payments via Apolo Pay securely.', 'apolo-pay-for-woocommerce' );
+        $this->method_title       = __( 'ApoloPay', 'apolopay-checkout-for-woocommerce' );
+        $this->method_description = __( 'Accept payments via ApoloPay securely.', 'apolopay-checkout-for-woocommerce' );
 
         $this->init_form_fields();
         $this->init_settings();
@@ -32,8 +37,8 @@ class WC_Gateway_Apolo_Pay extends WC_Payment_Gateway {
 
         add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
         add_action( 'wp_enqueue_scripts', array( $this, 'payment_scripts' ) );
-        add_action( 'wp_ajax_apolo_pay_create_process', array( $this, 'ajax_create_process' ) );
-        add_action( 'wp_ajax_nopriv_apolo_pay_create_process', array( $this, 'ajax_create_process' ) );
+        add_action( 'wp_ajax_apolopay_create_process', array( $this, 'ajax_create_process' ) );
+        add_action( 'wp_ajax_nopriv_apolopay_create_process', array( $this, 'ajax_create_process' ) );
 
         // Webhook endpoint: https://yoursite.com/?wc-api=apolo_pay_webhook
         add_action( 'woocommerce_api_apolo_pay_webhook', array( $this, 'handle_webhook' ) );
@@ -43,44 +48,44 @@ class WC_Gateway_Apolo_Pay extends WC_Payment_Gateway {
         $webhook_url = home_url( '/?wc-api=apolo_pay_webhook' );
 
         $this->form_fields = array(
-            'enabled' => array(
-                'title'   => __( 'Enable/Disable', 'apolo-pay-for-woocommerce' ),
+            'enabled'          => array(
+                'title'   => __( 'Enable/Disable', 'apolopay-checkout-for-woocommerce' ),
                 'type'    => 'checkbox',
-                'label'   => __( 'Enable Apolo Pay Payment', 'apolo-pay-for-woocommerce' ),
+                'label'   => __( 'Enable ApoloPay Payment', 'apolopay-checkout-for-woocommerce' ),
                 'default' => 'yes',
             ),
-            'title' => array(
-                'title'       => __( 'Title', 'apolo-pay-for-woocommerce' ),
+            'title'            => array(
+                'title'       => __( 'Title', 'apolopay-checkout-for-woocommerce' ),
                 'type'        => 'text',
-                'description' => __( 'Title seen during checkout.', 'apolo-pay-for-woocommerce' ),
-                'default'     => __( 'Pagar con Apolo Pay', 'apolo-pay-for-woocommerce' ),
+                'description' => __( 'Title seen during checkout.', 'apolopay-checkout-for-woocommerce' ),
+                'default'     => __( 'Pay with ApoloPay', 'apolopay-checkout-for-woocommerce' ),
                 'desc_tip'    => true,
             ),
-            'description' => array(
-                'title'       => __( 'Description', 'apolo-pay-for-woocommerce' ),
+            'description'      => array(
+                'title'       => __( 'Description', 'apolopay-checkout-for-woocommerce' ),
                 'type'        => 'textarea',
-                'description' => __( 'Description seen on checkout.', 'apolo-pay-for-woocommerce' ),
-                'default'     => __( 'Paga de forma segura con tarjeta de crédito o débito.', 'apolo-pay-for-woocommerce' ),
+                'description' => __( 'Description seen on checkout.', 'apolopay-checkout-for-woocommerce' ),
+                'default'     => __( 'Crypto payments with ApoloPay.', 'apolopay-checkout-for-woocommerce' ),
                 'desc_tip'    => true,
             ),
-            'public_key' => array(
-                'title'   => __( 'Public Key', 'apolo-pay-for-woocommerce' ),
+            'public_key'       => array(
+                'title'   => __( 'Public Key', 'apolopay-checkout-for-woocommerce' ),
                 'type'    => 'text',
                 'default' => '',
             ),
-            'secret_key' => array(
-                'title'   => __( 'Secret Key', 'apolo-pay-for-woocommerce' ),
+            'secret_key'       => array(
+                'title'   => __( 'Secret Key', 'apolopay-checkout-for-woocommerce' ),
                 'type'    => 'password',
                 'default' => '',
             ),
             'webhook_url_info' => array(
-                'title' => __( 'Webhook URL', 'apolo-pay-for-woocommerce' ),
+                'title' => __( 'Webhook URL', 'apolopay-checkout-for-woocommerce' ),
                 'type'  => 'webhook_url_info',
             ),
-            'webhook_secret' => array(
-                'title'       => __( 'Webhook Secret', 'apolo-pay-for-woocommerce' ),
+            'webhook_secret'   => array(
+                'title'       => __( 'Webhook Secret', 'apolopay-checkout-for-woocommerce' ),
                 'type'        => 'password',
-                'description' => __( 'Secret generated by ApoloPay. Go to Dashboard → Payment Button → Webhook → enter the URL above and copy the generated secret here.', 'apolo-pay-for-woocommerce' ),
+                'description' => __( 'Secret generated by ApoloPay. Go to Dashboard → Payment Button → Webhook → enter the URL above and copy the generated secret here.', 'apolopay-checkout-for-woocommerce' ),
                 'default'     => '',
                 'desc_tip'    => false,
             ),
@@ -97,7 +102,7 @@ class WC_Gateway_Apolo_Pay extends WC_Payment_Gateway {
         ?>
         <tr valign="top">
             <th scope="row" class="titledesc">
-                <label><?php esc_html_e( 'Webhook URL', 'apolo-pay-for-woocommerce' ); ?></label>
+                <label><?php esc_html_e( 'Webhook URL', 'apolopay-checkout-for-woocommerce' ); ?></label>
             </th>
             <td class="forminp">
                 <fieldset>
@@ -111,7 +116,7 @@ class WC_Gateway_Apolo_Pay extends WC_Payment_Gateway {
                         margin-bottom: 6px;
                     "><?php echo esc_html( $webhook_url ); ?></code>
                     <p class="description">
-                        <?php esc_html_e( 'Copy this URL and paste it in your ApoloPay Dashboard → Payment Button Settings → Webhook URL. After saving, copy the generated Webhook Secret into the field below.', 'apolo-pay-for-woocommerce' ); ?>
+                        <?php esc_html_e( 'Copy this URL and paste it in your ApoloPay Dashboard → Payment Button Settings → Webhook URL. After saving, copy the generated Webhook Secret into the field below.', 'apolopay-checkout-for-woocommerce' ); ?>
                     </p>
                 </fieldset>
             </td>
@@ -121,21 +126,36 @@ class WC_Gateway_Apolo_Pay extends WC_Payment_Gateway {
     }
 
     public function payment_scripts() {
-        if ( ! is_checkout() && ! is_wc_endpoint_url( 'order-pay' ) ) return;
-        if ( 'no' === $this->enabled ) return;
+        if ( ! is_checkout() && ! is_wc_endpoint_url( 'order-pay' ) ) {
+            return;
+        }
+        if ( 'no' === $this->enabled ) {
+            return;
+        }
 
-        $plugin_url = plugin_dir_url( dirname( __FILE__, 2 ) . '/apolo-pay.php' );
+        wp_enqueue_script(
+            'apolopay-sdk',
+            APOLOPAY_PLUGIN_URL . 'assets/apolopay-sdk.js',
+            array(),
+            APOLOPAY_VERSION,
+            true
+        );
 
-        wp_enqueue_script( 'apolopay-sdk', $plugin_url . 'assets/apolopay-sdk.js', array(), '1.1.0', true );
-        wp_register_script( 'checkout', $plugin_url . 'assets/checkout.js', array( 'jquery', 'apolopay-sdk' ), '1.2.0', true );
+        wp_register_script(
+            'apolopay-checkout',
+            APOLOPAY_PLUGIN_URL . 'assets/checkout.js',
+            array( 'jquery', 'apolopay-sdk' ),
+            APOLOPAY_VERSION,
+            true
+        );
 
-        wp_localize_script( 'checkout', 'apolo_params', array(
+        wp_localize_script( 'apolopay-checkout', 'apolo_params', array(
             'ajax_url'   => admin_url( 'admin-ajax.php' ),
-            'nonce'      => wp_create_nonce( 'apolo_pay_nonce' ),
+            'nonce'      => wp_create_nonce( 'apolopay_nonce' ),
             'public_key' => $this->public_key,
         ) );
 
-        wp_enqueue_script( 'checkout' );
+        wp_enqueue_script( 'apolopay-checkout' );
     }
 
     public function payment_fields() {
@@ -149,7 +169,7 @@ class WC_Gateway_Apolo_Pay extends WC_Payment_Gateway {
      * AJAX: Creates a preorder in ApoloPay and returns the processId to the frontend.
      */
     public function ajax_create_process() {
-        check_ajax_referer( 'apolo_pay_nonce', 'security' );
+        check_ajax_referer( 'apolopay_nonce', 'security' );
 
         $cart_total = (float) WC()->cart->get_total( 'edit' );
 
@@ -158,30 +178,29 @@ class WC_Gateway_Apolo_Pay extends WC_Payment_Gateway {
             'metadata' => (object) array(),
         );
 
-        // Log removed for production: error_log( 'APOLO DEBUG: Enviando Preorder con amount ' . $cart_total );
-
-        $response = wp_remote_post( 'https://pb-api.apolopay.app/payment-button/process/preorder', array(
-            'method'  => 'POST',
-            'headers' => array(
-                'Content-Type' => 'application/json',
-                'accept'       => '*/*',
-                'x-secret-key' => $this->secret_key,
-            ),
-            'body'    => json_encode( $body ),
-            'timeout' => 45,
-        ) );
+        $response = wp_remote_post(
+            'https://pb-api.apolopay.app/payment-button/process/preorder',
+            array(
+                'method'  => 'POST',
+                'headers' => array(
+                    'Content-Type' => 'application/json',
+                    'accept'       => '*/*',
+                    'x-secret-key' => $this->secret_key,
+                ),
+                'body'    => wp_json_encode( $body ),
+                'timeout' => 45,
+            )
+        );
 
         if ( is_wp_error( $response ) ) {
-            $error_message = $response->get_error_message();
-            // Log removed for production: error_log( 'APOLO DEBUG: Error de WP_Error: ' . $error_message );
-            wp_send_json_error( array( 'message' => $error_message ) );
+            wp_send_json_error( array( 'message' => $response->get_error_message() ) );
         }
 
         $api_data   = json_decode( wp_remote_retrieve_body( $response ), true );
         $process_id = isset( $api_data['result']['id'] ) ? $api_data['result']['id'] : null;
 
         if ( ! $process_id ) {
-            wp_send_json_error( array( 'message' => 'La API no devolvió un ID válido en result.' ) );
+            wp_send_json_error( array( 'message' => 'The API did not return a valid ID in result.' ) );
         }
 
         wp_send_json_success( array( 'process_id' => $process_id ) );
@@ -190,42 +209,49 @@ class WC_Gateway_Apolo_Pay extends WC_Payment_Gateway {
     /**
      * process_payment: called by WooCommerce after checkout form submission.
      *
-     * At this point the WC order already exists. We:
-     *   1. Save the processId (from the preorder) as order meta.
-     *   2. Set the order to "on-hold" — it waits for the ApoloPay webhook.
-     *   3. Redirect to the "Thank you" page. The order will be completed by handle_webhook().
+     * 1. Saves the processId (from the preorder) as order meta.
+     * 2. Checks for a pending webhook transient (race-condition guard).
+     * 3. Sets order to "on-hold" or completes it immediately.
      */
     public function process_payment( $order_id ) {
-        // Verificar nonce de WooCommerce para seguridad (plugin-check lo requiere)
-        if ( ! isset( $_POST['woocommerce-process-checkout-nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['woocommerce-process-checkout-nonce'] ) ), 'woocommerce-process_checkout' ) ) {
+        // Classic Checkout includes this nonce; Block Checkout uses the Store API
+        // which authenticates before calling process_payment() — so we only verify
+        // if the nonce is actually present.
+        if (
+            isset( $_POST['woocommerce-process-checkout-nonce'] ) &&
+            ! wp_verify_nonce(
+                sanitize_text_field( wp_unslash( $_POST['woocommerce-process-checkout-nonce'] ) ),
+                'woocommerce-process_checkout'
+            )
+        ) {
             return array( 'result' => 'failure' );
         }
 
         $order      = wc_get_order( $order_id );
-        $process_id = isset( $_POST['apolo_process_id'] ) ? sanitize_text_field( wp_unslash( $_POST['apolo_process_id'] ) ) : '';
-        $logger     = wc_get_logger();
-        $context    = array( 'source' => 'apolo-pay-for-woocommerce' );
+        $process_id = isset( $_POST['apolo_process_id'] )
+            ? sanitize_text_field( wp_unslash( $_POST['apolo_process_id'] ) )
+            : '';
+
+        $logger  = wc_get_logger();
+        $context = array( 'source' => 'apolopay-checkout-for-woocommerce' );
 
         if ( empty( $process_id ) ) {
             wc_add_notice(
-                __( 'No se pudo verificar la transacción de Apolo Pay. Por favor, intenta de nuevo.', 'apolo-pay-for-woocommerce' ),
+                __( 'Could not verify the ApoloPay transaction. Please try again.', 'apolopay-checkout-for-woocommerce' ),
                 'error'
             );
             return array( 'result' => 'failure' );
         }
 
-        // Persist the processId so the webhook handler can locate this order.
         $order->update_meta_data( '_apolo_process_id', $process_id );
         $order->save();
 
         // ── Race-condition check ──────────────────────────────────────────────
-        // ApoloPay fires the webhook almost instantly after the customer pays.
-        // If the webhook arrived BEFORE WooCommerce finished creating this
-        // order, handle_webhook() stored the event in a transient. We check
-        // for it now and, if present, complete the order immediately instead
-        // of leaving it in "on-hold".
-        $transient_key    = 'apolo_pending_wh_' . $process_id;
-        $pending_webhook  = get_transient( $transient_key );
+        // ApoloPay fires the webhook almost instantly after payment. If it
+        // arrived before WooCommerce finished creating this order,
+        // handle_webhook() stored a transient. Complete the order immediately.
+        $transient_key   = 'apolopay_pending_wh_' . $process_id;
+        $pending_webhook = get_transient( $transient_key );
 
         if ( $pending_webhook ) {
             delete_transient( $transient_key );
@@ -234,7 +260,7 @@ class WC_Gateway_Apolo_Pay extends WC_Payment_Gateway {
             $order->add_order_note(
                 sprintf(
                     /* translators: %s: ApoloPay process ID */
-                    __( 'Pago confirmado por ApoloPay (webhook recibido antes de crear la orden). Process ID: %s', 'apolo-pay-for-woocommerce' ),
+                    __( 'Payment confirmed by ApoloPay (webhook received before order was created). Process ID: %s', 'apolopay-checkout-for-woocommerce' ),
                     $process_id
                 )
             );
@@ -242,7 +268,7 @@ class WC_Gateway_Apolo_Pay extends WC_Payment_Gateway {
             WC()->cart->empty_cart();
 
             $logger->info(
-                sprintf( 'Orden #%d completada inmediatamente (webhook pendiente encontrado). Process ID: %s', $order_id, $process_id ),
+                sprintf( 'Order #%d completed immediately (pending webhook found). Process ID: %s', $order_id, $process_id ),
                 $context
             );
 
@@ -257,7 +283,7 @@ class WC_Gateway_Apolo_Pay extends WC_Payment_Gateway {
             'on-hold',
             sprintf(
                 /* translators: %s: ApoloPay process ID */
-                __( 'Pago iniciado vía Apolo Pay. En espera de confirmación del webhook. Process ID: %s', 'apolo-pay-for-woocommerce' ),
+                __( 'Payment initiated via ApoloPay. Awaiting webhook confirmation. Process ID: %s', 'apolopay-checkout-for-woocommerce' ),
                 $process_id
             )
         );
@@ -265,7 +291,7 @@ class WC_Gateway_Apolo_Pay extends WC_Payment_Gateway {
         WC()->cart->empty_cart();
 
         $logger->info(
-            sprintf( 'Orden #%d puesta en on-hold. Process ID: %s', $order_id, $process_id ),
+            sprintf( 'Order #%d set to on-hold. Process ID: %s', $order_id, $process_id ),
             $context
         );
 
@@ -285,13 +311,13 @@ class WC_Gateway_Apolo_Pay extends WC_Payment_Gateway {
      */
     public function handle_webhook() {
         $logger  = wc_get_logger();
-        $context = array( 'source' => 'apolo-pay-for-woocommerce' );
+        $context = array( 'source' => 'apolopay-checkout-for-woocommerce' );
 
-        $payload   = file_get_contents( 'php://input' );
+        // Raw payload must be read before any output / processing.
+        // It MUST NOT be sanitized before HMAC verification — doing so would
+        // alter the bytes and break the signature check.
+        $payload = file_get_contents( 'php://input' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
 
-        // Header names sent by the ApoloPay microservice (WebhookService/sendWebhook):
-        //   X-Signature  → HMAC-SHA256 of the JSON payload signed with the webhookSecret
-        //   X-Timestamp  → ISO-8601 timestamp of when the webhook was dispatched
         $signature = isset( $_SERVER['HTTP_X_SIGNATURE'] )
             ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_X_SIGNATURE'] ) )
             : '';
@@ -300,39 +326,29 @@ class WC_Gateway_Apolo_Pay extends WC_Payment_Gateway {
             ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_X_TIMESTAMP'] ) )
             : '';
 
-        // ── 0. Log every incoming request so we can verify connectivity ────────
+        // ── 0. Log incoming request ────────────────────────────────────────────
         $logger->info(
             sprintf(
                 "[WEBHOOK RECEIVED]\n  IP: %s\n  X-Signature: %s\n  X-Timestamp: %s\n  Payload: %s",
                 isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : 'unknown',
                 $signature ?: '(none)',
                 $timestamp ?: '(none)',
-                $payload ?: '(empty)'
+                wp_strip_all_tags( $payload ?: '(empty)' )
             ),
             $context
         );
 
         // ── 1. Signature verification (HMAC-SHA256) ───────────────────────────
-        //
-        // If a webhook_secret is configured in the plugin settings, the
-        // signature is REQUIRED and must match. If no secret is set yet
-        // (e.g. during initial testing), we skip verification with a warning.
         if ( ! empty( $this->webhook_secret ) ) {
             $expected_signature = hash_hmac( 'sha256', $payload, $this->webhook_secret );
 
             if ( empty( $signature ) ) {
                 $logger->warning(
-                    '[WEBHOOK] Webhook secret is configured but no x-apolopay-signature header was received. ' .
-                    'Make sure the Webhook URL is registered in the ApoloPay Dashboard so signatures are sent.',
+                    '[WEBHOOK] Webhook secret is configured but no X-Signature header was received.',
                     $context
                 );
-                // In strict mode you would reject here; for now we continue to
-                // allow testing while the dashboard is being set up.
             } elseif ( ! hash_equals( $expected_signature, $signature ) ) {
-                $logger->error(
-                    sprintf( '[WEBHOOK] Invalid signature.\n  Received:  %s\n  Expected: %s', $signature, $expected_signature ),
-                    $context
-                );
+                $logger->error( '[WEBHOOK] Invalid signature.', $context );
                 http_response_code( 401 );
                 exit( 'Invalid signature.' );
             } else {
@@ -343,16 +359,6 @@ class WC_Gateway_Apolo_Pay extends WC_Payment_Gateway {
         }
 
         // ── 2. Parse JSON payload ─────────────────────────────────────────────
-        //
-        // Actual ApoloPay payload format (observed in production):
-        //   { "id": "uuid", "status": "completed", "amount": 1,
-        //     "network": "apolopay", "asset": "USDT",
-        //     "wallet": null, "metadata": {}, "finalizedAt": "..." }
-        //
-        // Documentation format (may differ from live):
-        //   { "event": "payment.completed", "processId": "uuid", ... }
-        //
-        // We support both formats for maximum compatibility.
         $event = json_decode( $payload, true );
 
         if ( json_last_error() !== JSON_ERROR_NONE || ! is_array( $event ) ) {
@@ -367,17 +373,21 @@ class WC_Gateway_Apolo_Pay extends WC_Payment_Gateway {
         $is_completed = false;
 
         if ( isset( $event['status'] ) && 'completed' === $event['status'] ) {
-            // Format A — real ApoloPay webhook
             $is_completed = true;
         } elseif ( isset( $event['event'] ) && 'payment.completed' === $event['event'] ) {
-            // Format B — documented format
             $is_completed = true;
         } elseif ( isset( $event['event'] ) ) {
-            $logger->info( '[WEBHOOK] Ignoring event type: ' . $event['event'], $context );
+            $logger->info(
+                '[WEBHOOK] Ignoring event type: ' . sanitize_text_field( $event['event'] ),
+                $context
+            );
             http_response_code( 200 );
             exit( 'Event ignored.' );
         } elseif ( isset( $event['status'] ) ) {
-            $logger->info( '[WEBHOOK] Ignoring status: ' . $event['status'], $context );
+            $logger->info(
+                '[WEBHOOK] Ignoring status: ' . sanitize_text_field( $event['status'] ),
+                $context
+            );
             http_response_code( 200 );
             exit( 'Status ignored.' );
         } else {
@@ -394,12 +404,12 @@ class WC_Gateway_Apolo_Pay extends WC_Payment_Gateway {
         // ── 4. Extract processId (supports both field names) ──────────────────
         $process_id = '';
         if ( ! empty( $event['id'] ) ) {
-            $process_id = sanitize_text_field( $event['id'] );       // Format A
+            $process_id = sanitize_text_field( $event['id'] );
         } elseif ( ! empty( $event['processId'] ) ) {
-            $process_id = sanitize_text_field( $event['processId'] ); // Format B
+            $process_id = sanitize_text_field( $event['processId'] );
         }
 
-        $metadata_orderid = isset( $event['metadata']['orderId'] ) ? intval( $event['metadata']['orderId'] ) : 0;
+        $metadata_orderid = isset( $event['metadata']['orderId'] ) ? absint( $event['metadata']['orderId'] ) : 0;
 
         if ( empty( $process_id ) ) {
             $logger->error( '[WEBHOOK] Missing process ID (id / processId) in payload.', $context );
@@ -412,10 +422,9 @@ class WC_Gateway_Apolo_Pay extends WC_Payment_Gateway {
             $context
         );
 
-        // ── 5. Locate the WooCommerce order ──────────────────────────────────
+        // ── 5. Locate the WooCommerce order ───────────────────────────────────
         $order = null;
 
-        // Primary: try orderId from metadata (present if ApoloPay includes it).
         if ( $metadata_orderid > 0 ) {
             $candidate = wc_get_order( $metadata_orderid );
             if ( $candidate && $candidate->get_meta( '_apolo_process_id' ) === $process_id ) {
@@ -424,18 +433,17 @@ class WC_Gateway_Apolo_Pay extends WC_Payment_Gateway {
             }
         }
 
-        // Fallback: search by _apolo_process_id meta (covers all cases).
         if ( ! $order ) {
             $orders = wc_get_orders( array(
-                'meta_query' => array(
+                'meta_query' => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
                     array(
                         'key'     => '_apolo_process_id',
                         'value'   => $process_id,
                         'compare' => '=',
                     ),
                 ),
-                'limit'      => 1,
-                'status'     => array( 'on-hold', 'pending' ),
+                'limit'  => 1,
+                'status' => array( 'on-hold', 'pending' ),
             ) );
 
             if ( ! empty( $orders ) ) {
@@ -446,32 +454,30 @@ class WC_Gateway_Apolo_Pay extends WC_Payment_Gateway {
 
         if ( ! $order ) {
             // ── Race-condition guard ──────────────────────────────────────────
-            // The webhook arrived before WooCommerce finished creating the order.
-            // Store the event in a transient (1 hour TTL). process_payment() will
-            // find it and complete the order immediately after saving the meta.
-            $transient_key = 'apolo_pending_wh_' . $process_id;
-            set_transient( $transient_key, $event, HOUR_IN_SECONDS );
+            // The webhook arrived before WooCommerce created the order.
+            // Store a flag transient (1 hour TTL). process_payment() will find
+            // it and complete the order immediately after saving the meta.
+            $transient_key = 'apolopay_pending_wh_' . $process_id;
+            set_transient( $transient_key, true, HOUR_IN_SECONDS );
 
             $logger->warning(
                 sprintf(
-                    '[WEBHOOK] Order not found yet for Process ID: %s — stored as pending transient. Will complete when WC order is created.',
+                    '[WEBHOOK] Order not found yet for Process ID: %s — stored as pending transient.',
                     $process_id
                 ),
                 $context
             );
 
-            // Return 200 so ApoloPay marks this delivery as successful.
-            // The order will be completed by process_payment() when it checks the transient.
             http_response_code( 200 );
             header( 'Content-Type: application/json' );
-            exit( json_encode( array( 'received' => true ) ) );
+            exit( wp_json_encode( array( 'received' => true ) ) );
         }
 
         // ── 6. Idempotency guard — prevent double-processing ──────────────────
         if ( $order->has_status( array( 'processing', 'completed' ) ) ) {
             $logger->info( '[WEBHOOK] Order #' . $order->get_id() . ' already processed. Skipping.', $context );
             http_response_code( 200 );
-            exit( json_encode( array( 'received' => true ) ) );
+            exit( wp_json_encode( array( 'received' => true ) ) );
         }
 
         // ── 7. Complete the order ─────────────────────────────────────────────
@@ -479,18 +485,18 @@ class WC_Gateway_Apolo_Pay extends WC_Payment_Gateway {
         $order->add_order_note(
             sprintf(
                 /* translators: %s: ApoloPay process ID */
-                __( 'Pago confirmado por webhook de ApoloPay. Process ID: %s', 'apolo-pay-for-woocommerce' ),
+                __( 'Payment confirmed by ApoloPay webhook. Process ID: %s', 'apolopay-checkout-for-woocommerce' ),
                 $process_id
             )
         );
 
         $logger->info(
-            sprintf( '[WEBHOOK] ✅ Order #%d completada exitosamente. Process ID: %s', $order->get_id(), $process_id ),
+            sprintf( '[WEBHOOK] Order #%d completed successfully. Process ID: %s', $order->get_id(), $process_id ),
             $context
         );
 
         http_response_code( 200 );
         header( 'Content-Type: application/json' );
-        exit( json_encode( array( 'received' => true ) ) );
+        exit( wp_json_encode( array( 'received' => true ) ) );
     }
 }

@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "skills": {
+    "wordpress-plugin-development": {
+      "source": "sickn33/antigravity-awesome-skills",
+      "sourceType": "github",
+      "skillPath": "skills/wordpress-plugin-development/SKILL.md",
+      "computedHash": "b5a8c01a08d322544ae36da2ab71876b4b822a005fa1e2622f8288d576a44462"
+    }
+  }
+}
