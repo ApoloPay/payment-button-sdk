@@ -1,76 +1,77 @@
 <?php
 /**
- * Plugin Name: Apolo Pay for WooCommerce
- * Plugin URI:  https://apolopay.app
- * Description: Pasarela de pago oficial de Apolo Pay para WooCommerce. Permite aceptar pagos con tarjeta de forma segura.
- * Version:     1.1.0
- * Author:      Apolo Pay
+ * Plugin Name: ApoloPay Checkout for WooCommerce
+ * Plugin URI:  https://github.com/ApoloPay/payment-button-sdk
+ * Description: Accept payments with ease using the official ApoloPay integration for WooCommerce. Provides a seamless checkout experience for stablecoin transactions (USDT).
+ * Version:     1.2.0
+ * Author:      ApoloPay
  * Author URI:  https://apolopay.app
- * Text Domain: apolo-pay
+ * Text Domain: apolopay-checkout-for-woocommerce
  * Domain Path: /languages
+ * License:     GPLv2 or later
+ * License URI: https://www.gnu.org/licenses/gpl-2.0.html
+ * Tested up to: 7.0
  * Requires at least: 5.0
  * Requires PHP: 7.4
  * WC requires at least: 3.0
+ * Requires Plugins: woocommerce
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
-    exit; // Salida si se accede directamente
+    exit;
 }
 
+define( 'APOLOPAY_PLUGIN_FILE', __FILE__ );
+define( 'APOLOPAY_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
+define( 'APOLOPAY_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
+define( 'APOLOPAY_VERSION', '1.2.0' );
+
 /**
- * Inicialización del plugin
+ * Bootstrap the payment gateway after WooCommerce loads.
  */
-add_action( 'plugins_loaded', 'init_apolo_pay_gateway_loader' );
+add_action( 'plugins_loaded', 'apolopay_init_gateway' );
 
-function init_apolo_pay_gateway_loader() {
-    if ( ! class_exists( 'WC_Payment_Gateway' ) ) return;
+function apolopay_init_gateway() {
+    if ( ! class_exists( 'WC_Payment_Gateway' ) ) {
+        return;
+    }
 
-    // ✅ Cargamos traducciones ANTES de instanciar la clase
-    load_plugin_textdomain('apolo-pay', false, dirname(plugin_basename(__FILE__)) . '/languages');
+    require_once APOLOPAY_PLUGIN_DIR . 'includes/class-apolopay-gateway.php';
 
-    require_once plugin_dir_path( __FILE__ ) . 'includes/class-wc-gateway-apolo-pay.php';
+    // Instantiate to register AJAX hooks inside the constructor.
+    new ApoloPay_Gateway();
 
-    // Instancia para registrar hooks AJAX
-    new WC_Gateway_Apolo_Pay();
-
-    add_filter( 'woocommerce_payment_gateways', function($gateways) {
-        $gateways[] = 'WC_Gateway_Apolo_Pay';
+    add_filter( 'woocommerce_payment_gateways', function ( $gateways ) {
+        $gateways[] = 'ApoloPay_Gateway';
         return $gateways;
-    });
+    } );
 }
 
 /**
- * Registrar la pasarela en WooCommerce Blocks
+ * Register the gateway with WooCommerce Checkout Blocks.
  */
-add_action( 'woocommerce_blocks_payment_method_type_registration', 'register_apolo_pay_blocks_integration' );
+add_action( 'woocommerce_blocks_payment_method_type_registration', 'apolopay_register_blocks' );
 
-function register_apolo_pay_blocks_integration( $payment_method_registry ) {
-    // Si la clase base de Blocks no existe, salimos (por compatibilidad con WC antiguos)
+function apolopay_register_blocks( $payment_method_registry ) {
     if ( ! class_exists( '\Automattic\WooCommerce\Blocks\Payments\Integrations\AbstractPaymentMethodType' ) ) {
         return;
     }
 
-    require_once plugin_dir_path( __FILE__ ) . 'includes/class-wc-apolo-pay-blocks-integration.php';
-    
-    $payment_method_registry->register( new WC_Apolo_Pay_Blocks_Integration() );
+    require_once APOLOPAY_PLUGIN_DIR . 'includes/class-apolopay-blocks-integration.php';
+
+    $payment_method_registry->register( new ApoloPay_Blocks_Integration() );
 }
 
 /**
- * Agrega la clase a la lista de métodos de pago de WooCommerce
+ * Add a Settings link on the Plugins list page.
  */
-function add_apolo_pay_to_woocommerce( $gateways ) {
-    $gateways[] = 'WC_Gateway_Apolo_Pay';
-    return $gateways;
-}
+add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), 'apolopay_action_links' );
 
-/**
- * Agregar link de configuración en la lista de plugins (UX mejorada)
- */
-add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), 'apolo_pay_action_links' );
-
-function apolo_pay_action_links( $links ) {
+function apolopay_action_links( $links ) {
     $settings_link = array(
-        '<a href="' . admin_url( 'admin.php?page=wc-settings&tab=checkout&section=apolo_pay' ) . '">' . __( 'Configuración', 'apolo-pay' ) . '</a>',
+        '<a href="' . esc_url( admin_url( 'admin.php?page=wc-settings&tab=checkout&section=apolo_pay' ) ) . '">'
+            . esc_html__( 'Settings', 'apolopay-checkout-for-woocommerce' )
+        . '</a>',
     );
     return array_merge( $settings_link, $links );
 }

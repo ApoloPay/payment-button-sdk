@@ -1,5 +1,11 @@
 # @apolopay-sdk/astro
 
+## 1.2.3
+
+### Patch Changes
+
+- fix: include ApoloPayButton.astro in published package
+
 ## 1.2.2
 
 ### Patch Changes
