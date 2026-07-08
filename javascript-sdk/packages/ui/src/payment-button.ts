@@ -347,12 +347,13 @@ export class ApoloPayButton extends LitElement {
   // --- Styles ---
   static override styles = css`
     :host {
-      display: inline-block;
+      display: var(--apolopay-display, inline-block);
     }
 
     #trigger-wrapper {
       position: relative;
-      display: inline-block;
+      display: var(--apolopay-trigger-display, inline-block);
+      width: var(--apolopay-trigger-width, auto);
       cursor: pointer;
     }
   `;
