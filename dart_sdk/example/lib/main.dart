@@ -40,7 +40,7 @@ class ApoloPlaygroundApp extends StatelessWidget {
           hintStyle: const TextStyle(color: Color(0xFFA1A1A1), fontSize: 14),
           labelStyle: const TextStyle(color: Color(0xFFA1A1A1), fontSize: 14),
         ),
-        cardTheme: CardTheme(
+        cardTheme: CardThemeData(
           color: const Color(0xFF1A1A1E),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),

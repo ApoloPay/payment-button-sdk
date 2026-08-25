@@ -317,8 +317,8 @@ class _ApoloPayModalState extends State<ApoloPayModal>
                   I18n.t.modal.sandbox.actions.partial, SandboxOutcome.partial),
               buildOption(
                   I18n.t.modal.sandbox.actions.error, SandboxOutcome.error),
-              buildOption(I18n.t.modal.sandbox.actions.expired,
-                  SandboxOutcome.expired),
+              buildOption(
+                  I18n.t.modal.sandbox.actions.expired, SandboxOutcome.expired),
               const SizedBox(height: 8),
             ],
           ),
@@ -560,8 +560,7 @@ class _ApoloPayModalState extends State<ApoloPayModal>
               const SizedBox(height: 16),
             ]),
           ),
-          if (_isSandbox)
-            Positioned(top: 10, child: _buildSandboxBadge()),
+          if (_isSandbox) Positioned(top: 10, child: _buildSandboxBadge()),
         ],
       ),
     );
@@ -785,7 +784,7 @@ class _ApoloPayModalState extends State<ApoloPayModal>
             border: Border.all(color: const Color(0xFFF3F4F6)),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.05),
+                color: Colors.black.withValues(alpha: 0.05),
                 blurRadius: 10,
                 offset: const Offset(0, 4),
               ),
