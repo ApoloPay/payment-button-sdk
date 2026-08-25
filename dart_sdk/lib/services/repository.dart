@@ -4,6 +4,7 @@ import 'package:apolopay_sdk/utils/variables.dart';
 import 'package:http/http.dart' as http;
 import 'package:apolopay_sdk/models/client_response.dart';
 import 'package:apolopay_sdk/models/asset.dart';
+import 'package:apolopay_sdk/models/network.dart';
 
 class Repository {
   static Map<String, String> getHeaders(String? publicKey) {
@@ -67,7 +68,7 @@ class Repository {
       final wallet = result['wallet'];
       final networkName = result['network'];
 
-      final String address = networkName == "apolopay"
+      final String address = networkName == Network.apolopayNetworkId
           ? "$appURL/payment-process/$processId"
           : wallet;
 

@@ -69,6 +69,20 @@ export const es: Dictionary = {
       message2: 'con los detalles.',
       details: 'Detalles de la compra',
       support: 'Cualquier duda o inquietud puedes comunicarte con soporte'
+    },
+    sandbox: {
+      badge: '🧪 Modo prueba',
+      title: 'Simular resultado de pago',
+      actions: {
+        success: 'Simular pago exitoso',
+        partial: 'Simular pago parcial',
+        error: 'Simular error de pago',
+        expired: 'Simular expiración del QR'
+      },
+      partialMessage: 'Pago parcial detectado (modo prueba). Aún queda un monto por pagar.',
+      qrInfo: 'Estás usando <strong>datos de prueba</strong>. Para simular el resultado del pago, presiona el botón <strong>Simular pago</strong> de abajo.',
+      qrPlaceholder: 'QR de prueba (modo sandbox) - Solo para mostrar, no contiene datos de pago reales.',
+      simulateButton: 'Simular pago'
     }
   },
   successes: {
@@ -86,6 +100,7 @@ export const es: Dictionary = {
     qrFetchError: 'Fallo al obtener los detalles del código QR.',
     paymentProcessNotAvailable: 'El proceso de pago no está disponible.',
     getAssetsError: 'Error al obtener los activos.',
-    unknownError: 'Ocurrió un error inesperado.'
+    unknownError: 'Ocurrió un error inesperado.',
+    sandboxSimulatedError: 'Error simulado (modo prueba). Este resultado no proviene de un pago real.'
   }
 };

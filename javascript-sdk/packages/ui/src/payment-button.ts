@@ -13,6 +13,8 @@ import {
   type PartialPaymentResponseData,
   type PaymentResponseData,
   type Network,
+  type SandboxOutcome,
+  isApoloPayNetwork,
 } from '@apolopay-sdk/core';
 import type { ModalStatus } from './types/status.type.js';
 
@@ -55,6 +57,11 @@ export class ApoloPayButton extends LitElement {
       this.validateConfig();
       if (this.client && this._service === null) {
         this.initService();
+      }
+      if (changedProperties.has('processId')) {
+        // A new process means the previous QR/simulated result (e.g. a sandbox
+        // partial payment) no longer applies — clear it before loading the next one.
+        this.resetState();
       }
       if (this.client && this.processId) {
         this.loadInitialData();
@@ -115,7 +122,12 @@ export class ApoloPayButton extends LitElement {
 
   private validateConfig() {
     const key = this.client?.getPublicKey();
-    const isKeyValid = !!(key && key.startsWith('pk_') && key.length === 35);
+    // Sandbox (pk_test...) keys are not required to match the live key length.
+    const isKeyValid = !!(
+      key &&
+      key.startsWith('pk_') &&
+      (key.startsWith('pk_test') || key.length === 35)
+    );
 
     if (this.client && !isKeyValid) {
       console.error(
@@ -163,6 +175,8 @@ export class ApoloPayButton extends LitElement {
     this.paymentAddress = null;
     this.paymentUrl = null;
     this.qrCodeExpiresAt = null;
+    this.amount = 0;
+    this.amountPaid = undefined;
   }
 
   // --- Event Handlers (Triggered by Child Components) ---
@@ -258,7 +272,7 @@ export class ApoloPayButton extends LitElement {
     this.selectedNetwork = event.detail.network.id;
     if (!this.selectedAsset || !this.selectedNetwork) return;
 
-    if (event.detail.network.network !== 'apolopay') {
+    if (!isApoloPayNetwork(event.detail.network)) {
       const response = await InfoModal.show({
         title: I18n.t.modal.info.disclaimerTitle,
         content: I18n.t.modal.info.disclaimerConfirmation.replace('$termsURL', termsURL)
@@ -276,6 +290,7 @@ export class ApoloPayButton extends LitElement {
     this.qrCodeUrl = null;
     this.paymentAddress = null;
     this.error = null;
+    this.successResult = null;
 
     try {
       const qrData = await this._service!.fetchQrCodeDetails(detail, {
@@ -310,7 +325,9 @@ export class ApoloPayButton extends LitElement {
       this.paymentUrl = qrData.paymentUrl || null;
       this.qrCodeExpiresAt = qrData.expiresAtMs;
       this.amount = typeof qrData.amount === 'string' ? parseFloat(qrData.amount) : qrData.amount;
-      if (qrData.amountPaid) this.amountPaid = typeof qrData.amountPaid === 'string' ? parseFloat(qrData.amountPaid) : qrData.amountPaid;
+      this.amountPaid = qrData.amountPaid !== undefined && qrData.amountPaid !== null
+        ? (typeof qrData.amountPaid === 'string' ? parseFloat(qrData.amountPaid) : qrData.amountPaid)
+        : undefined;
       this.status = 'idle';
     } catch (e) {
       const error = e as ClientError
@@ -324,6 +341,79 @@ export class ApoloPayButton extends LitElement {
 
       console.error("Error fetching QR code details:", error);
       this.currentStep = ModalStep.SELECT_NETWORK;
+    }
+  }
+
+  private handleSandboxSimulate(event: CustomEvent<SandboxOutcome>) {
+    const outcome = event.detail;
+
+    switch (outcome) {
+      case 'success': {
+        const asset = this.assets.find((a: any) => a.id === this.selectedAsset);
+        const network = asset?.networks?.find((n: any) => n.id === this.selectedNetwork);
+
+        this.status = 'processing';
+        this.currentStep = ModalStep.RESULT;
+        this.successResult = new ClientResponse({
+          code: ClientCode.payment_success,
+          message: I18n.t.successes.success,
+          result: {
+            id: '',
+            network: network?.network ?? '',
+            asset: asset?.symbol ?? '',
+            amount: this.amount,
+            status: 'success',
+          },
+        });
+
+        setTimeout(() => {
+          this.status = 'success';
+        }, 2000);
+        break;
+      }
+
+      case 'partial': {
+        const asset = this.assets.find((a: any) => a.id === this.selectedAsset);
+        const network = asset?.networks?.find((n: any) => n.id === this.selectedNetwork);
+        const total = this.amount;
+        const paid = total * 0.4;
+
+        this.status = 'idle';
+        this.currentStep = ModalStep.SHOW_QR;
+        this.amount = total;
+        this.amountPaid = paid;
+        this.successResult = new ClientResponse({
+          code: ClientCode.payment_partial,
+          message: I18n.t.modal.sandbox.partialMessage,
+          result: {
+            id: '',
+            network: network?.network ?? '',
+            asset: asset?.symbol ?? '',
+            amount: total,
+            amountPaid: paid,
+            status: 'pending',
+          },
+        });
+        break;
+      }
+
+      case 'error':
+        this.status = 'error';
+        this.currentStep = ModalStep.RESULT;
+        this.error = {
+          code: ClientCode.payment_failed,
+          message: I18n.t.errors.sandboxSimulatedError,
+        };
+        break;
+
+      case 'expired':
+        this.status = 'error';
+        this.currentStep = ModalStep.RESULT;
+        this.error = {
+          code: ClientCode.payment_timeout,
+          message: I18n.t.errors.timeout,
+        };
+        break;
     }
   }
 
@@ -396,11 +486,13 @@ export class ApoloPayButton extends LitElement {
         .email=${this.email}
         .qrCodeExpiresAt=${this.qrCodeExpiresAt}
         .paymentUrl=${this.paymentUrl}
+        .isSandbox=${this.client?.isSandbox() ?? false}
         @closeRequest=${this.handleCloseRequest}
         @assetSelect=${this.handleAssetSelect}
         @networkSelect=${this.handleInitiatePayment}
         @changeStep=${this.handleChangeStep}
         @expired=${this.handleExpired}
+        @sandboxSimulate=${this.handleSandboxSimulate}
       ></payment-modal>
     `;
   }

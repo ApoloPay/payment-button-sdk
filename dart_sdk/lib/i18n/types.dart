@@ -27,6 +27,7 @@ class DictionaryModal {
     required this.info,
     required this.warnings,
     required this.success,
+    required this.sandbox,
   });
   final DictionaryModalTitles titles;
   final DictionaryModalSubTitles subTitles;
@@ -35,6 +36,7 @@ class DictionaryModal {
   final DictionaryModalInfo info;
   final DictionaryModalWarnings warnings;
   final DictionaryModalSuccess success;
+  final DictionaryModalSandbox sandbox;
 }
 
 class DictionaryModalTitles {
@@ -156,6 +158,38 @@ class DictionaryModalSuccess {
   final String support;
 }
 
+class DictionaryModalSandbox {
+  const DictionaryModalSandbox({
+    required this.badge,
+    required this.title,
+    required this.actions,
+    required this.partialMessage,
+    required this.qrInfo,
+    required this.qrPlaceholder,
+    required this.simulateButton,
+  });
+  final String badge;
+  final String title;
+  final DictionaryModalSandboxActions actions;
+  final String partialMessage;
+  final String qrInfo;
+  final String qrPlaceholder;
+  final String simulateButton;
+}
+
+class DictionaryModalSandboxActions {
+  const DictionaryModalSandboxActions({
+    required this.success,
+    required this.partial,
+    required this.error,
+    required this.expired,
+  });
+  final String success;
+  final String partial;
+  final String error;
+  final String expired;
+}
+
 class DictionarySuccesses {
   const DictionarySuccesses({
     required this.success,
@@ -177,6 +211,7 @@ class DictionaryErrors {
     required this.paymentProcessNotAvailable,
     required this.getAssetsError,
     required this.unknownError,
+    required this.sandboxSimulatedError,
   });
   final String generic;
   final String publicKeyMissing;
@@ -190,4 +225,5 @@ class DictionaryErrors {
   final String paymentProcessNotAvailable;
   final String getAssetsError;
   final String unknownError;
+  final String sandboxSimulatedError;
 }
