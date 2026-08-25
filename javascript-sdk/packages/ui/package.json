@@ -1,6 +1,6 @@
 {
   "name": "@apolopay-sdk/ui",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "UI Components (Web Components) for payment button",
   "repository": {
     "type": "git",

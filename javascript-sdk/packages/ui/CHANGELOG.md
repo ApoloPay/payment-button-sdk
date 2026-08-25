@@ -1,5 +1,22 @@
 # @apolopay-sdk/ui
 
+## 1.4.0
+
+### Minor Changes
+
+- **Sandbox Mode**: Added a "Simulate partial payment" option to the sandbox picker, so both a full success and a partial payment can now be tested end-to-end. The sandbox flow now fetches the real (public) asset/network catalog for accurate icons — with an offline fallback if unreachable — while the QR/payment step and the WebSocket connection stay fully mocked and isolated from the real backend. Extracted a shared `APOLOPAY_NETWORK_ID` / `isApoloPayNetwork()` helper, replacing scattered `'apolopay'` string checks across the codebase.
+
+  **Sandbox UI**: The "Test mode" badge is now a floating, non-interactive indicator anchored to the modal's top edge instead of taking up layout space. A new "Simulate payment" button and explanatory banner replace the "scan to pay" banner and network warnings while in sandbox mode. The QR code now encodes a placeholder message in sandbox mode instead of any (fake) payment data.
+
+  **Bug Fix**: Fixed a bug where a simulated partial payment's `amount`/`amountPaid` could leak into the next QR or process instead of resetting — root cause was `if (qrData.amountPaid)` treating a legitimate `0` as "nothing to update". `resetState()` now also clears `amount`/`amountPaid`, and assigning a new `processId` now resets the whole session.
+
+  **Testing**: Added a Vitest suite for `@apolopay-sdk/core` (services, types, i18n) and `@apolopay-sdk/ui` (sandbox/session-state regressions), now required to pass in CI before publishing.
+
+### Patch Changes
+
+- Updated dependencies
+  - @apolopay-sdk/core@1.4.0
+
 ## 1.3.0
 
 ### Minor Changes
