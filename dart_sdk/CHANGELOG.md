@@ -24,3 +24,12 @@
 *   **New Processing State**: Introduced a dedicated UI state for when a payment is being processed, improving user feedback.
 *   **Event Synchronization**: Updated modal navigation logic to ensure events are dispatched only when the modal is fully closed, matching the JS SDK behavior.
 
+## 1.3.0
+
+*   **Sandbox Mode**: Added a "Simulate partial payment" option to the sandbox picker, alongside success/error/expired. The sandbox flow now fetches the real (public) asset/network catalog for accurate icons — with an offline fallback if unreachable — while the QR/payment step and the WebSocket connection stay fully mocked and isolated from the real backend.
+*   **Sandbox UI**: The "Modo prueba" badge is now a floating, non-interactive indicator anchored to the modal's top edge instead of taking up layout space. A new "Simular pago" button and explanatory banner replace the "scan to pay" banner and network warnings while in sandbox mode. The QR code now encodes a placeholder message in sandbox mode instead of any (fake) payment data.
+*   **Bug Fix**: Fixed a bug where a simulated partial payment result could leak into the next QR or process instead of resetting when a new network was selected or a new `processId` was assigned.
+*   **Bug Fix**: `ApoloPayButton` no longer rejects valid sandbox (`pk_test_...`) keys of non-standard length, matching the JS SDK's validation behavior.
+*   **Refactor**: Extracted a shared `Network.apolopayNetworkId` / `isApoloPay` helper, replacing scattered `'apolopay'` string checks.
+*   **Testing**: Added a `flutter_test` suite covering sandbox service isolation, network helpers, and button config validation.
+
