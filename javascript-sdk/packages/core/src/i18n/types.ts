@@ -59,6 +59,20 @@ export interface Dictionary {
       details: string;
       support: string;
     };
+    sandbox: {
+      badge: string;
+      title: string;
+      actions: {
+        success: string;
+        partial: string;
+        error: string;
+        expired: string;
+      };
+      partialMessage: string;
+      qrInfo: string;
+      qrPlaceholder: string;
+      simulateButton: string;
+    };
   };
   successes: {
     success: string;
@@ -76,5 +90,6 @@ export interface Dictionary {
     paymentProcessNotAvailable: string;
     getAssetsError: string;
     unknownError: string;
+    sandboxSimulatedError: string;
   };
 }

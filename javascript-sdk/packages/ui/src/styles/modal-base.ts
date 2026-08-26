@@ -24,10 +24,11 @@ export const modalBaseStyles = css`
 
   /* 2. Estilos Base */
   dialog {
+    position: relative; /* Ancla elementos flotantes (ej. badge de sandbox) al borde del card */
     border: none;
     padding: 0;
     margin: auto;
-    
+
     /* Geometría */
     min-width: 320px;
     max-width: 420px;

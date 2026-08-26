@@ -6,4 +6,6 @@ class ApoloPayClient {
   });
 
   String getPublicKey() => publicKey;
+
+  bool get isSandbox => publicKey.startsWith('pk_test');
 }

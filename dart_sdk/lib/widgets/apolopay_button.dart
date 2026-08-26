@@ -76,7 +76,9 @@ class _ApoloPayButtonState extends State<ApoloPayButton> {
     }
 
     final key = widget.client!.getPublicKey();
-    final isValid = key.startsWith('pk_') && key.length == 35;
+    // Sandbox (pk_test...) keys are not required to match the live key length.
+    final isValid = key.startsWith('pk_') &&
+        (key.startsWith('pk_test') || key.length == 35);
 
     setState(() {
       _hasConfigError = !isValid;
@@ -166,7 +168,7 @@ class _ApoloPayButtonState extends State<ApoloPayButton> {
             height: 48,
             decoration: ShapeDecoration(
               color: _hasConfigError
-                  ? Colors.red.withOpacity(0.1)
+                  ? Colors.red.withValues(alpha: 0.1)
                   : const Color(0x25747272),
               shape: const StadiumBorder(),
             ),

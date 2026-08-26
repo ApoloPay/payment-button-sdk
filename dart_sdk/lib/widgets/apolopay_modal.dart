@@ -19,6 +19,8 @@ import '../services/apolopay_service.dart';
 
 enum ModalStep { selectAsset, selectNetwork, showQr, processing, result }
 
+enum SandboxOutcome { success, partial, error, expired }
+
 class ApoloPayModal extends StatefulWidget {
   final ApoloPayOptions options;
   final I18nLocale? locale;
@@ -102,6 +104,11 @@ class _ApoloPayModalState extends State<ApoloPayModal>
   @override
   void initState() {
     super.initState();
+    _initService();
+    _loadAssets();
+  }
+
+  void _initService() {
     _service = ApoloPayService(ApoloPayOptions(
       client: widget.options.client,
       processId: widget.options.processId,
@@ -126,7 +133,27 @@ class _ApoloPayModalState extends State<ApoloPayModal>
         if (mounted) setState(() {});
       },
     ));
-    _loadAssets();
+  }
+
+  @override
+  void didUpdateWidget(covariant ApoloPayModal oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // A new process means the previous QR/simulated result (e.g. a sandbox
+    // partial payment) no longer applies — clear it before loading the next one.
+    if (oldWidget.options.processId != widget.options.processId) {
+      _timer?.cancel();
+      _service.disconnectWebSocket();
+      _currentStep = ModalStep.selectAsset;
+      _isLoading = true;
+      _selectedAsset = null;
+      _selectedNetwork = null;
+      _qrData = null;
+      _finalResult = null;
+      _isCopied = false;
+      _initService();
+      if (mounted) setState(() {});
+      _loadAssets();
+    }
   }
 
   Future<void> _loadAssets() async {
@@ -196,6 +223,174 @@ class _ApoloPayModalState extends State<ApoloPayModal>
     if (mounted) setState(() {});
   }
 
+  bool get _isSandbox => widget.options.client.isSandbox;
+
+  void _simulateOutcome(SandboxOutcome outcome) {
+    Navigator.pop(context); // close the sandbox picker sheet
+
+    switch (outcome) {
+      case SandboxOutcome.success:
+        setState(() => _currentStep = ModalStep.processing);
+        Future.delayed(const Duration(seconds: 2), () {
+          _finalResult = ClientResponse<QrResponseData>(
+            code: ClientCode.paymentSuccess,
+            message: I18n.t.successes.success,
+            result: _qrData,
+          );
+          _currentStep = ModalStep.result;
+          if (mounted) setState(() {});
+        });
+        break;
+
+      case SandboxOutcome.partial:
+        final num total = _qrData?.amount ?? 0;
+        _finalResult = ClientResponse<PartialPaymentResponseData>(
+          code: ClientCode.paymentPartial,
+          message: I18n.t.modal.sandbox.partialMessage,
+          result: PartialPaymentResponseData(
+            id: _qrData?.id ?? '',
+            network: _selectedNetwork?.network ?? '',
+            asset: _selectedAsset?.symbol ?? '',
+            amount: total,
+            amountPaid: total * 0.4,
+            status: 'pending',
+          ),
+        );
+        _currentStep = ModalStep.showQr;
+        if (mounted) setState(() {});
+        break;
+
+      case SandboxOutcome.error:
+        _finalResult = ClientError(
+          code: ClientCode.paymentFailed,
+          message: I18n.t.errors.sandboxSimulatedError,
+        );
+        _currentStep = ModalStep.result;
+        if (mounted) setState(() {});
+        break;
+
+      case SandboxOutcome.expired:
+        _handleTimerExpired();
+        break;
+    }
+  }
+
+  void _showSandboxSheet() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        Widget buildOption(String label, SandboxOutcome outcome) {
+          return ListTile(
+            title: Text(
+              label,
+              style: const TextStyle(
+                color: Color(0xFF1C315C),
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            onTap: () => _simulateOutcome(outcome),
+          );
+        }
+
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 20, 16, 8),
+                child: Text(
+                  I18n.t.modal.sandbox.title,
+                  style: const TextStyle(
+                    color: Color(0xFF1C315C),
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              buildOption(
+                  I18n.t.modal.sandbox.actions.success, SandboxOutcome.success),
+              buildOption(
+                  I18n.t.modal.sandbox.actions.partial, SandboxOutcome.partial),
+              buildOption(
+                  I18n.t.modal.sandbox.actions.error, SandboxOutcome.error),
+              buildOption(
+                  I18n.t.modal.sandbox.actions.expired, SandboxOutcome.expired),
+              const SizedBox(height: 8),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildSandboxBadge() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: const Color(0xFFFFF7ED),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: const Color(0xFFEA580C)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.1),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Text(
+        I18n.t.modal.sandbox.badge,
+        style: const TextStyle(
+          color: Color(0xFFEA580C),
+          fontWeight: FontWeight.bold,
+          fontSize: 12,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSandboxInfoBanner() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color(0xFFFFF7ED),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFFEA580C)),
+      ),
+      child: _buildRichText(
+        I18n.t.modal.sandbox.qrInfo,
+        textAlign: TextAlign.center,
+        baseStyle: const TextStyle(
+          color: Color(0xFF9A3412),
+          fontSize: 13,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSimulatePaymentButton() {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      width: double.infinity,
+      child: ElevatedButton(
+        onPressed: _showSandboxSheet,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: const Color(0xFFEA580C),
+          foregroundColor: Colors.white,
+          shape: const StadiumBorder(),
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+        ),
+        child: Text(I18n.t.modal.sandbox.simulateButton),
+      ),
+    );
+  }
+
   void onPopInvokedWithResult(bool didPop, dynamic result) {
     if (!didPop) return;
 
@@ -229,7 +424,7 @@ class _ApoloPayModalState extends State<ApoloPayModal>
   }
 
   Future<void> handleSelectNetwork(Network network) async {
-    if (network.network != 'apolopay') {
+    if (!network.isApoloPay) {
       final response = await InfoModal.show(
         context,
         title: I18n.t.modal.info.disclaimerTitle,
@@ -251,6 +446,9 @@ class _ApoloPayModalState extends State<ApoloPayModal>
         networkId: network.id,
       );
       _qrData = qrData;
+      // A fresh QR means any previous simulated/socket result (e.g. a sandbox
+      // partial payment) no longer applies to this process.
+      _finalResult = null;
       _selectedNetwork = network;
       _currentStep = ModalStep.showQr;
       _isLoading = false;
@@ -337,27 +535,33 @@ class _ApoloPayModalState extends State<ApoloPayModal>
 
     return PopScope(
       onPopInvokedWithResult: onPopInvokedWithResult,
-      child: Container(
-        height: isDesktop ? null : MediaQuery.of(context).size.height * 0.9,
-        decoration: BoxDecoration(
-          color: const Color(0xFFF6F2EC),
-          borderRadius: isDesktop
-              ? BorderRadius.circular(24)
-              : const BorderRadius.vertical(top: Radius.circular(24)),
-        ),
-        child: Column(children: [
-          _buildHeader(),
-          Expanded(
-            child: AnimatedSwitcher(
-              duration: const Duration(milliseconds: 300),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: _buildCurrentStep(),
-              ),
+      child: Stack(
+        alignment: Alignment.topCenter,
+        children: [
+          Container(
+            height: isDesktop ? null : MediaQuery.of(context).size.height * 0.9,
+            decoration: BoxDecoration(
+              color: const Color(0xFFF6F2EC),
+              borderRadius: isDesktop
+                  ? BorderRadius.circular(24)
+                  : const BorderRadius.vertical(top: Radius.circular(24)),
             ),
+            child: Column(children: [
+              _buildHeader(),
+              Expanded(
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 300),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: _buildCurrentStep(),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+            ]),
           ),
-          const SizedBox(height: 16),
-        ]),
+          if (_isSandbox) Positioned(top: 10, child: _buildSandboxBadge()),
+        ],
       ),
     );
   }
@@ -580,7 +784,7 @@ class _ApoloPayModalState extends State<ApoloPayModal>
             border: Border.all(color: const Color(0xFFF3F4F6)),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.05),
+                color: Colors.black.withValues(alpha: 0.05),
                 blurRadius: 10,
                 offset: const Offset(0, 4),
               ),
@@ -649,7 +853,7 @@ class _ApoloPayModalState extends State<ApoloPayModal>
           return _buildSelectionCard(
             title: network.name,
             subtitle: '',
-            imageUrl: network.network == 'apolopay'
+            imageUrl: network.isApoloPay
                 ? ''
                 : network.image, // Temporary, will handle apolopay logo
             onTap: () => handleSelectNetwork(network),
@@ -692,7 +896,7 @@ class _ApoloPayModalState extends State<ApoloPayModal>
     final warningTimer =
         I18n.interpolate(I18n.t.modal.warnings.timer, {'time': timeWindow});
 
-    final bool isApoloPay = _selectedNetwork?.network == 'apolopay';
+    final bool isApoloPay = _selectedNetwork?.isApoloPay ?? false;
 
     // Widget auxiliar para las filas de balance
     Widget buildBalanceRow(String label, String value,
@@ -798,7 +1002,12 @@ class _ApoloPayModalState extends State<ApoloPayModal>
                 child: Stack(
                   alignment: Alignment.center,
                   children: [
-                    QrImageView(data: _qrData!.address, size: 180),
+                    QrImageView(
+                      data: _isSandbox
+                          ? I18n.t.modal.sandbox.qrPlaceholder
+                          : _qrData!.address,
+                      size: 180,
+                    ),
                     Container(
                       width: 40,
                       height: 40,
@@ -892,7 +1101,7 @@ class _ApoloPayModalState extends State<ApoloPayModal>
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              if (!isApoloPay) ...[
+              if (!isApoloPay && !_isSandbox) ...[
                 _buildWarningItem(I18n.t.modal.warnings.networkMatch),
                 _buildWarningItem(I18n.t.modal.warnings.noNFT),
                 _buildWarningItem(warningToken),
@@ -904,7 +1113,9 @@ class _ApoloPayModalState extends State<ApoloPayModal>
             ],
           ),
           const SizedBox(height: 24),
-          if (isApoloPay)
+          if (_isSandbox)
+            _buildSandboxInfoBanner()
+          else if (isApoloPay)
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(16),
@@ -921,7 +1132,10 @@ class _ApoloPayModalState extends State<ApoloPayModal>
                     fontSize: 14),
               ),
             ),
-          if (_qrData?.paymentUrl != null) ...[
+          if (_isSandbox) ...[
+            const SizedBox(height: 16),
+            _buildSimulatePaymentButton(),
+          ] else if (_qrData?.paymentUrl != null) ...[
             const SizedBox(height: 16),
             _buildPayFromDeviceButton(),
           ],

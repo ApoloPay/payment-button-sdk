@@ -12,4 +12,8 @@ export class ApoloPayClient {
   public getPublicKey(): string {
     return this.publicKey;
   }
+
+  public isSandbox(): boolean {
+    return this.publicKey.startsWith('pk_test');
+  }
 }

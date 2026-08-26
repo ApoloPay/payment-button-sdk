@@ -87,6 +87,23 @@ const en = Dictionary(
       details: 'Purchase Details',
       support: 'Any doubt or inquiry you can contact support',
     ),
+    sandbox: DictionaryModalSandbox(
+      badge: '🧪 Test mode',
+      title: 'Simulate payment result',
+      actions: DictionaryModalSandboxActions(
+        success: 'Simulate successful payment',
+        partial: 'Simulate partial payment',
+        error: 'Simulate payment error',
+        expired: 'Simulate QR expiration',
+      ),
+      partialMessage:
+          'Partial payment detected (test mode). An amount is still pending.',
+      qrInfo:
+          'You are using <strong>test data</strong>. To simulate the payment result, press the <strong>Simulate payment</strong> button below.',
+      qrPlaceholder:
+          'Test QR (sandbox mode) - Display only, does not contain real payment data.',
+      simulateButton: 'Simulate payment',
+    ),
   ),
   successes: DictionarySuccesses(
     success: 'Success',
@@ -104,5 +121,7 @@ const en = Dictionary(
     paymentProcessNotAvailable: 'The payment process is not available.',
     getAssetsError: 'Failed to get assets.',
     unknownError: 'An unexpected error occurred.',
+    sandboxSimulatedError:
+        'Simulated error (test mode). This result does not come from a real payment.',
   ),
 );
