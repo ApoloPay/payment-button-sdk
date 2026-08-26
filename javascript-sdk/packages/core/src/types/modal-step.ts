@@ -4,3 +4,5 @@ export enum ModalStep {
   SHOW_QR = 2,
   RESULT = 3,
 }
+
+export type SandboxOutcome = 'success' | 'partial' | 'error' | 'expired';

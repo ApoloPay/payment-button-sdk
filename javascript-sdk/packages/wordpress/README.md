@@ -1,6 +1,19 @@
-# @apolopay-sdk/wordpress-plugin
+=== Apolo Pay for WooCommerce ===
+Contributors: apolopay
+Tags: woocommerce, payments, apolo pay, gateway, card
+Requires at least: 5.0
+Tested up to: 6.9
+Stable tag: 1.1.0
+Requires PHP: 7.4
+License: GPLv2 or later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-WordPress integration for the Apolo Pay SDK. Provides a simple Shortcode to integrate the Apolo Pay payment button into any WordPress page or post.
+Official Apolo Pay payment gateway for WooCommerce. Securely accept credit and debit card payments.
+
+== Description ==
+
+WordPress integration for the Apolo Pay SDK. Provides a simple integration to accept payments via Apolo Pay securely.
+
 
 ## Installation
 
@@ -15,14 +28,14 @@ If you are developing inside the monorepo, run the build command to generate the
 turbo run build --filter=@apolo-pay/wordpress-plugin
 ```
 
-This will create a file named `apolo-pay-plugin.zip` inside the `packages/wordpress` directory.
+This will create a file named `apolo-pay-for-woocommerce.zip` inside the `packages/wordpress` directory.
 
 ### 2. Upload to WordPress
 
 1. Go to your WordPress Admin Panel (`/wp-admin`).
 2. Navigate to **Plugins** > **Add New**.
 3. Click **Upload Plugin** at the top.
-4. Select the `apolo-pay-plugin.zip` file you just generated.
+4. Select the `apolo-pay-for-woocommerce.zip` file you just generated.
 5. Click **Install Now** and then **Activate**.
 
 ## Usage
@@ -105,4 +118,4 @@ You can add this script to your site's footer or inside a Custom HTML block:
 
 ## License
 
-MIT
+GPLv2 o posterior

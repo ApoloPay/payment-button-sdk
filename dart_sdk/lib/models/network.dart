@@ -1,4 +1,6 @@
 class Network {
+  static const String apolopayNetworkId = 'apolopay';
+
   final String id;
   final String name;
   final String network;
@@ -12,6 +14,8 @@ class Network {
     required this.image,
     required this.isNative,
   });
+
+  bool get isApoloPay => network == apolopayNetworkId;
 
   Network copyWith({
     String? id,

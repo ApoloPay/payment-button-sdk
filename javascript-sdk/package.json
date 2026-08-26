@@ -13,6 +13,7 @@
     "clean:deps": "npx --yes rimraf@latest --glob \"apps/*/node_modules\" \"packages/*/node_modules\" pnpm-lock.yaml && npx --yes rimraf@latest node_modules",
     "clean:turbo": "npx --yes rimraf@latest --glob .turbo \"apps/*/.turbo\" \"packages/*/.turbo\"",
     "lint": "turbo run lint",
+    "test": "turbo run test --filter=./packages/*",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "check-types": "turbo run check-types",
     "changeset": "changeset",

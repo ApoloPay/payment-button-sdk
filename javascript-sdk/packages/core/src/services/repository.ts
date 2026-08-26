@@ -1,6 +1,7 @@
 import { PaymentOptions, QrRequestDetails, QrResponseData } from "../types/payment-client-types";
 import { Asset } from "../types/asset";
 import { ClientCode, ClientError, ClientResponse } from "../types/client-response";
+import { APOLOPAY_NETWORK_ID } from "../types/network";
 import { apiURL, appURL } from "../utils/variables";
 import { I18n } from "../i18n";
 
@@ -60,8 +61,7 @@ export class Repository {
       const wallet = data.result.wallet;
       const network = data.result.network;
 
-      // TODO review if enable testing environment switch to the address
-      const address = network === "apolopay" ?
+      const address = network === APOLOPAY_NETWORK_ID ?
         `${appURL}/payment-process/${processId}` :
         wallet
 
