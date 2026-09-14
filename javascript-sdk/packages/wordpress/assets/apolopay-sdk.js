@@ -1041,12 +1041,13 @@
       ></payment-modal>
     `}},c.ApoloPayButton.styles=U`
     :host {
-      display: inline-block;
+      display: var(--apolopay-display, inline-block);
     }
 
     #trigger-wrapper {
       position: relative;
-      display: inline-block;
+      display: var(--apolopay-trigger-display, inline-block);
+      width: var(--apolopay-trigger-width, auto);
       cursor: pointer;
     }
   `,y([d({type:Object})],c.ApoloPayButton.prototype,"client",2),y([d({type:String,attribute:"process-id"})],c.ApoloPayButton.prototype,"processId",2),y([d({type:String,attribute:"product-title"})],c.ApoloPayButton.prototype,"productTitle",2),y([d({type:String})],c.ApoloPayButton.prototype,"lang",2),y([d({type:String})],c.ApoloPayButton.prototype,"label",2),y([d({type:Boolean})],c.ApoloPayButton.prototype,"loading",2),y([d({type:Boolean})],c.ApoloPayButton.prototype,"disabled",2),y([d({type:Boolean,attribute:"barrier-dismissible",converter:{fromAttribute:s=>s===null?!1:s!=="false",toAttribute:s=>s?"":null}})],c.ApoloPayButton.prototype,"barrierDismissible",2),y([v()],c.ApoloPayButton.prototype,"isOpen",2),y([v()],c.ApoloPayButton.prototype,"status",2),y([v()],c.ApoloPayButton.prototype,"currentStep",2),y([v()],c.ApoloPayButton.prototype,"selectedAsset",2),y([v()],c.ApoloPayButton.prototype,"selectedNetwork",2),y([v()],c.ApoloPayButton.prototype,"qrCodeUrl",2),y([v()],c.ApoloPayButton.prototype,"qrCodeExpiresAt",2),y([v()],c.ApoloPayButton.prototype,"paymentAddress",2),y([v()],c.ApoloPayButton.prototype,"paymentUrl",2),y([v()],c.ApoloPayButton.prototype,"assets",2),y([v()],c.ApoloPayButton.prototype,"successResult",2),y([v()],c.ApoloPayButton.prototype,"error",2),y([v()],c.ApoloPayButton.prototype,"isLoadingData",2),y([v()],c.ApoloPayButton.prototype,"amount",2),y([v()],c.ApoloPayButton.prototype,"amountPaid",2),y([v()],c.ApoloPayButton.prototype,"hasConfigError",2),y([v()],c.ApoloPayButton.prototype,"email",2),y([v()],c.ApoloPayButton.prototype,"alreadyShownInfoModal",2),y([v()],c.ApoloPayButton.prototype,"_service",2),c.ApoloPayButton=y([ne("apolopay-button")],c.ApoloPayButton),c.APOLOPAY_NETWORK_ID=Ee,c.ApoloPayClient=ir,c.ClientCode=O,c.ClientError=Se,c.ClientResponse=ae,c.ClientResponseBase=qe,c.I18n=m,c.ModalStep=g,c.PaymentService=Lt,c.isApoloPayNetwork=Y,Object.defineProperty(c,Symbol.toStringTag,{value:"Module"})}));
