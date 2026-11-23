@@ -12,7 +12,7 @@
     "dev": "node scripts/dev.js",
     "clean": "pnpm run clean:dist && pnpm run clean:deps && pnpm run clean:turbo",
     "clean:dist": "npx --yes rimraf@latest --glob \"apps/*/dist\" \"packages/*/dist\" \"apps/*/.angular\" \"packages/*/.angular\"",
-    "clean:deps": "npx --yes rimraf@latest --glob \"apps/*/node_modules\" \"packages/*/node_modules\" pnpm-lock.yaml && npx --yes rimraf@latest node_modules",
+    "clean:deps": "npx --yes rimraf@latest --glob \"apps/*/node_modules\" \"packages/*/node_modules\" && npx --yes rimraf@latest node_modules",
     "clean:turbo": "npx --yes rimraf@latest --glob .turbo \"apps/*/.turbo\" \"packages/*/.turbo\"",
     "lint": "turbo run lint",
     "test": "turbo run test --filter=./packages/*",
@@ -34,7 +34,9 @@
       "@types/react": "18.3.3",
       "@types/react-dom": "18.3.0",
       "react": "18.3.1",
-      "react-dom": "18.3.1"
+      "react-dom": "18.3.1",
+      "socket.io-parser@>=4.0.0 <4.2.7": "4.2.7",
+      "ws@>=8.0.0 <8.21.0": "8.21.3"
     }
   }
 }
