@@ -2,7 +2,7 @@ import { PaymentOptions, QrRequestDetails, QrResponseData } from "../types/payme
 import { Asset } from "../types/asset";
 import { ClientCode, ClientError, ClientResponse } from "../types/client-response";
 import { APOLOPAY_NETWORK_ID } from "../types/network";
-import { apiURL, appURL } from "../utils/variables";
+import { appURL } from "../utils/variables";
 import { I18n } from "../i18n";
 
 export class Repository {
@@ -16,9 +16,10 @@ export class Repository {
     return options
   }
 
-  static async getAssets(): Promise<ClientResponse<Asset[]>> {
+  /** @param apiUrl REST API base URL (from `SmartPayClient.getApiUrl()`), without trailing slash. */
+  static async getAssets(apiUrl: string): Promise<ClientResponse<Asset[]>> {
     try {
-      const response = await fetch(`${apiURL}/payment-button/assets`, {
+      const response = await fetch(`${apiUrl}/payment-button/assets`, {
         method: 'GET',
         headers: this.headers(),
       })
@@ -33,14 +34,15 @@ export class Repository {
     }
   }
 
-  static async fetchQrCodeDetails({
+  /** @param apiUrl REST API base URL (from `SmartPayClient.getApiUrl()`), without trailing slash. */
+  static async fetchQrCodeDetails(apiUrl: string, {
     processId,
     assetId,
     networkId,
     publicKey
   }: (QrRequestDetails & Omit<PaymentOptions, 'onSuccess' | 'onError'>)): Promise<ClientResponse<QrResponseData>> {
     try {
-      const response = await fetch(`${apiURL}/payment-button/process/confirm`, {
+      const response = await fetch(`${apiUrl}/payment-button/process/confirm`, {
         method: 'POST',
         headers: this.headers(publicKey),
         body: JSON.stringify({

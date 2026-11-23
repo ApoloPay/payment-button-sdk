@@ -35,6 +35,19 @@ flutter pub add nexora_smartpay_sdk
 
 Version 2.0.0 renames the SDKs: the npm packages moved from `@apolopay-sdk/*` to `@nexora-smartpay/*` and the Flutter package from `apolopay_sdk` to `nexora_smartpay_sdk`. Public names changed from `ApoloPay*` to `SmartPay*` (and `<apolopay-button>` to `<smartpay-button>`), but the old names are still exported as deprecated aliases so existing integrations keep working. See the [JavaScript](./javascript-sdk#migrating-from-apolopay-sdk) and [Flutter](./dart_sdk#migrating-from-apolopay_sdk) READMEs for details.
 
+### API and realtime hosts
+
+Both SDKs talk to `https://api.smartpaylatam.com` (REST) and `https://ws.smartpaylatam.com` (realtime) by default. Each client accepts optional overrides, validated to `https://` only (`http://localhost` / `http://127.0.0.1` allowed for local development):
+
+| SDK | Option | Type | Default |
+|-----|--------|------|---------|
+| JavaScript (`SmartPayClient`) | `apiUrl` | `string` | `DEFAULT_API_URL` (`https://api.smartpaylatam.com`) |
+| JavaScript (`SmartPayClient`) | `socketUrl` | `string` | `DEFAULT_SOCKET_URL` (`https://ws.smartpaylatam.com`) |
+| Flutter (`SmartPayClient`) | `apiUrl` | `String?` | `defaultApiUrl` (`https://api.smartpaylatam.com`) |
+| Flutter (`SmartPayClient`) | `socketUrl` | `String?` | `defaultSocketUrl` (`https://ws.smartpaylatam.com`) |
+
+During the transition the same backend is also served on Apolo Pay's old hosts, exported as `LEGACY_APOLO_API_URL` / `LEGACY_APOLO_SOCKET_URL` (JS) and `legacyApoloApiUrl` / `legacyApoloSocketUrl` (Dart): `https://pb-api.apolopay.app` and `https://pb-ws.apolopay.app`.
+
 ## Continuous Integration and Deployment
 
 This repository uses **GitHub Actions** with **Trusted Publishing** to ensure secure and automated releases:

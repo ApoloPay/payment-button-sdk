@@ -25,7 +25,7 @@ export class PaymentService {
       // The catalog endpoint is public and holds no payment/wallet data, so we
       // still fetch it in sandbox mode just to reuse its real asset/network icons.
       try {
-        const assets = await Repository.getAssets();
+        const assets = await Repository.getAssets(this.client.getApiUrl());
         this.assets = assets.result!;
       } catch {
         this.assets = sandboxFallbackAssets;
@@ -33,7 +33,7 @@ export class PaymentService {
       return this.assets;
     }
 
-    const assets = await Repository.getAssets();
+    const assets = await Repository.getAssets(this.client.getApiUrl());
     this.assets = assets.result!;
 
     return this.assets;
@@ -49,7 +49,7 @@ export class PaymentService {
       return buildSandboxQrData({ processId: session.processId, asset, network });
     }
 
-    const qrData = await Repository.fetchQrCodeDetails({
+    const qrData = await Repository.fetchQrCodeDetails(this.client.getApiUrl(), {
       ...details,
       processId: session.processId,
       publicKey: this.client.getPublicKey()

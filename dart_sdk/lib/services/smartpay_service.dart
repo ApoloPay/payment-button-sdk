@@ -19,7 +19,7 @@ class SmartPayService {
       // The catalog endpoint is public and holds no payment/wallet data, so we
       // still fetch it in sandbox mode just to reuse its real asset/network icons.
       try {
-        final response = await Repository.getAssets();
+        final response = await Repository.getAssets(options.client.apiUrl);
         _assets = response.result!;
       } catch (_) {
         _assets = SandboxData.fallbackAssets;
@@ -27,7 +27,7 @@ class SmartPayService {
       return _assets;
     }
 
-    final response = await Repository.getAssets();
+    final response = await Repository.getAssets(options.client.apiUrl);
     _assets = response.result!;
     return _assets;
   }
@@ -55,6 +55,7 @@ class SmartPayService {
     }
 
     final qrData = await Repository.fetchQrCodeDetails(
+      apiUrl: options.client.apiUrl,
       publicKey: options.client.getPublicKey(),
       processId: options.processId,
       assetId: assetId,

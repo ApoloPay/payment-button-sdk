@@ -17,10 +17,12 @@ class Repository {
     return headers;
   }
 
-  static Future<ClientResponse<List<Asset>>> getAssets() async {
+  /// [apiUrl] is the REST API base URL (from [SmartPayClient.apiUrl]),
+  /// without a trailing slash.
+  static Future<ClientResponse<List<Asset>>> getAssets(String apiUrl) async {
     try {
       final response = await http.get(
-            Uri.parse('$apiURL/payment-button/assets'),
+            Uri.parse('$apiUrl/payment-button/assets'),
             headers: getHeaders(null),
           ),
           data = jsonDecode(response.body);
@@ -38,7 +40,10 @@ class Repository {
     }
   }
 
+  /// [apiUrl] is the REST API base URL (from [SmartPayClient.apiUrl]),
+  /// without a trailing slash.
   static Future<ClientResponse<QrResponseData>> fetchQrCodeDetails({
+    required String apiUrl,
     required String publicKey,
     required String processId,
     required String assetId,
@@ -46,7 +51,7 @@ class Repository {
   }) async {
     try {
       final response = await http.post(
-        Uri.parse('$apiURL/payment-button/process/confirm'),
+        Uri.parse('$apiUrl/payment-button/process/confirm'),
         headers: getHeaders(publicKey),
         body: jsonEncode({
           'processId': processId,

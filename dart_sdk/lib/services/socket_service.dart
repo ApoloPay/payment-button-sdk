@@ -1,5 +1,4 @@
 import 'package:nexora_smartpay_sdk/nexora_smartpay_sdk.dart';
-import 'package:nexora_smartpay_sdk/utils/variables.dart';
 import 'package:flutter/foundation.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 import '../models/client_response.dart';
@@ -55,11 +54,14 @@ class SocketService {
   final SmartPayOptions options;
   io.Socket? _socket;
 
+  /// Base URL the socket connects to, taken from the options' client.
+  String get url => options.client.socketUrl;
+
   void connect(String processId) {
     if (_socket != null && _socket!.connected) return;
 
     _socket = io.io(
-      socketURL,
+      url,
       io.OptionBuilder()
           .setTransports([kIsWeb ? 'polling' : 'websocket'])
           .disableAutoConnect()

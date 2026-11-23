@@ -1,7 +1,6 @@
 import { io, Socket as SocketIO } from "socket.io-client";
 import { PaymentSessionOptions } from "../types/payment-client-types";
 import { SmartPayClient } from "../smart-pay-client";
-import { socketURL } from "../utils/variables";
 import { ClientCode } from "../types/client-response";
 import { I18n } from "../i18n";
 
@@ -28,7 +27,7 @@ export class SocketService {
 
     if (this.socket && this.socket.connected) return this.disconnect();
 
-    this.socket = io(socketURL, {
+    this.socket = io(this.client.getSocketUrl(), {
       extraHeaders: {
         "x-public-key": this.client.getPublicKey()
       },

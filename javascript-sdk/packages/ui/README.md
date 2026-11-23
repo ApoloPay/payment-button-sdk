@@ -44,6 +44,8 @@ You can use the component directly in your HTML or any framework that supports W
 | `label` | `label` | `string` | Custom label for the trigger button. |
 | `barrier-dismissible`| `barrierDismissible`| `boolean` | If true, clicking the backdrop closes the modal. |
 
+The API and realtime hosts are configured on the client, not on the element: pass `apiUrl` / `socketUrl` to `new SmartPayClient({ publicKey, apiUrl, socketUrl })` (types `string`, defaults `https://api.smartpaylatam.com` / `https://ws.smartpaylatam.com`, `https://` only). The framework wrappers (React, Vue, Angular, Svelte, Astro) forward the same `client` object, so this works the same everywhere. See [`@nexora-smartpay/core`](../core#options), including the `LEGACY_APOLO_API_URL` / `LEGACY_APOLO_SOCKET_URL` constants for the Apolo Pay host transition.
+
 ### Events
 
 - `success`: Fired when a payment is successfully completed.

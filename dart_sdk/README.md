@@ -33,18 +33,21 @@ import 'package:nexora_smartpay_sdk/nexora_smartpay_sdk.dart';
 import 'package:flutter/material.dart';
 
 class MyPaymentScreen extends StatelessWidget {
+  static final client = SmartPayClient(publicKey: 'pk_test_...'); // Your Public Key
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
         child: SmartPayButton(
-          publicKey: 'pk_test_...', // Your Public Key
-          processId: 'order_123...', // Your unique order/process ID
-          amount: 100.0,             // Amount to charge
-          onSuccess: (transaction) {
-            print('Payment successful: ${transaction.id}');
+          client: client,
+          // The preorder id your server created with its secret key
+          // (`POST /payment-button/process/preorder`); it carries the amount.
+          processId: 'order_123...',
+          onSuccess: (context, response) {
+            print('Payment successful: ${response.message}');
           },
-          onError: (error) {
+          onError: (context, error) {
             print('Payment error: ${error.message}');
           },
         ),
@@ -61,16 +64,36 @@ You can customize the look and behavior of the button and the payment client:
 ```dart
 final client = SmartPayClient(
   publicKey: 'pk_test_...',
-  baseUrl: 'https://api.apolopay.app', // Optional custom base URL
+  apiUrl: 'https://api.smartpaylatam.com', // Optional, this is the default
+  socketUrl: 'https://ws.smartpaylatam.com', // Optional, this is the default
 );
 
 // ... then use in widget
 SmartPayButton(
   client: client,
   processId: 'order_123',
-  amount: 50.0,
-  isTest: true, // Enable test mode if needed
+  productTitle: 'Order #123', // Optional, shown in the payment modal
 )
+```
+
+#### `SmartPayClient` parameters
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `publicKey` | `String` (required) | - | Your merchant Public Key (`pk_test_...` enables sandbox mode). |
+| `apiUrl` | `String?` | `defaultApiUrl` = `https://api.smartpaylatam.com` | REST API base URL. Exposed as `client.apiUrl` / `client.getApiUrl()`. |
+| `socketUrl` | `String?` | `defaultSocketUrl` = `https://ws.smartpaylatam.com` | Realtime (Socket.IO) base URL. Exposed as `client.socketUrl` / `client.getSocketUrl()`. |
+
+Both URLs must use `https://` (plain `http://` is accepted only for `localhost` / `127.0.0.1`, for local development); anything else throws an `ArgumentError` from the constructor. Trailing slashes are trimmed.
+
+**Transition from Apolo Pay hosts**: the same backend is still served on Apolo Pay's old hosts, exported as `legacyApoloApiUrl` (`https://pb-api.apolopay.app`) and `legacyApoloSocketUrl` (`https://pb-ws.apolopay.app`):
+
+```dart
+final client = SmartPayClient(
+  publicKey: 'pk_...',
+  apiUrl: legacyApoloApiUrl,
+  socketUrl: legacyApoloSocketUrl,
+);
 ```
 
 ## Migrating from `apolopay_sdk`
