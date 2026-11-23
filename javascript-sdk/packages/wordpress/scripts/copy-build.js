@@ -5,7 +5,7 @@ const path = require('path');
 const source = path.join(__dirname, '..', '..', 'ui', 'dist', 'nexora-smartpay.umd.js');
 const destDir = path.join(__dirname, '..', 'assets');
 const distDir = path.resolve(__dirname, '../dist');
-const destFile = path.join(destDir, 'apolopay-sdk.js');
+const destFile = path.join(destDir, 'nexora-smartpay.js');
 
 console.log('🔄 Iniciando copia de assets para WordPress...');
 

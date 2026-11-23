@@ -1,121 +1,85 @@
-=== Apolo Pay for WooCommerce ===
-Contributors: apolopay
-Tags: woocommerce, payments, apolo pay, gateway, card
-Requires at least: 5.0
-Tested up to: 6.9
-Stable tag: 1.1.0
-Requires PHP: 7.4
-License: GPLv2 or later
-License URI: https://www.gnu.org/licenses/gpl-2.0.html
+# Nexora SmartPay for WooCommerce
 
-Official Apolo Pay payment gateway for WooCommerce. Securely accept credit and debit card payments.
+WooCommerce payment gateway for the Nexora SmartPay payment button (formerly "ApoloPay Checkout
+for WooCommerce"). Customers pay in stablecoins (USDT) by scanning a QR code at checkout; the order
+is confirmed by a signed webhook. Works with the classic checkout and the Checkout block.
 
-== Description ==
+The WordPress-facing description, changelog and external-services disclosure live in
+[`readme.txt`](./readme.txt).
 
-WordPress integration for the Apolo Pay SDK. Provides a simple integration to accept payments via Apolo Pay securely.
+## Compatibility identifiers (do not rename)
 
+Version 2.0.0 rebranded every visible string, but these identifiers are kept so existing stores
+update in place without losing settings or orders:
 
-## Installation
+| Identifier                  | Value                                     |
+| :-------------------------- | :---------------------------------------- |
+| Plugin folder / slug        | `apolopay-checkout-for-woocommerce`       |
+| Main file                   | `apolo-pay.php`                           |
+| Text domain                 | `apolopay-checkout-for-woocommerce`       |
+| Gateway id                  | `apolo_pay` (option `woocommerce_apolo_pay_settings`) |
+| Webhook endpoint            | `/?wc-api=apolo_pay_webhook`              |
+| AJAX action                 | `apolopay_create_process`                 |
+| Order meta                  | `_apolo_process_id`                       |
+| PHP classes / constants     | `ApoloPay_Gateway`, `ApoloPay_Blocks_Integration`, `APOLOPAY_*` |
 
-Unlike the other packages in this SDK, this is a WordPress Plugin that must be installed via the Admin Panel.
+## Build
 
-### 1. Build the Plugin
-
-If you are developing inside the monorepo, run the build command to generate the `.zip` file:
+From the `javascript-sdk` folder of the monorepo:
 
 ```bash
-# From the root of the monorepo
-turbo run build --filter=@apolo-pay/wordpress-plugin
+pnpm install --frozen-lockfile
+pnpm turbo run build --filter=@nexora-smartpay/wordpress-plugin
 ```
 
-This will create a file named `apolo-pay-for-woocommerce.zip` inside the `packages/wordpress` directory.
+The build:
 
-### 2. Upload to WordPress
+1. Builds `@nexora-smartpay/ui` and copies its UMD bundle to `assets/nexora-smartpay.js`
+   (`scripts/copy-build.js`). The bundle is committed, so commit it after rebuilding.
+2. Stages the plugin into `dist/apolopay-checkout-for-woocommerce/` and zips it to
+   `dist/apolopay-checkout-for-woocommerce.zip` (`scripts/package-zip.js`).
 
-1. Go to your WordPress Admin Panel (`/wp-admin`).
-2. Navigate to **Plugins** > **Add New**.
-3. Click **Upload Plugin** at the top.
-4. Select the `apolo-pay-for-woocommerce.zip` file you just generated.
-5. Click **Install Now** and then **Activate**.
+The zip contains a single top-level `apolopay-checkout-for-woocommerce/` folder. WordPress installs
+a plugin zip into the folder found inside it, so the zip can be renamed (the release workflow adds
+the version to the file name) and still installs over the same plugin.
 
-## Usage
+## Install
 
-You can use the Apolo Pay button in any Page, Post, or Text Widget using the `[apolo_button]` shortcode.
+1. In WordPress, go to **Plugins > Add New > Upload Plugin** and upload the zip. When updating,
+   choose **Replace current with uploaded**.
+2. Activate the plugin and open **WooCommerce > Settings > Payments > Nexora SmartPay**.
+3. Enter the Public Key and Secret Key from your Nexora SmartPay dashboard.
+4. Copy the Webhook URL shown on the settings page into the dashboard (Payment Button > Webhook)
+   and paste the generated Webhook Secret into the plugin.
 
-### Basic Example
+The method is hidden at checkout until the Webhook Secret is set, and webhooks are rejected
+(HTTP 401) without it.
 
-Add this shortcode to your content editor:
+## Webhook endpoint
 
-```text
-[apolo_button 
-  public_key="pk_test_123456" 
-  process_id="proc_abcdef123" 
-  label="Pay Now"
-]
-```
+`POST https://<your-store>/?wc-api=apolo_pay_webhook`
 
-### Full Example with Attributes
+- Headers: `X-Signature: <hex HMAC-SHA256 of the raw body, keyed with the Webhook Secret>`
+  (required), `X-Timestamp: <timestamp>` (logged), `Content-Type: application/json`.
+- Body (JSON), either shape:
+  - `{ "id": string, "status": "completed", "metadata"?: { "orderId"?: number } }`
+  - `{ "processId": string, "event": "payment.completed", "metadata"?: { "orderId"?: number } }`
+- Responses: `200 {"received": true}` when processed (or stored as pending if the order doesn't
+  exist yet); `200` plain text for ignored events/statuses; `400` for invalid JSON, an unknown
+  shape or a missing process ID; `401` for a missing secret, missing signature or invalid
+  signature.
 
-```text
-[apolo_button 
-  public_key="pk_live_987654"
-  process_id="proc_xyz789"
-  label="Buy Order #101"
-  theme="dark"
-  lang="en"
-  email="customer@example.com"
-  amount="150.00"
-]
-```
+## Services contacted
 
-## Shortcode Attributes
+- `POST https://api.smartpaylatam.com/payment-button/process/preorder` from the store server,
+  headers `Content-Type: application/json`, `x-secret-key: <Secret Key>`, body
+  `{ "amount": number, "metadata": {} }`; the plugin reads `result.id` (string) from the response
+  as the process ID.
+- `api.smartpaylatam.com` and `ws.smartpaylatam.com` from the customer's browser, through the
+  bundled SDK with its default hosts.
 
-The `[apolo_button]` shortcode accepts the following parameters. These map directly to the Web Component attributes.
-
-| Attribute     | Description                                        | Example           |
-| :------------ | :------------------------------------------------- | :---------------- |
-| `public_key`  | **Required**. Your Apolo Pay Public Key.           | `pk_test_...`     |
-| `process_id`  | **Required**. The unique ID of the payment process.| `proc_123...`     |
-| `label`       | Text to display on the button.                     | `Pay $100`        |
-| `theme`       | Button theme (`light` or `dark`).                  | `dark`            |
-| `lang`        | Language for the UI (`es`, `en`).                  | `es`              |
-| `email`       | Pre-fill user email (optional).                    | `user@test.com`   |
-| `amount`      | Payment amount (optional display).                 | `100.00`          |
-
-## Handling Events (Advanced)
-
-Since WordPress Shortcodes are static HTML, you cannot pass JavaScript functions directly in the editor (like `@success` in Vue). 
-
-To handle payment events (like redirects or analytics), you must add a JavaScript listener in your theme's footer or a custom JS file.
-
-### Example Script
-
-You can add this script to your site's footer or inside a Custom HTML block:
-
-```html
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    // Select the button element
-    const button = document.querySelector('payment-button');
-
-    if (button) {
-      // Handle Success Event
-      button.addEventListener('success', (event) => {
-        console.log('Payment successful!', event.detail);
-        // Example: Redirect to a thank you page
-        // window.location.href = '/thank-you?id=' + event.detail.transactionId;
-      });
-
-      // Handle Error Event
-      button.addEventListener('error', (event) => {
-        console.error('Payment failed:', event.detail);
-        alert('There was an error processing your payment.');
-      });
-    }
-  });
-</script>
-```
+The QR code is generated locally in the browser.
 
 ## License
 
-GPLv2 o posterior
+GPLv2 or later

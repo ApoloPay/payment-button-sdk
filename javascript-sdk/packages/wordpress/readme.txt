@@ -1,84 +1,96 @@
-=== ApoloPay Checkout for WooCommerce ===
+=== Nexora SmartPay for WooCommerce ===
 Contributors: apolopay
-Tags: woocommerce, payments, apolopay, gateway, crypto, usdt, stablecoin
+Tags: woocommerce, payments, nexora, smartpay, crypto, usdt, stablecoin
 Requires at least: 5.0
 Tested up to: 7.0
-Stable tag: 1.2.0
+Stable tag: 2.0.0
 Requires PHP: 7.4
 Requires Plugins: woocommerce
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Official ApoloPay payment gateway for WooCommerce. Securely accept crypto payments (USDT) in your store using ApoloPay technology.
+Official Nexora SmartPay payment gateway for WooCommerce. Securely accept stablecoin payments (USDT) in your store.
 
 == Description ==
 
-Accept payments with ease using the official ApoloPay integration for WooCommerce. This plugin provides a seamless checkout experience for stablecoin transactions (USDT).
+Accept stablecoin payments (USDT) in WooCommerce with the official Nexora SmartPay payment button. Customers pay from their crypto wallet by scanning a QR code at checkout, and the order is confirmed automatically by a signed webhook.
+
+Nexora SmartPay is operated by Nexora (https://smartpaylatam.com).
 
 = Key Features =
-* **Secure Crypto Payments**: Integration with the ApoloPay SDK for high-security digital asset transactions.
-* **WooCommerce Blocks Support**: Fully compatible with the modern WooCommerce Checkout and Cart blocks.
-* **Real-time Notifications**: Webhook support to ensure order statuses are updated instantly upon payment confirmation.
-* **Race-condition safe**: Handles edge cases where the ApoloPay webhook arrives before WooCommerce finishes creating the order.
+* **Secure Crypto Payments**: Built on the official Nexora SmartPay JavaScript SDK.
+* **WooCommerce Blocks Support**: Compatible with the classic checkout and with the WooCommerce Checkout and Cart blocks.
+* **Signed Webhooks**: Orders are confirmed only by webhooks signed with your Webhook Secret (HMAC-SHA256).
+* **Race-condition safe**: Handles the case where the webhook arrives before WooCommerce finishes creating the order.
+* **QR generated locally**: The payment QR code is generated in the customer's browser; no third-party QR service is contacted.
 
 == Installation ==
 
-1. Upload the plugin files to the `/wp-content/plugins/apolopay-checkout-for-woocommerce` directory, or install the plugin through the WordPress plugins screen directly.
-2. Activate the plugin through the 'Plugins' screen in WordPress.
-3. Go to **WooCommerce > Settings > Payments** and enable **ApoloPay**.
-4. Enter your Public Key, Secret Key, and Webhook Secret provided in your ApoloPay Dashboard.
-5. Copy the Webhook URL from the settings page and add it to your ApoloPay developer settings.
+1. Upload the plugin zip through **Plugins > Add New > Upload Plugin**, or upload the `apolopay-checkout-for-woocommerce` folder to `/wp-content/plugins/`.
+2. Activate the plugin through the **Plugins** screen in WordPress.
+3. Go to **WooCommerce > Settings > Payments** and open **Nexora SmartPay**.
+4. Enter the Public Key and Secret Key from your Nexora SmartPay dashboard.
+5. Copy the Webhook URL shown on the settings page into your Nexora SmartPay dashboard (Payment Button > Webhook), then paste the generated Webhook Secret into the plugin settings.
+6. Enable the method. It is offered at checkout only once the Webhook Secret is set.
 
 == Frequently Asked Questions ==
 
-= Does it support the new WooCommerce Checkout Block? =
-Yes, the plugin is fully integrated with WooCommerce Blocks.
+= Does it support the WooCommerce Checkout Block? =
+Yes, the plugin works with both the classic checkout and the WooCommerce Checkout block.
 
 = Where can I find my API keys? =
-You can find your Public and Secret keys in the ApoloPay Dashboard under the Payment Button settings.
+In your Nexora SmartPay dashboard, under the Payment Button settings.
+
+= Why is Nexora SmartPay not shown at checkout? =
+The method is hidden until the Webhook Secret is configured: without it no payment could be confirmed, so customers are never offered a payment that would leave the order on hold. An admin notice is shown while the method is enabled without a Webhook Secret.
+
+= I am updating from ApoloPay Checkout for WooCommerce. Do I lose my settings? =
+No. Version 2.0.0 is the same plugin (same folder and settings) under the Nexora SmartPay name. Your keys, webhook URL and orders are kept. If your checkout title or description still had the old default text, it is updated to the new default; customized texts are not changed. Set the Webhook Secret before updating (see the Upgrade Notice).
 
 = Where can I find the source code? =
-The compiled `apolopay-sdk.js` file bundled with this plugin is built from our open-source JavaScript SDK monorepo. The unminified source code, build scripts, and full development history are publicly available at:
+The compiled `nexora-smartpay.js` file bundled with this plugin is built from the open-source Nexora SmartPay SDK monorepo. The unminified source code, build scripts, and full development history are publicly available at:
 
-https://github.com/ApoloPay/payment-button-sdk
+https://github.com/Nexora-SmartPay/nexora_smartpay_sdk
 
 The repository also contains the source for `checkout.js` and `checkout-block.js` under `javascript-sdk/packages/wordpress/assets/`.
 
-To build from source, run `turbo run build --filter=@apolo-pay/wordpress-plugin` from the monorepo root. Node.js and pnpm are required.
+To build from source, run `pnpm turbo run build --filter=@nexora-smartpay/wordpress-plugin` from the `javascript-sdk` folder of the monorepo. Node.js and pnpm are required.
 
 == External Services ==
 
-This plugin communicates with the following external services. No personal customer data (name, address, email) is sent to any of them unless explicitly noted.
+This plugin connects to the Nexora SmartPay services operated by Nexora. No personal customer data (name, address, email) is sent to them.
 
-= ApoloPay Payment API =
-Used to create payment sessions (preorders) when a customer initiates checkout.
+= Nexora SmartPay API (api.smartpaylatam.com) =
+Used to create the payment session (preorder) when the customer places the order, and by the bundled SDK to load the available assets and networks and to confirm the payment session.
 
-* **Data sent**: Payment amount and an optional order metadata object.
-* **When**: When the customer clicks "Place Order" on the checkout page.
-* **Endpoint**: `https://pb-api.apolopay.app`
-* **Privacy Policy**: https://apolopay.app/privacy
-* **Terms of Service**: https://apolopay.app/terms
+* **Data sent**: From your server: the order amount, an empty metadata object and your Secret Key. From the customer's browser: your Public Key, the payment process ID and the asset/network the customer selects.
+* **When**: When the customer clicks "Place Order" with Nexora SmartPay selected, and while the payment window is open.
+* **Endpoint**: `https://api.smartpaylatam.com`
+* **Terms of Service**: https://smartpaylatam.com/terminos
+* **Privacy Policy**: https://smartpaylatam.com/privacidad
 
-= ApoloPay WebSocket (real-time payment status) =
-The ApoloPay SDK opens a WebSocket connection to the ApoloPay servers to receive real-time payment confirmation events. The SDK uses the Socket.IO client library internally; the connection goes to ApoloPay's own servers, not to socket.io.com.
+= Nexora SmartPay real-time service (ws.smartpaylatam.com) =
+The bundled SDK opens a Socket.IO connection from the customer's browser to receive the payment status in real time. The connection goes to Nexora SmartPay's own servers, not to socket.io.com.
 
-* **Data sent**: The payment process ID, used to subscribe to status updates for that specific payment session.
-* **When**: During an active payment session on the checkout page.
-* **Provider**: ApoloPay
-* **Privacy Policy**: https://apolopay.app/privacy
-* **Terms of Service**: https://apolopay.app/terms
+* **Data sent**: Your Public Key and the payment process ID, used to subscribe to that payment's status.
+* **When**: While the payment window is open during checkout.
+* **Endpoint**: `https://ws.smartpaylatam.com`
+* **Terms of Service**: https://smartpaylatam.com/terminos
+* **Privacy Policy**: https://smartpaylatam.com/privacidad
 
-= QR Code Generation (api.qrserver.com by goQR.me) =
-The ApoloPay SDK generates a QR code so that customers can scan the recipient crypto wallet address with a mobile wallet app. The QR image is requested from api.qrserver.com directly from the customer's browser.
-
-* **Data sent**: The cryptocurrency wallet address (a public blockchain identifier — not linked to any personal user data).
-* **When**: When the customer is shown the payment screen during checkout.
-* **Provider**: goQR.me (api.qrserver.com)
-* **API Documentation**: https://goqr.me/api/
-* **Privacy & Security**: https://goqr.me/privacy-safety-security/
-* **Legal Notice**: https://goqr.me/legal/
+The payment QR code is generated locally in the customer's browser; no QR service is contacted.
 
 == Changelog ==
+
+= 2.0.0 =
+* Rebranded to Nexora SmartPay ("Nexora SmartPay for WooCommerce"). The plugin folder, settings, webhook URL and stored order data are unchanged, so it updates in place.
+* The default checkout title is now "Nexora SmartPay". A title or description still equal to the previous default text is updated automatically; customized texts are kept.
+* Webhook Secret is now required: without it the method is hidden at checkout and incoming webhooks are rejected with HTTP 401. Configure it BEFORE updating.
+* The payment QR code is now generated locally; api.qrserver.com is no longer contacted.
+* Payments are processed through the Nexora SmartPay API (api.smartpaylatam.com).
+* Bundled Nexora SmartPay SDK 2.0.0 (`assets/nexora-smartpay.js`, script handle `nexora-smartpay-sdk`, element `<smartpay-button>`).
+* New Nexora SmartPay icon.
+* Fixed: the release zip now contains a single `apolopay-checkout-for-woocommerce/` folder, so every version installs over the same plugin.
 
 = 1.2.0 =
 * Renamed plugin to "ApoloPay Checkout for WooCommerce" (new slug: apolopay-checkout-for-woocommerce).
@@ -90,7 +102,7 @@ The ApoloPay SDK generates a QR code so that customers can scan the recipient cr
 * Fixed: `set_transient` now stores a lightweight boolean flag instead of the raw payload array.
 * Fixed: script handle `checkout` renamed to `apolopay-checkout` to avoid collisions.
 * Added constants `APOLOPAY_PLUGIN_URL` / `APOLOPAY_PLUGIN_DIR` for clean path resolution.
-* Documented all external services (ApoloPay API, ApoloPay WebSocket, goQR.me) in readme.
+* Documented all external services in readme.
 * Added source-code link and build instructions in readme.
 
 = 1.1.0 =
@@ -99,3 +111,8 @@ The ApoloPay SDK generates a QR code so that customers can scan the recipient cr
 * HMAC-SHA256 webhook signature verification.
 * Race-condition guard (transient) for webhooks arriving before the WC order is created.
 * Idempotency guard to prevent double-processing the same payment.
+
+== Upgrade Notice ==
+
+= 2.0.0 =
+Set the Webhook Secret in WooCommerce > Settings > Payments > Nexora SmartPay BEFORE updating. From 2.0.0 the method is hidden at checkout and webhooks are rejected (401) without it. The plugin is now branded Nexora SmartPay; settings are kept.

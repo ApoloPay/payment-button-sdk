@@ -62,23 +62,27 @@ jobs:
       - name: Generate WordPress Plugin ZIP
         if: steps.changesets.outputs.published == 'true'
         run: |
-          pnpm run build --filter=@apolo-pay/wordpress-plugin
+          pnpm run build --filter=@nexora-smartpay/wordpress-plugin
+          # Released alongside the SDK it bundles: the asset/tag carry the SDK version.
           PACKAGE_VERSION=$(node -p "require('./packages/ui/package.json').version")
-          mv javascript-sdk/packages/wordpress/dist/apolo-pay-for-woocommerce.zip javascript-sdk/packages/wordpress/dist/apolo-pay-for-woocommerce-v$PACKAGE_VERSION.zip
+          # The zip holds a single apolopay-checkout-for-woocommerce/ folder, so
+          # WordPress installs it under that slug whatever the asset is named.
+          mv packages/wordpress/dist/apolopay-checkout-for-woocommerce.zip packages/wordpress/dist/nexora-smartpay-for-woocommerce-v$PACKAGE_VERSION.zip
           echo "WP_VERSION=$PACKAGE_VERSION" >> $GITHUB_ENV
-        
+
       - name: Upload WordPress ZIP to GitHub Release
         if: steps.changesets.outputs.published == 'true'
         uses: softprops/action-gh-release@v2
         with:
-          files: javascript-sdk/packages/wordpress/dist/apolo-pay-for-woocommerce-v${{ env.WP_VERSION }}.zip
+          files: javascript-sdk/packages/wordpress/dist/nexora-smartpay-for-woocommerce-v${{ env.WP_VERSION }}.zip
           tag_name: WordPress-v${{ env.WP_VERSION }}
           name: "WordPress Release v${{ env.WP_VERSION }}"
           append_body: true
           body: |
             ---
-            ### 🔌 WordPress Integration
+            ### 🔌 WordPress Integration (Nexora SmartPay for WooCommerce)
             - **Plugin Version:** v${{ env.WP_VERSION }}
-            - **Installation:** Download the `apolo-pay-for-woocommerce-v${{ env.WP_VERSION }}.zip` below and upload it to your WordPress admin panel.
+            - **Installation:** Download the `nexora-smartpay-for-woocommerce-v${{ env.WP_VERSION }}.zip` below and upload it to your WordPress admin panel. It installs (and updates) the `apolopay-checkout-for-woocommerce` plugin in place.
+            - **Before updating to 2.x:** set the Webhook Secret in the plugin settings, or the payment method is hidden at checkout.
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

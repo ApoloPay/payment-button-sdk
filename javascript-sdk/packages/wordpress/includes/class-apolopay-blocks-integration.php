@@ -6,7 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Integrates ApoloPay with the WooCommerce Checkout Blocks API.
+ * Integrates Nexora SmartPay with the WooCommerce Checkout Blocks API.
  */
 final class ApoloPay_Blocks_Integration extends AbstractPaymentMethodType {
 
@@ -31,13 +31,13 @@ final class ApoloPay_Blocks_Integration extends AbstractPaymentMethodType {
     /**
      * Returns the script handles that WooCommerce Blocks will enqueue.
      *
-     * Note: apolopay-sdk is registered here (not just in payment_scripts) so
-     * that window.ApoloPaySDK is available in the block checkout context too.
+     * Note: nexora-smartpay-sdk is registered here (not just in payment_scripts)
+     * so that window.NexoraSmartPay is available in the block checkout context too.
      */
     public function get_payment_method_script_handles() {
         wp_register_script(
-            'apolopay-sdk',
-            APOLOPAY_PLUGIN_URL . 'assets/apolopay-sdk.js',
+            'nexora-smartpay-sdk',
+            APOLOPAY_PLUGIN_URL . 'assets/nexora-smartpay.js',
             array(),
             APOLOPAY_VERSION,
             true
@@ -46,7 +46,7 @@ final class ApoloPay_Blocks_Integration extends AbstractPaymentMethodType {
         wp_register_script(
             'apolopay-blocks-integration',
             APOLOPAY_PLUGIN_URL . 'assets/checkout-block.js',
-            array( 'wc-blocks-registry', 'wc-settings', 'wp-element', 'wp-html-entities', 'apolopay-sdk' ),
+            array( 'wc-blocks-registry', 'wc-settings', 'wp-element', 'wp-html-entities', 'nexora-smartpay-sdk' ),
             APOLOPAY_VERSION,
             true
         );

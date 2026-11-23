@@ -10,7 +10,7 @@ if ( window.wc && window.wc.wcBlocksRegistry && window.wp && window.wp.element )
     const BlockContent = ( props ) => {
         const { eventRegistration } = props;
         const { onPaymentSetup } = eventRegistration;
-        const apoloPayRef = useRef( null );
+        const smartPayRef = useRef( null );
 
         useEffect( () => {
             const unsubscribe = onPaymentSetup( async () => {
@@ -28,9 +28,9 @@ if ( window.wc && window.wc.wcBlocksRegistry && window.wp && window.wp.element )
 
                     if ( result.success && result.data.process_id ) {
                         const processId = result.data.process_id;
-                        const component = apoloPayRef.current;
+                        const component = smartPayRef.current;
 
-                        component.client = new window.ApoloPaySDK.ApoloPayClient( {
+                        component.client = new window.NexoraSmartPay.SmartPayClient( {
                             publicKey: settings.publicKey,
                         } );
                         component.setAttribute( 'process-id', processId );
@@ -48,7 +48,7 @@ if ( window.wc && window.wc.wcBlocksRegistry && window.wp && window.wp.element )
                              * WebSocket "success": customer has completed the crypto
                              * payment. Pass the processId to WooCommerce so that
                              * process_payment() can save it and set the order to
-                             * "on-hold", awaiting the ApoloPay webhook confirmation.
+                             * "on-hold", awaiting the Nexora SmartPay webhook confirmation.
                              */
                             const handleSuccess = () => {
                                 cleanupEvents();
@@ -110,7 +110,7 @@ if ( window.wc && window.wc.wcBlocksRegistry && window.wp && window.wp.element )
                     } else {
                         return {
                             type: 'error',
-                            message: result.data?.message || 'Error al conectar con Apolo Pay.',
+                            message: result.data?.message || 'Error al conectar con Nexora SmartPay.',
                         };
                     }
                 } catch ( error ) {
@@ -126,9 +126,9 @@ if ( window.wc && window.wc.wcBlocksRegistry && window.wp && window.wp.element )
         return createElement(
             'div',
             { className: 'apolo-pay-block-content' },
-            createElement( 'p', null, settings.description || 'Paga de forma segura con Apolo Pay.' ),
-            createElement( 'apolopay-button', {
-                ref: apoloPayRef,
+            createElement( 'p', null, settings.description || 'Paga de forma segura con Nexora SmartPay.' ),
+            createElement( 'smartpay-button', {
+                ref: smartPayRef,
                 style: { position: 'absolute', width: '0', height: '0', overflow: 'hidden' },
             }, createElement( 'span', { slot: '' } ) )
         );
@@ -138,22 +138,22 @@ if ( window.wc && window.wc.wcBlocksRegistry && window.wp && window.wp.element )
         return createElement(
             'span',
             { style: { width: '100%', display: 'flex', alignItems: 'center', gap: '8px' } },
-            settings.title || 'Apolo Pay'
+            settings.title || 'Nexora SmartPay'
         );
     };
 
-    const ApoloPayBlocksIntegration = {
+    const SmartPayBlocksIntegration = {
         name: name,
         label: createElement( Label, null ),
         content: createElement( BlockContent, null ),
         edit: createElement( BlockContent, null ),
         canMakePayment: () => true,
-        ariaLabel: settings.title || 'Apolo Pay',
+        ariaLabel: settings.title || 'Nexora SmartPay',
         supports: { features: [ 'products' ] },
     };
 
-    registerPaymentMethod( ApoloPayBlocksIntegration );
+    registerPaymentMethod( SmartPayBlocksIntegration );
 
 } else {
-    console.error( 'Apolo Pay: Faltan dependencias de WooCommerce Blocks.' );
+    console.error( 'Nexora SmartPay: Faltan dependencias de WooCommerce Blocks.' );
 }

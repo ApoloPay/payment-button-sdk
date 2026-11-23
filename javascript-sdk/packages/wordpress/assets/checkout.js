@@ -3,7 +3,7 @@ jQuery(function ($) {
     'use strict';
 
     const formSelector      = 'form.checkout';
-    const componentSelector = 'apolopay-button';
+    const componentSelector = 'smartpay-button';
 
     const blockUI = () => {
         $(formSelector).addClass('processing').block({
@@ -37,12 +37,12 @@ jQuery(function ($) {
             return true;
         }
 
-        // No process ID yet → start the Apolo Pay flow and block WooCommerce.
-        iniciarFlujoApoloPay();
+        // No process ID yet → start the Nexora SmartPay flow and block WooCommerce.
+        iniciarFlujoSmartPay();
         return false;
     });
 
-    function iniciarFlujoApoloPay() {
+    function iniciarFlujoSmartPay() {
         blockUI();
 
         // Clear any stale processId from a previous attempt.
@@ -69,8 +69,8 @@ jQuery(function ($) {
 
                     const component = document.querySelector(componentSelector);
 
-                    if (component && window.ApoloPaySDK) {
-                        component.client = new window.ApoloPaySDK.ApoloPayClient({
+                    if (component && window.NexoraSmartPay) {
+                        component.client = new window.NexoraSmartPay.SmartPayClient({
                             publicKey: apolo_params.public_key
                         });
                         component.setAttribute('process-id', processId);
@@ -86,7 +86,7 @@ jQuery(function ($) {
                          * WebSocket "success" event: the customer has completed the
                          * crypto payment. We put the order in "on-hold" via
                          * process_payment() on the server; the order will be moved to
-                         * "processing" only after the ApoloPay webhook confirms it.
+                         * "processing" only after the Nexora SmartPay webhook confirms it.
                          */
                         const handleSuccess = () => {
                             cleanupEvents();
@@ -146,7 +146,7 @@ jQuery(function ($) {
                 } else {
                     if (processIdInput) processIdInput.value = '';
                     unblockUI();
-                    alert('Error al conectar con Apolo Pay.');
+                    alert('Error al conectar con Nexora SmartPay.');
                 }
             },
             error: function () {

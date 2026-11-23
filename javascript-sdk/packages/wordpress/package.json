@@ -1,17 +1,18 @@
 {
-  "name": "@apolo-pay/wordpress-plugin",
-  "version": "1.2.0",
+  "name": "@nexora-smartpay/wordpress-plugin",
+  "version": "2.0.0",
   "private": true,
-  "description": "WooCommerce Payment Gateway for ApoloPay",
+  "description": "Nexora SmartPay payment gateway for WooCommerce",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ApoloPay/payment-button-sdk.git"
+    "url": "git+https://github.com/Nexora-SmartPay/nexora_smartpay_sdk.git",
+    "directory": "javascript-sdk/packages/wordpress"
   },
   "main": "apolo-pay.php",
   "scripts": {
-    "build": "node scripts/copy-build.js && npm run zip",
-    "zip": "bestzip dist/apolopay-checkout-for-woocommerce.zip apolo-pay.php includes/ assets/ languages/ readme.txt",
-    "clean": "rimraf dist assets/apolopay-sdk.js"
+    "build": "node scripts/copy-build.js && node scripts/package-zip.js",
+    "zip": "node scripts/package-zip.js",
+    "clean": "rimraf dist assets/nexora-smartpay.js"
   },
   "devDependencies": {
     "@nexora-smartpay/ui": "workspace:*",
@@ -20,7 +21,9 @@
   },
   "keywords": [
     "woocommerce",
-    "apolo-pay",
+    "nexora",
+    "smartpay",
+    "nexora-smartpay",
     "payment-gateway",
     "wordpress"
   ]
