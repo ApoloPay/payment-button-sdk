@@ -1,19 +1,19 @@
 // 1. Importa el Web Component para registrarlo
-import '@apolopay-sdk/ui';
+import '@nexora-smartpay/ui';
 
 // 2. Importa las herramientas de Vue
 import { defineComponent, h, onMounted, ref } from 'vue';
 
 // 3. Re-exporta los tipos de 'core' para el usuario final
 //    (Nota: @core es una dependencia de @ui, que es una dependencia nuestra)
-export * from '@apolopay-sdk/ui';
+export * from '@nexora-smartpay/ui';
 
 /**
  * El componente adaptador de Vue.
  * Traduce los eventos nativos del DOM a eventos de Vue.
  */
-export const ApoloPayButton = defineComponent({
-  name: 'ApoloPayButton',
+export const SmartPayButton = defineComponent({
+  name: 'SmartPayButton',
 
   // 1. Define los props que acepta (camelCase)
   props: {
@@ -72,7 +72,7 @@ export const ApoloPayButton = defineComponent({
 
     // 5. Renderiza el Web Component
     return () => h(
-      'apolopay-button',
+      'smartpay-button',
       {
         // 6. Asigna la ref
         ref: buttonRef,
@@ -92,3 +92,6 @@ export const ApoloPayButton = defineComponent({
     );
   },
 });
+
+/** @deprecated Use `SmartPayButton` instead. Pre-2.0 name, kept for backwards compatibility. */
+export const ApoloPayButton = SmartPayButton;

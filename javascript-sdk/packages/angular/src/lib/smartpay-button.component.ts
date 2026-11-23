@@ -1,11 +1,11 @@
 import { Component, Input, Output, EventEmitter, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import type { ClientResponse, ClientError, Locale, ApoloPayClient, PaymentResponseData, PartialPaymentResponseData } from '@apolopay-sdk/ui';
+import type { ClientResponse, ClientError, Locale, SmartPayClient, PaymentResponseData, PartialPaymentResponseData } from '@nexora-smartpay/ui';
 
 @Component({
-  selector: 'apolopay-button-component',
+  selector: 'smartpay-button-component, apolopay-button-component',
   standalone: true,
   template: `
-    <apolopay-button
+    <smartpay-button
       [client]="client"
       [attr.process-id]="processId"
       [label]="label"
@@ -21,21 +21,21 @@ import type { ClientResponse, ClientError, Locale, ApoloPayClient, PaymentRespon
       (dismissed)="onDismissed($event)"
     >
       <ng-content></ng-content>
-    </apolopay-button>
+    </smartpay-button>
   `,
   // 4. Asegura que el wrapper se comporte como un bloque
   styles: [`
     :host { display: inline-block; }
 
-    apolopay-button { display: block; }
+    smartpay-button { display: block; }
   `],
   schemas: [
     CUSTOM_ELEMENTS_SCHEMA
   ]
 })
-export class ApoloPayButtonComponent {
+export class SmartPayButtonComponent {
   // 5. Define los Inputs (props)
-  @Input() client?: ApoloPayClient;
+  @Input() client?: SmartPayClient;
   @Input() processId?: string;
   @Input() productTitle?: string;
   @Input() lang?: Locale;
@@ -77,3 +77,10 @@ export class ApoloPayButtonComponent {
     this.dismissed.emit();
   }
 }
+
+/**
+ * @deprecated Use `SmartPayButtonComponent` (selector `smartpay-button-component`) instead.
+ * Pre-2.0 name, kept for backwards compatibility; the legacy `apolopay-button-component`
+ * selector is still matched by `SmartPayButtonComponent`.
+ */
+export { SmartPayButtonComponent as ApoloPayButtonComponent };

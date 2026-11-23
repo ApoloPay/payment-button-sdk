@@ -2,7 +2,7 @@
   <aside class="sidebar">
     <div class="sidebar-header">
       <div class="logo">
-        <span class="logo-accent">Apolo</span> Pay
+        <span class="logo-accent">Smart</span>Pay
       </div>
       <h1>Playground Angular</h1>
     </div>
@@ -76,7 +76,7 @@
           Configura las llaves para ver el botón
         </div>
         <div *ngIf="processId() && client()">
-          <apolopay-button-component
+          <smartpay-button-component
             [client]="client()"
             [processId]="processId()!"
             [barrierDismissible]="true"
@@ -84,7 +84,7 @@
             (error)="handleError($event)"
             (expired)="handleExpired($event)"
             (dismissed)="handleDismissed()"
-          ></apolopay-button-component>
+          ></smartpay-button-component>
         </div>
       </div>
     </div>
@@ -101,4 +101,4 @@
       </div>
     </div>
   </main>
-</div>
+</div>

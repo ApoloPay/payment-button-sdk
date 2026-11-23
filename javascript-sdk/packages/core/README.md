@@ -1,28 +1,28 @@
-# @apolopay-sdk/core
+# @nexora-smartpay/core
 
-The core logic and common types for the Apolo Pay JavaScript SDK. This package provides the foundational classes and services used across all platform-specific SDKs (React, Vue, Angular, etc.).
+The core logic and common types for the Nexora SmartPay JavaScript SDK. This package provides the foundational classes and services used across all platform-specific SDKs (React, Vue, Angular, etc.).
 
 ## Installation
 
 ```bash
-npm install @apolopay-sdk/core
+npm install @nexora-smartpay/core
 # or
-pnpm add @apolopay-sdk/core
+pnpm add @nexora-smartpay/core
 # or
-yarn add @apolopay-sdk/core
+yarn add @nexora-smartpay/core
 ```
 
 ## Usage
 
-### ApoloPayClient
+### SmartPayClient
 
-The `ApoloPayClient` is the main entry point for interacting with the Apolo Pay API. You'll need your Public Key to initialize it.
+The `SmartPayClient` is the main entry point for interacting with the Nexora SmartPay API. You'll need your Public Key to initialize it.
 
 ```typescript
-import { ApoloPayClient } from '@apolopay-sdk/core';
+import { SmartPayClient } from '@nexora-smartpay/core';
 
-const client = new ApoloPayClient({
-  publicKey: 'pk_test_...', // Your Apolo Pay Public Key
+const client = new SmartPayClient({
+  publicKey: 'pk_test_...', // Your Public Key
 });
 ```
 
@@ -34,6 +34,10 @@ This package also exports various types and services:
 - `I18n`: Internationalization utility for the SDK.
 - `Locale`: Type for supported languages ('es', 'en').
 - `ClientResponse`, `ClientError`: Standardized response and error types.
+
+## Migrating from `@apolopay-sdk/core`
+
+This package was previously published as `@apolopay-sdk/core`. Replace the dependency with `@nexora-smartpay/core`. `ApoloPayClient` and `ApoloPayClientOptions` are still exported as deprecated aliases of `SmartPayClient` / `SmartPayClientOptions`, so existing code keeps working after changing the import path.
 
 ## License
 

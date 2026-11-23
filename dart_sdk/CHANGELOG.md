@@ -31,3 +31,8 @@
 *   **Refactor**: Extracted a shared `Network.apolopayNetworkId` / `isApoloPay` helper, replacing scattered `'apolopay'` string checks.
 *   **Testing**: Added a `flutter_test` suite covering sandbox service isolation, network helpers, and button config validation.
 
+
+## 2.0.0
+
+*   **BREAKING – Renamed to Nexora SmartPay**: The package is now published as `nexora_smartpay_sdk` (previously `apolopay_sdk`), with the main library at `package:nexora_smartpay_sdk/nexora_smartpay_sdk.dart`. Public classes were renamed from `ApoloPay*` to `SmartPay*` (`SmartPayClient`, `SmartPayButton`, `SmartPayOptions`, `SmartPayService`) and their source files moved accordingly (`smart_pay_client.dart`, `smartpay_button.dart`, `smartpay_models.dart`, `smartpay_service.dart`, `smartpay_modal.dart`).
+*   **Backwards compatibility**: The old names `ApoloPayClient`, `ApoloPayButton`, `ApoloPayOptions` and `ApoloPayService` are still exported as `@Deprecated` typedefs of the new classes, so existing code only needs the new dependency and import path. They will be removed in a future major version.

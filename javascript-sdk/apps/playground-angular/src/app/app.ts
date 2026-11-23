@@ -1,7 +1,7 @@
 import { Component, CUSTOM_ELEMENTS_SCHEMA, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ApoloPayButtonModule, ApoloPayClient } from '@apolopay-sdk/angular';
+import { SmartPayButtonModule, SmartPayClient } from '@nexora-smartpay/angular';
 
 // --- VALORES INICIALES (OPCIONALES) ---
 const initialPublicKey = "";
@@ -21,7 +21,7 @@ interface LogEntry {
   imports: [
     CommonModule,
     FormsModule,
-    ApoloPayButtonModule
+    SmartPayButtonModule
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './app.html',
@@ -31,7 +31,7 @@ export class App {
   pubKey = signal(initialPublicKey);
   privKey = signal(initialPrivateKey);
   amount = signal(1);
-  client = signal<ApoloPayClient | undefined>(undefined);
+  client = signal<SmartPayClient | undefined>(undefined);
   processId = signal(initialProcessId);
   isLoading = signal(false);
   status = signal(initialProcessId ? "Botón Listo ✅" : "Esperando configuración...");
@@ -80,7 +80,7 @@ export class App {
       const newProcessId = await this.getProcessId(amt, sk);
       this.addLog(`Process ID obtenido: ${newProcessId}`, "success");
 
-      const newClient = new ApoloPayClient({ publicKey: pk });
+      const newClient = new SmartPayClient({ publicKey: pk });
       this.client.set(newClient);
       this.processId.set(newProcessId);
       this.status.set("Botón Listo ✅");

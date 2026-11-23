@@ -6,9 +6,9 @@ export default defineConfig({
     plugins: [vue()],
     resolve: {
         alias: {
-            '@apolopay-sdk/vue': path.resolve(__dirname, '../../packages/vue/src/index.tsx'),
-            '@apolopay-sdk/ui': path.resolve(__dirname, '../../packages/ui/src/index.ts'),
-            '@apolopay-sdk/core': path.resolve(__dirname, '../../packages/core/src/index.ts'),
+            '@nexora-smartpay/vue': path.resolve(__dirname, '../../packages/vue/src/index.tsx'),
+            '@nexora-smartpay/ui': path.resolve(__dirname, '../../packages/ui/src/index.ts'),
+            '@nexora-smartpay/core': path.resolve(__dirname, '../../packages/core/src/index.ts'),
         }
     }
 });

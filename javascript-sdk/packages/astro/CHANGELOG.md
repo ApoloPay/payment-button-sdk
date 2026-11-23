@@ -1,4 +1,10 @@
-# @apolopay-sdk/astro
+# @nexora-smartpay/astro
+
+## 2.0.0
+
+### Major Changes
+
+- **Renamed to Nexora SmartPay**: This package is now published as `@nexora-smartpay/astro` (previously `@apolopay-sdk/astro`), with all internal workspace dependencies moved to the `@nexora-smartpay` scope. The component is now `SmartPayButton.astro` (exported as `@nexora-smartpay/astro/SmartPayButton.astro`); the `./ApoloPayButton.astro` entry point is kept as a deprecated alias of the same file.
 
 ## 1.3.0
 

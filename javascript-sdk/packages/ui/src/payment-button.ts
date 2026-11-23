@@ -1,9 +1,9 @@
 import { LitElement, html, css } from 'lit';
-import { customElement, property, state } from 'lit/decorators.js';
+import { property, state } from 'lit/decorators.js';
 import {
   I18n,
   ModalStep,
-  ApoloPayClient,
+  SmartPayClient,
   ClientError,
   PaymentService,
   type Locale,
@@ -15,7 +15,7 @@ import {
   type Network,
   type SandboxOutcome,
   isApoloPayNetwork,
-} from '@apolopay-sdk/core';
+} from '@nexora-smartpay/core';
 import type { ModalStatus } from './types/status.type.js';
 
 // Import child components
@@ -25,10 +25,9 @@ import { InfoModal } from './components/info-modal.js';
 import { termsURL } from './utils/variables.js';
 
 
-@customElement('apolopay-button')
-export class ApoloPayButton extends LitElement {
+export class SmartPayButton extends LitElement {
   // --- Component Properties ---
-  @property({ type: Object }) client: ApoloPayClient | undefined = undefined;
+  @property({ type: Object }) client: SmartPayClient | undefined = undefined;
   @property({ type: String, attribute: 'process-id' }) processId: string | undefined = undefined;
   @property({ type: String, attribute: 'product-title' }) productTitle?: string = undefined;
   @property({ type: String }) override lang: Locale = 'es';
@@ -180,7 +179,7 @@ export class ApoloPayButton extends LitElement {
   }
 
   // --- Event Handlers (Triggered by Child Components) ---
-  // Triggered by <trigger-button> when clicked
+  // Triggered by <smartpay-trigger-button> when clicked
   private async handleOpen() {
     this.resetState();
 
@@ -212,7 +211,7 @@ export class ApoloPayButton extends LitElement {
 
   private closeTimeoutId?: ReturnType<typeof setTimeout>;
 
-  // Triggered by <payment-modal> requesting to close (X, backdrop, Escape)
+  // Triggered by <smartpay-payment-modal> requesting to close (X, backdrop, Escape)
   private handleCloseRequest() {
     this.isOpen = false;
     document.body.style.overflow = 'auto';
@@ -255,7 +254,7 @@ export class ApoloPayButton extends LitElement {
     }, 300);
   }
 
-  // Triggered by <payment-modal> when an asset is selected
+  // Triggered by <smartpay-payment-modal> when an asset is selected
   private handleAssetSelect(event: CustomEvent<{ assetId: string }>) {
     this.selectedAsset = event.detail.assetId;
     this.currentStep = ModalStep.SELECT_NETWORK;
@@ -266,7 +265,7 @@ export class ApoloPayButton extends LitElement {
     this.error = event.detail.error;
   }
 
-  // Triggered by <payment-modal> when a network is selected
+  // Triggered by <smartpay-payment-modal> when a network is selected
   private async handleInitiatePayment(event: CustomEvent<{ network: Network }>) {
     if (!this.client || !this.processId) return;
     this.selectedNetwork = event.detail.network.id;
@@ -417,7 +416,7 @@ export class ApoloPayButton extends LitElement {
     }
   }
 
-  // Triggered by <payment-modal> "Back" buttons
+  // Triggered by <smartpay-payment-modal> "Back" buttons
   private handleChangeStep(event: CustomEvent<ModalStep>) {
     // Disconnect WebSocket if going back from QR step before completion
     if (this.currentStep === ModalStep.SHOW_QR && event.detail !== ModalStep.RESULT) {
@@ -437,13 +436,13 @@ export class ApoloPayButton extends LitElement {
   // --- Styles ---
   static override styles = css`
     :host {
-      display: var(--apolopay-display, inline-block);
+      display: var(--smartpay-display, var(--apolopay-display, inline-block));
     }
 
     #trigger-wrapper {
       position: relative;
-      display: var(--apolopay-trigger-display, inline-block);
-      width: var(--apolopay-trigger-width, auto);
+      display: var(--smartpay-trigger-display, var(--apolopay-trigger-display, inline-block));
+      width: var(--smartpay-trigger-width, var(--apolopay-trigger-width, auto));
       cursor: pointer;
     }
   `;
@@ -454,7 +453,7 @@ export class ApoloPayButton extends LitElement {
     return html`
       <div id="trigger-wrapper" @click=${this.handleOpen}>
         <slot>
-          <trigger-button 
+          <smartpay-trigger-button 
             .lang=${this.lang}
             .label=${this.label}
             .loading=${this.loading ||
@@ -464,11 +463,11 @@ export class ApoloPayButton extends LitElement {
             ?disabled=${this.disabled ||
       this.hasConfigError ||
       !this.isValidProcessId}
-          ></trigger-button>
+          ></smartpay-trigger-button>
         </slot>
       </div>
 
-      <payment-modal
+      <smartpay-payment-modal
         ?isOpen=${this.isOpen}
         .barrierDismissible=${this.barrierDismissible}
         .lang=${this.lang}
@@ -494,14 +493,44 @@ export class ApoloPayButton extends LitElement {
         @changeStep=${this.handleChangeStep}
         @expired=${this.handleExpired}
         @sandboxSimulate=${this.handleSandboxSimulate}
-      ></payment-modal>
+      ></smartpay-payment-modal>
     `;
   }
+}
+if (!customElements.get('smartpay-button')) {
+  customElements.define('smartpay-button', SmartPayButton);
+}
+
+let legacyTagWarningShown = false;
+
+/**
+ * Legacy `<apolopay-button>` element, kept so existing merchant integrations keep working.
+ * A separate subclass is required because the same constructor cannot be registered under
+ * two tag names.
+ *
+ * @deprecated Use `<smartpay-button>` / `SmartPayButton` instead.
+ */
+export class ApoloPayButton extends SmartPayButton {
+  override connectedCallback() {
+    if (!legacyTagWarningShown) {
+      legacyTagWarningShown = true;
+      console.warn(
+        '[Nexora SmartPay] <apolopay-button> is deprecated and will be removed in a future major version. Use <smartpay-button> instead.'
+      );
+    }
+    super.connectedCallback();
+  }
+}
+
+if (!customElements.get('apolopay-button')) {
+  customElements.define('apolopay-button', ApoloPayButton);
 }
 
 // Global type declaration for TypeScript
 declare global {
   interface HTMLElementTagNameMap {
+    'smartpay-button': SmartPayButton;
+    /** @deprecated Use `smartpay-button` instead. */
     'apolopay-button': ApoloPayButton;
   }
 }

@@ -11,7 +11,7 @@ import 'package:example/main.dart';
 
 void main() {
   testWidgets('App builds without throwing', (WidgetTester tester) async {
-    await tester.pumpWidget(const ApoloPlaygroundApp());
+    await tester.pumpWidget(const SmartPayPlaygroundApp());
     await tester.pump();
   });
 }

@@ -1,19 +1,19 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:apolopay_sdk/apolopay_sdk.dart';
+import 'package:nexora_smartpay_sdk/nexora_smartpay_sdk.dart';
 import 'package:http/http.dart' as http;
 
 void main() {
-  runApp(const ApoloPlaygroundApp());
+  runApp(const SmartPayPlaygroundApp());
 }
 
-class ApoloPlaygroundApp extends StatelessWidget {
-  const ApoloPlaygroundApp({super.key});
+class SmartPayPlaygroundApp extends StatelessWidget {
+  const SmartPayPlaygroundApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Apolo Pay Playground',
+      title: 'Nexora SmartPay Playground',
       debugShowCheckedModeBanner: false,
       theme: ThemeData.dark().copyWith(
         scaffoldBackgroundColor: const Color(0xFF0A0A0B),
@@ -76,7 +76,7 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
   final _amountController = TextEditingController(text: "1");
 
   // State
-  ApoloPayClient? _client;
+  SmartPayClient? _client;
   String? _processId;
   bool _isLoading = false;
   String _status = "Esperando configuración...";
@@ -146,7 +146,7 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
       _addLog("Process ID obtenido: $newProcessId", "success");
 
       setState(() {
-        _client = ApoloPayClient(publicKey: pubKey);
+        _client = SmartPayClient(publicKey: pubKey);
         _processId = newProcessId;
         _status = "Botón Listo ✅";
       });
@@ -226,7 +226,7 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
         Row(
           children: [
             Text(
-              "Apolo",
+              "Smart",
               style: TextStyle(
                 color: Color(0xFF0070F3),
                 fontSize: 24,
@@ -235,7 +235,7 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
               ),
             ),
             Text(
-              " Pay",
+              "Pay",
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 24,
@@ -423,7 +423,7 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
                       style: TextStyle(
                           color: Color(0xFFA1A1A1),
                           fontStyle: FontStyle.italic))
-                  : ApoloPayButton(
+                  : SmartPayButton(
                       client: _client,
                       processId: _processId,
                       onSuccess: (ctx, res) =>

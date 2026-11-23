@@ -1,4 +1,10 @@
-# @apolopay-sdk/react
+# @nexora-smartpay/react
+
+## 2.0.0
+
+### Major Changes
+
+- **Renamed to Nexora SmartPay**: This package is now published as `@nexora-smartpay/react` (previously `@apolopay-sdk/react`), with all internal workspace dependencies moved to the `@nexora-smartpay` scope. `ApoloPayButton` was renamed to `SmartPayButton` and now renders `<smartpay-button>`; `ApoloPayButton` is still exported as a deprecated alias.
 
 ## 1.3.0
 

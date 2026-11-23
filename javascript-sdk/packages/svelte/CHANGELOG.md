@@ -1,4 +1,10 @@
-# @apolopay-sdk/svelte
+# @nexora-smartpay/svelte
+
+## 2.0.0
+
+### Major Changes
+
+- **Renamed to Nexora SmartPay**: This package is now published as `@nexora-smartpay/svelte` (previously `@apolopay-sdk/svelte`), with all internal workspace dependencies moved to the `@nexora-smartpay` scope. `ApoloPayButton` was renamed to `SmartPayButton` and now renders `<smartpay-button>`; `ApoloPayButton` is still exported as a deprecated alias.
 
 ## 1.3.0
 

@@ -1,7 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { ApoloPayClient } from '@apolopay-sdk/core';
-import './payment-button.js';
-import type { ApoloPayButton } from './payment-button.js';
+import { SmartPayClient, ApoloPayClient } from '@nexora-smartpay/core';
+import { SmartPayButton, ApoloPayButton } from './payment-button.js';
 
 function jsonResponse(body: unknown) {
   return new Response(JSON.stringify(body), {
@@ -12,14 +11,14 @@ function jsonResponse(body: unknown) {
 
 // Regression tests for a bug where a stale simulated partial-payment result
 // (amount/amountPaid) survived into the next QR/process instead of resetting.
-describe('ApoloPayButton state reset', () => {
-  let el: ApoloPayButton;
+describe('SmartPayButton state reset', () => {
+  let el: SmartPayButton;
 
   beforeEach(() => {
     // getAssets() fetches the (public) real catalog even in sandbox mode —
     // stub it so no test ever makes a real network call.
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue(jsonResponse({ status: 'success', message: 'ok', result: [] })));
-    el = document.createElement('apolopay-button') as ApoloPayButton;
+    el = document.createElement('smartpay-button') as SmartPayButton;
     document.body.appendChild(el);
   });
 
@@ -29,7 +28,7 @@ describe('ApoloPayButton state reset', () => {
   });
 
   it('resets amountPaid to the fresh QR value (0) instead of keeping a stale one', async () => {
-    el.client = new ApoloPayClient({ publicKey: 'pk_test_unit' });
+    el.client = new SmartPayClient({ publicKey: 'pk_test_unit' });
     el.processId = 'proc-1';
     await el.updateComplete;
 
@@ -49,7 +48,7 @@ describe('ApoloPayButton state reset', () => {
   });
 
   it('resetState clears amount/amountPaid along with the rest of the session', () => {
-    el.client = new ApoloPayClient({ publicKey: 'pk_test_unit' });
+    el.client = new SmartPayClient({ publicKey: 'pk_test_unit' });
     (el as any).amount = 50;
     (el as any).amountPaid = 20;
     (el as any).successResult = { code: 'payment_partial' };
@@ -62,7 +61,7 @@ describe('ApoloPayButton state reset', () => {
   });
 
   it('clears the previous session state when a new processId is assigned', async () => {
-    el.client = new ApoloPayClient({ publicKey: 'pk_test_unit' });
+    el.client = new SmartPayClient({ publicKey: 'pk_test_unit' });
     el.processId = 'proc-1';
     await el.updateComplete;
 
@@ -79,15 +78,15 @@ describe('ApoloPayButton state reset', () => {
   });
 });
 
-// Regression tests mirroring dart_sdk's apolopay_button_test.dart — the two
+// Regression tests mirroring dart_sdk's smartpay_button_test.dart — the two
 // SDKs must agree on which public keys are accepted, or one platform's
 // "sandbox mode works" silently breaks on the other.
-describe('ApoloPayButton config validation', () => {
-  let el: ApoloPayButton;
+describe('SmartPayButton config validation', () => {
+  let el: SmartPayButton;
 
   beforeEach(() => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue(jsonResponse({ status: 'success', message: 'ok', result: [] })));
-    el = document.createElement('apolopay-button') as ApoloPayButton;
+    el = document.createElement('smartpay-button') as SmartPayButton;
     document.body.appendChild(el);
   });
 
@@ -97,23 +96,57 @@ describe('ApoloPayButton config validation', () => {
   });
 
   it('accepts a sandbox key regardless of its length', async () => {
-    el.client = new ApoloPayClient({ publicKey: 'pk_test_c6649e69315edc3389a3cc439e7b0649' });
+    el.client = new SmartPayClient({ publicKey: 'pk_test_c6649e69315edc3389a3cc439e7b0649' });
     await el.updateComplete;
 
     expect((el as any).hasConfigError).toBe(false);
   });
 
   it('accepts a valid 35-char live key', async () => {
-    el.client = new ApoloPayClient({ publicKey: `pk_${'a'.repeat(32)}` });
+    el.client = new SmartPayClient({ publicKey: `pk_${'a'.repeat(32)}` });
     await el.updateComplete;
 
     expect((el as any).hasConfigError).toBe(false);
   });
 
   it('rejects a live key with the wrong length', async () => {
-    el.client = new ApoloPayClient({ publicKey: 'pk_too_short' });
+    el.client = new SmartPayClient({ publicKey: 'pk_too_short' });
     await el.updateComplete;
 
     expect((el as any).hasConfigError).toBe(true);
+  });
+});
+
+// The pre-rename tag/class/client names must keep working for existing merchants.
+describe('deprecated apolopay aliases', () => {
+  beforeEach(() => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(jsonResponse({ status: 'success', message: 'ok', result: [] })));
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.restoreAllMocks();
+  });
+
+  it('registers both <smartpay-button> and the legacy <apolopay-button>', () => {
+    expect(customElements.get('smartpay-button')).toBe(SmartPayButton);
+    expect(customElements.get('apolopay-button')).toBe(ApoloPayButton);
+  });
+
+  it('legacy <apolopay-button> behaves like <smartpay-button> and warns once', async () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const first = document.createElement('apolopay-button');
+    const second = document.createElement('apolopay-button');
+    expect(first).toBeInstanceOf(SmartPayButton);
+
+    document.body.append(first, second);
+    first.client = new ApoloPayClient({ publicKey: 'pk_test_c6649e69315edc3389a3cc439e7b0649' });
+    await first.updateComplete;
+
+    expect((first as any).hasConfigError).toBe(false);
+    expect(warn).toHaveBeenCalledTimes(1);
+
+    first.remove();
+    second.remove();
   });
 });

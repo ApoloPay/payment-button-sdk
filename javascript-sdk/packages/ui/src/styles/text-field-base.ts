@@ -14,7 +14,7 @@ export const textFieldBaseStyles = css`
     --padding-top: 0.15rem;
     font-size: 0.75rem;
     color: #9ca3af;
-    border-radius: calc(var(--apolo-radius) - 1px);
+    border-radius: calc(var(--smartpay-radius) - 1px);
     background: #ffffff;
     padding: var(--padding-top) var(--padding-left);
     position: absolute;
@@ -27,7 +27,7 @@ export const textFieldBaseStyles = css`
     width: 100%;
     padding: 0.75rem 1rem;
     border: 1px solid #526282;
-    border-radius: var(--apolo-radius);
+    border-radius: var(--smartpay-radius);
     background: #ffffff;
     color: #4b5563;
     font-size: 0.9rem;
@@ -37,7 +37,7 @@ export const textFieldBaseStyles = css`
     background-color: #526282;
     color: #ffffff;
     border: none;
-    border-radius: var(--apolo-radius);
+    border-radius: var(--smartpay-radius);
     padding: 0.5rem 1rem;
     cursor: pointer;
     transition: background-color 0.2s ease;

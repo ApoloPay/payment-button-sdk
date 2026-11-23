@@ -1,4 +1,10 @@
-# @apolopay-sdk/angular
+# @nexora-smartpay/angular
+
+## 2.0.0
+
+### Major Changes
+
+- **Renamed to Nexora SmartPay**: This package is now published as `@nexora-smartpay/angular` (previously `@apolopay-sdk/angular`), with all internal workspace dependencies moved to the `@nexora-smartpay` scope. `ApoloPayButtonComponent` / `ApoloPayButtonModule` were renamed to `SmartPayButtonComponent` / `SmartPayButtonModule` (selector `smartpay-button-component`); the old class names are still exported as deprecated aliases and the old `apolopay-button-component` selector still matches.
 
 ## 1.3.0
 

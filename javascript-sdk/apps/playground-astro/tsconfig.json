@@ -12,13 +12,13 @@
   ],
   "compilerOptions": {
     "paths": {
-      "@apolopay-sdk/astro/*": [
+      "@nexora-smartpay/astro/*": [
         "../../packages/astro/src/*"
       ],
-      "@apolopay-sdk/astro": [
+      "@nexora-smartpay/astro": [
         "../../packages/astro/src/index.ts"
       ],
-      "@apolopay-sdk/ui": [
+      "@nexora-smartpay/ui": [
         "../../packages/ui/src/index.ts"
       ]
     }

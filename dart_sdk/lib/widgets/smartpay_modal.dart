@@ -1,34 +1,34 @@
 import 'dart:async';
 import 'dart:math';
-import 'package:apolopay_sdk/utils/amount_formatter.dart';
-import 'package:apolopay_sdk/utils/build_rich_text.dart';
-import 'package:apolopay_sdk/widgets/Info_modal.dart';
-import 'package:apolopay_sdk/widgets/scrollbar.dart';
+import 'package:nexora_smartpay_sdk/utils/amount_formatter.dart';
+import 'package:nexora_smartpay_sdk/utils/build_rich_text.dart';
+import 'package:nexora_smartpay_sdk/widgets/Info_modal.dart';
+import 'package:nexora_smartpay_sdk/widgets/scrollbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:apolopay_sdk/i18n/i18n.dart';
-import 'package:apolopay_sdk/models/client_response.dart';
-import 'package:apolopay_sdk/models/asset.dart';
-import 'package:apolopay_sdk/models/network.dart';
-import 'package:apolopay_sdk/models/apolopay_models.dart';
+import 'package:nexora_smartpay_sdk/i18n/i18n.dart';
+import 'package:nexora_smartpay_sdk/models/client_response.dart';
+import 'package:nexora_smartpay_sdk/models/asset.dart';
+import 'package:nexora_smartpay_sdk/models/network.dart';
+import 'package:nexora_smartpay_sdk/models/smartpay_models.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'dart:convert';
-import 'package:apolopay_sdk/assets/logo_apolo.dart';
+import 'package:nexora_smartpay_sdk/assets/logo_apolo.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../services/apolopay_service.dart';
+import '../services/smartpay_service.dart';
 
 enum ModalStep { selectAsset, selectNetwork, showQr, processing, result }
 
 enum SandboxOutcome { success, partial, error, expired }
 
-class ApoloPayModal extends StatefulWidget {
-  final ApoloPayOptions options;
+class SmartPayModal extends StatefulWidget {
+  final SmartPayOptions options;
   final I18nLocale? locale;
   final String productTitle;
   final Function(ClientError)? onExpired;
   final VoidCallback? onDismissed;
 
-  const ApoloPayModal({
+  const SmartPayModal({
     super.key,
     required this.options,
     this.locale,
@@ -39,7 +39,7 @@ class ApoloPayModal extends StatefulWidget {
 
   static Future<void> show(
     BuildContext context,
-    ApoloPayOptions options, {
+    SmartPayOptions options, {
     I18nLocale? locale,
     String productTitle = '',
     Function(ClientError)? onExpired,
@@ -47,7 +47,7 @@ class ApoloPayModal extends StatefulWidget {
   }) {
     final bool isDesktop = MediaQuery.of(context).size.width > 880;
 
-    final child = ApoloPayModal(
+    final child = SmartPayModal(
       options: options,
       locale: locale,
       productTitle: productTitle,
@@ -79,16 +79,16 @@ class ApoloPayModal extends StatefulWidget {
   }
 
   @override
-  State<ApoloPayModal> createState() => _ApoloPayModalState();
+  State<SmartPayModal> createState() => _SmartPayModalState();
 }
 
-class _ApoloPayModalState extends State<ApoloPayModal>
+class _SmartPayModalState extends State<SmartPayModal>
     with SingleTickerProviderStateMixin {
   final scrollControllerAssets = ScrollController();
   final scrollControllerNetworks = ScrollController();
   final scrollControllerQr = ScrollController();
 
-  late ApoloPayService _service;
+  late SmartPayService _service;
   ModalStep _currentStep = ModalStep.selectAsset;
   bool _isLoading = true;
   List<Asset> _assets = [];
@@ -109,7 +109,7 @@ class _ApoloPayModalState extends State<ApoloPayModal>
   }
 
   void _initService() {
-    _service = ApoloPayService(ApoloPayOptions(
+    _service = SmartPayService(SmartPayOptions(
       client: widget.options.client,
       processId: widget.options.processId,
       onSuccess: (res) {
@@ -136,7 +136,7 @@ class _ApoloPayModalState extends State<ApoloPayModal>
   }
 
   @override
-  void didUpdateWidget(covariant ApoloPayModal oldWidget) {
+  void didUpdateWidget(covariant SmartPayModal oldWidget) {
     super.didUpdateWidget(oldWidget);
     // A new process means the previous QR/simulated result (e.g. a sandbox
     // partial payment) no longer applies — clear it before loading the next one.

@@ -1,10 +1,22 @@
 {
-  "name": "@apolopay-sdk/astro",
-  "version": "1.3.0",
-  "description": "Astro Payment Button Adapter",
+  "name": "@nexora-smartpay/astro",
+  "version": "2.0.0",
+  "description": "Nexora SmartPay payment button adapter for Astro",
+  "author": "Nexora SmartPay",
+  "homepage": "https://smartpaylatam.com",
+  "keywords": [
+    "nexora",
+    "smartpay",
+    "nexora-smartpay",
+    "payments",
+    "crypto",
+    "payment-button",
+    "astro"
+  ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ApoloPay/payment-button-sdk.git"
+    "url": "git+https://github.com/Nexora-SmartPay/nexora_smartpay_sdk.git",
+    "directory": "javascript-sdk/packages/astro"
   },
   "publishConfig": {
     "access": "public",
@@ -22,7 +34,7 @@
     "build": "tsc"
   },
   "dependencies": {
-    "@apolopay-sdk/ui": "workspace:*"
+    "@nexora-smartpay/ui": "workspace:*"
   },
   "devDependencies": {
     "typescript": "5.4.5"
@@ -35,6 +47,7 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
     },
-    "./ApoloPayButton.astro": "./src/ApoloPayButton.astro"
+    "./SmartPayButton.astro": "./src/SmartPayButton.astro",
+    "./ApoloPayButton.astro": "./src/SmartPayButton.astro"
   }
 }

@@ -8,21 +8,21 @@ export default defineConfig({
     resolve: {
       alias: [
         {
-          find: '@apolopay-sdk/astro',
+          find: '@nexora-smartpay/astro',
           replacement: fileURLToPath(new URL(
             '../../packages/astro/src',
             import.meta.url
           )),
         },
         {
-          find: '@apolopay-sdk/ui',
+          find: '@nexora-smartpay/ui',
           replacement: fileURLToPath(new URL(
             '../../packages/ui/src/index.ts',
             import.meta.url
           )),
         },
         {
-          find: '@apolopay-sdk/core',
+          find: '@nexora-smartpay/core',
           replacement: fileURLToPath(new URL(
             '../../packages/core/src/index.ts',
             import.meta.url

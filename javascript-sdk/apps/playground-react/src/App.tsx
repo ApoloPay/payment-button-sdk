@@ -1,4 +1,4 @@
-import { ApoloPayClient, ApoloPayButton } from '@apolopay-sdk/react';
+import { SmartPayClient, SmartPayButton } from '@nexora-smartpay/react';
 import { useState } from 'react';
 
 // --- VALORES INICIALES (OPCIONALES) ---
@@ -17,7 +17,7 @@ function App() {
   const [pubKey, setPubKey] = useState(initialPublicKey);
   const [privKey, setPrivKey] = useState(initialPrivateKey);
   const [amount, setAmount] = useState(1);
-  const [client, setClient] = useState<ApoloPayClient | undefined>(undefined);
+  const [client, setClient] = useState<SmartPayClient | undefined>(undefined);
   const [processId, setProcessId] = useState(initialProcessId);
   const [isLoading, setIsLoading] = useState(false);
   const [status, setStatus] = useState(initialProcessId ? "Botón Listo ✅" : "Esperando configuración...");
@@ -62,7 +62,7 @@ function App() {
       const newProcessId = await getProcessId(amount, privKey);
       addLog(`Process ID obtenido: ${newProcessId}`, "success");
 
-      const newClient = new ApoloPayClient({ publicKey: pubKey });
+      const newClient = new SmartPayClient({ publicKey: pubKey });
       setClient(newClient);
       setProcessId(newProcessId);
       setStatus("Botón Listo ✅");
@@ -81,7 +81,7 @@ function App() {
       <aside className="sidebar">
         <div className="sidebar-header">
           <div className="logo">
-            <span className="logo-accent">Apolo</span> Pay
+            <span className="logo-accent">Smart</span>Pay
           </div>
           <h1>Playground React</h1>
         </div>
@@ -158,7 +158,7 @@ function App() {
                 Configura las llaves para ver el botón
               </div>
             ) : (
-              <ApoloPayButton
+              <SmartPayButton
                 client={client}
                 processId={processId}
                 barrierDismissible

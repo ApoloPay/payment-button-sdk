@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { ApoloPayButton, ApoloPayClient, type ClientResponse, type ClientError } from '@apolopay-sdk/vue';
+import { SmartPayButton, SmartPayClient, type ClientResponse, type ClientError } from '@nexora-smartpay/vue';
 
 // --- VALORES INICIALES (OPCIONALES) ---
 const initialPublicKey = "";
@@ -17,7 +17,7 @@ interface LogEntry {
 const pubKey = ref(initialPublicKey);
 const privKey = ref(initialPrivateKey);
 const amount = ref(1);
-const client = ref<ApoloPayClient | undefined>(undefined);
+const client = ref<SmartPayClient | undefined>(undefined);
 const processId = ref(initialProcessId);
 const isLoading = ref(false);
 const status = ref(initialProcessId ? "Botón Listo ✅" : "Esperando configuración...");
@@ -62,7 +62,7 @@ const handleUpdate = async () => {
     const newProcessId = await getProcessId(amount.value, privKey.value);
     addLog(`Process ID obtenido: ${newProcessId}`, "success");
 
-    const newClient = new ApoloPayClient({ publicKey: pubKey.value });
+    const newClient = new SmartPayClient({ publicKey: pubKey.value });
     client.value = newClient;
     processId.value = newProcessId;
     status.value = "Botón Listo ✅";
@@ -86,7 +86,7 @@ const clearLogs = () => {
     <aside class="sidebar">
       <div class="sidebar-header">
         <div class="logo">
-          <span class="logo-accent">Apolo</span> Pay
+          <span class="logo-accent">Smart</span>Pay
         </div>
         <h1>Playground Vue</h1>
       </div>
@@ -157,7 +157,7 @@ const clearLogs = () => {
             Configura las llaves para ver el botón
           </div>
           <div v-else>
-            <ApoloPayButton
+            <SmartPayButton
               :client="client"
               :processId="processId"
               barrierDismissible

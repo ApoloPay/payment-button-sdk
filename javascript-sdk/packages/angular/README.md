@@ -1,13 +1,13 @@
-# @apolopay-sdk/angular
+# @nexora-smartpay/angular
 
-Angular wrapper for the Apolo Pay SDK. Provides a component to integrate the Apolo Pay payment button into Angular applications.
+Angular wrapper for the Nexora SmartPay SDK. Provides a component to integrate the Nexora SmartPay payment button into Angular applications.
 
 ## Installation
 
 ```bash
-npm install @apolopay-sdk/angular
+npm install @nexora-smartpay/angular
 # or
-pnpm add @apolopay-sdk/angular
+pnpm add @nexora-smartpay/angular
 ```
 
 ## Usage
@@ -16,25 +16,25 @@ pnpm add @apolopay-sdk/angular
 
 ```typescript
 import { CUSTOM_ELEMENTS_SCHEMA, Component } from '@angular/core';
-import { ApoloPayButtonComponent, ApoloPayClient, type ClientResponse, type ClientError } from '@apolopay-sdk/angular';
+import { SmartPayButtonComponent, SmartPayClient, type ClientResponse, type ClientError } from '@nexora-smartpay/angular';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [ApoloPayButtonComponent],
+  imports: [SmartPayButtonComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA], // Required for Web Components
   template: `
-    <apolopay-button
+    <smartpay-button-component
       [client]="client"
       [processId]="processId"
       productTitle="Order #ANG-1"
       (success)="handleSuccess($event)"
       (error)="handleError($event)"
-    ></apolopay-button>
+    ></smartpay-button-component>
   `
 })
 export class AppComponent {
-  client = new ApoloPayClient({ publicKey: 'pk_test_...' });
+  client = new SmartPayClient({ publicKey: 'pk_test_...' });
   processId = 'your-process-id';
 
   handleSuccess(response: ClientResponse) {
@@ -49,7 +49,7 @@ export class AppComponent {
 
 ## Props and Events
 
-- `[client]`: (ApoloPayClient) **Required**.
+- `[client]`: (SmartPayClient) **Required**.
 - `[processId]`: (string) **Required**.
 - `[productTitle]`: (string)
 - `[lang]`: ('es' | 'en')
@@ -57,6 +57,10 @@ export class AppComponent {
 - `[barrierDismissible]`: (boolean)
 - `(success)`: Event fired on success.
 - `(error)`: Event fired on error.
+
+## Migrating from `@apolopay-sdk/angular`
+
+This package was previously published as `@apolopay-sdk/angular`. Replace the dependency with `@nexora-smartpay/angular`. `ApoloPayButtonComponent`, `ApoloPayButtonModule` and `ApoloPayClient` are still exported as deprecated aliases of `SmartPayButtonComponent`, `SmartPayButtonModule` and `SmartPayClient`, and the component still matches the old `<apolopay-button-component>` selector as well as the new `<smartpay-button-component>`.
 
 ## License
 

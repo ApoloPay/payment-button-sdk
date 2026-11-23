@@ -1,16 +1,16 @@
-import '@apolopay-sdk/ui';
+import '@nexora-smartpay/ui';
 import React, { useRef, useEffect } from 'react';
 
 // 2. Importa los tipos para las props
-import type { Locale, ClientResponse, ClientError, ApoloPayClient, PaymentResponseData, PartialPaymentResponseData } from '@apolopay-sdk/ui';
+import type { Locale, ClientResponse, ClientError, SmartPayClient, PaymentResponseData, PartialPaymentResponseData } from '@nexora-smartpay/ui';
 
 // 3. Re-exporta los tipos de 'core' para el usuario final
 //    (Nota: @core es una dependencia de @ui, que es una dependencia nuestra)
-export * from '@apolopay-sdk/ui';
+export * from '@nexora-smartpay/ui';
 
 // 3. Define las props "tipo React" (onSuccess, publicKey)
-type ApoloPayButtonProps = {
-  client?: ApoloPayClient;
+type SmartPayButtonProps = {
+  client?: SmartPayClient;
   processId?: string;
   productTitle?: string;
   lang?: Locale;
@@ -27,7 +27,7 @@ type ApoloPayButtonProps = {
 };
 
 // 4. El componente de React ahora es un "ADAPTADOR"
-export const ApoloPayButton: React.FC<ApoloPayButtonProps> = ({
+export const SmartPayButton: React.FC<SmartPayButtonProps> = ({
   client,
   processId,
   productTitle,
@@ -90,7 +90,7 @@ export const ApoloPayButton: React.FC<ApoloPayButtonProps> = ({
   // 6. Renderiza el Web Component, pasando props de React (camelCase)
   //    a atributos HTML (kebab-case)
   return React.createElement(
-    'apolopay-button',
+    'smartpay-button',
     {
       ref,
       'process-id': processId,
@@ -104,3 +104,6 @@ export const ApoloPayButton: React.FC<ApoloPayButtonProps> = ({
     children
   );
 };
+
+/** @deprecated Use `SmartPayButton` instead. Pre-2.0 name, kept for backwards compatibility. */
+export const ApoloPayButton = SmartPayButton;

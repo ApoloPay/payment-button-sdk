@@ -1,4 +1,4 @@
-import 'package:apolopay_sdk/apolopay_sdk.dart';
+import 'package:nexora_smartpay_sdk/nexora_smartpay_sdk.dart';
 import 'package:intl/intl.dart';
 
 String amountFormatter(

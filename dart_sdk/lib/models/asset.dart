@@ -1,4 +1,4 @@
-import 'package:apolopay_sdk/models/network.dart';
+import 'package:nexora_smartpay_sdk/models/network.dart';
 
 class Asset {
   final String id;

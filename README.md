@@ -1,6 +1,6 @@
-# Apolo Pay SDK Mono-Repository
+# Nexora SmartPay SDK Mono-Repository
 
-Welcome to the official repository for **Apolo Pay SDKs**. This repository contains the source code, documentation, and tools for integrating Apolo Pay into your applications across different platforms.
+Welcome to the official repository for **Nexora SmartPay SDKs**. This repository contains the source code, documentation, and tools for integrating Nexora SmartPay into your applications across different platforms.
 
 ## Repository Structure
 
@@ -11,7 +11,7 @@ This is a mono-repository organized by platform:
 
 ## Getting Started
 
-To get started with Apolo Pay, you will need a **Public Key**, which you can obtain from your [Apolo Pay Dashboard](https://www.apolopay.app).
+To get started with Nexora SmartPay, you will need a **Public Key**, which you can obtain from your [merchant dashboard](https://www.apolopay.app).
 
 ### 🌐 Web (JavaScript/TypeScript)
 
@@ -19,7 +19,7 @@ If you are building for the web, go to the [`javascript-sdk`](./javascript-sdk) 
 
 ```bash
 # Example for Core JS
-npm install @apolopay-sdk/core
+npm install @nexora-smartpay/core
 ```
 
 ### 📱 Mobile (Flutter/Dart)
@@ -28,8 +28,12 @@ If you are building a Flutter app, go to the [`dart_sdk`](./dart_sdk) directory.
 
 ```bash
 # Add to your Flutter project
-flutter pub add apolopay_sdk
+flutter pub add nexora_smartpay_sdk
 ```
+
+## Migrating from Apolo Pay SDK
+
+Version 2.0.0 renames the SDKs: the npm packages moved from `@apolopay-sdk/*` to `@nexora-smartpay/*` and the Flutter package from `apolopay_sdk` to `nexora_smartpay_sdk`. Public names changed from `ApoloPay*` to `SmartPay*` (and `<apolopay-button>` to `<smartpay-button>`), but the old names are still exported as deprecated aliases so existing integrations keep working. See the [JavaScript](./javascript-sdk#migrating-from-apolopay-sdk) and [Flutter](./dart_sdk#migrating-from-apolopay_sdk) READMEs for details.
 
 ## Continuous Integration and Deployment
 

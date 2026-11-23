@@ -1,6 +1,6 @@
 import { io, Socket as SocketIO } from "socket.io-client";
 import { PaymentSessionOptions } from "../types/payment-client-types";
-import { ApoloPayClient } from "../apolo-pay-client";
+import { SmartPayClient } from "../smart-pay-client";
 import { socketURL } from "../utils/variables";
 import { ClientCode } from "../types/client-response";
 import { I18n } from "../i18n";
@@ -13,11 +13,11 @@ interface _SocketResponse<T = any> {
 }
 
 export class SocketService {
-  private client: ApoloPayClient;
+  private client: SmartPayClient;
   private sessionOptions: PaymentSessionOptions | null = null;
   private socket: SocketIO | null = null;
 
-  constructor(client: ApoloPayClient) {
+  constructor(client: SmartPayClient) {
     this.client = client;
   }
 

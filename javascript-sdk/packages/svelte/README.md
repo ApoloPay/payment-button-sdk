@@ -1,23 +1,23 @@
-# @apolopay-sdk/svelte
+# @nexora-smartpay/svelte
 
-Svelte wrapper for the Apolo Pay SDK. Provides a component to integrate the Apolo Pay payment button into Svelte applications.
+Svelte wrapper for the Nexora SmartPay SDK. Provides a component to integrate the Nexora SmartPay payment button into Svelte applications.
 
 ## Installation
 
 ```bash
-npm install @apolopay-sdk/svelte
+npm install @nexora-smartpay/svelte
 # or
-pnpm add @apolopay-sdk/svelte
+pnpm add @nexora-smartpay/svelte
 ```
 
 ## Usage
 
 ```html
 <script lang="ts">
-  import { ApoloPayButton, ApoloPayClient, type ClientResponse, type ClientError } from '@apolopay-sdk/svelte';
+  import { SmartPayButton, SmartPayClient, type ClientResponse, type ClientError } from '@nexora-smartpay/svelte';
 
   // 1. Initialize the client
-  const client = new ApoloPayClient({
+  const client = new SmartPayClient({
     publicKey: 'pk_test_...',
   });
 
@@ -37,7 +37,7 @@ pnpm add @apolopay-sdk/svelte
   <h1>My Svelte Store</h1>
 
   <!-- 3. Use the component -->
-  <ApoloPayButton
+  <SmartPayButton
     {client}
     {processId}
     productTitle="Order #SVELTE-1"
@@ -51,7 +51,7 @@ pnpm add @apolopay-sdk/svelte
 
 ## Props and Events
 
-- `client`: (ApoloPayClient) **Required**.
+- `client`: (SmartPayClient) **Required**.
 - `processId`: (string) **Required**.
 - `productTitle`: (string)
 - `lang`: ('es' | 'en')
@@ -59,6 +59,10 @@ pnpm add @apolopay-sdk/svelte
 - `barrierDismissible`: (boolean)
 - `on:success`: Fired on success.
 - `on:error`: Fired on error.
+
+## Migrating from `@apolopay-sdk/svelte`
+
+This package was previously published as `@apolopay-sdk/svelte`. Replace the dependency with `@nexora-smartpay/svelte`. `ApoloPayButton` and `ApoloPayClient` are still exported as deprecated aliases of `SmartPayButton` / `SmartPayClient`, so existing code keeps working after changing the import path.
 
 ## License
 

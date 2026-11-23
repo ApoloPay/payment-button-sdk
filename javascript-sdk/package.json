@@ -1,10 +1,12 @@
 {
-  "name": "apolopay-sdk",
+  "name": "nexora-smartpay-sdk",
   "private": true,
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ApoloPay/payment-button-sdk.git"
+    "url": "git+https://github.com/Nexora-SmartPay/nexora_smartpay_sdk.git"
   },
+  "homepage": "https://smartpaylatam.com",
+  "author": "Nexora SmartPay",
   "scripts": {
     "build": "turbo run build",
     "dev": "node scripts/dev.js",

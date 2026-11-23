@@ -1,10 +1,22 @@
 {
-  "name": "@apolopay-sdk/svelte",
-  "version": "1.3.0",
-  "description": "Svelte Payment Button Adapter",
+  "name": "@nexora-smartpay/svelte",
+  "version": "2.0.0",
+  "description": "Nexora SmartPay payment button adapter for Svelte",
+  "author": "Nexora SmartPay",
+  "homepage": "https://smartpaylatam.com",
+  "keywords": [
+    "nexora",
+    "smartpay",
+    "nexora-smartpay",
+    "payments",
+    "crypto",
+    "payment-button",
+    "svelte"
+  ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ApoloPay/payment-button-sdk.git"
+    "url": "git+https://github.com/Nexora-SmartPay/nexora_smartpay_sdk.git",
+    "directory": "javascript-sdk/packages/svelte"
   },
   "publishConfig": {
     "access": "public",
@@ -22,7 +34,7 @@
     "check:watch": "svelte-check --tsconfig ./tsconfig.json --watch"
   },
   "dependencies": {
-    "@apolopay-sdk/ui": "workspace:*"
+    "@nexora-smartpay/ui": "workspace:*"
   },
   "devDependencies": {
     "@sveltejs/package": "2.0.0",

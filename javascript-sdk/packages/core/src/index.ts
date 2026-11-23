@@ -1,4 +1,4 @@
-export * from "./apolo-pay-client";
+export * from "./smart-pay-client";
 export * from "./services/payment-service";
 export * from "./types/asset";
 export * from "./types/client-response";

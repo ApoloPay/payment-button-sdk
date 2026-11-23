@@ -1,9 +1,9 @@
 /*
- * API Pública de @apolopay-sdk/angular
+ * API Pública de @nexora-smartpay/angular
  */
 
-export * from './lib/apolopay-button.module';
-export * from './lib/apolopay-button.component';
+export * from './lib/smartpay-button.module';
+export * from './lib/smartpay-button.component';
 
 // Re-exporta los tipos
-export * from '@apolopay-sdk/ui';
+export * from '@nexora-smartpay/ui';

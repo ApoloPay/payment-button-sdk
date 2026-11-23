@@ -1,5 +1,5 @@
 ---
-import ApoloPayButton from "@apolopay-sdk/astro/ApoloPayButton.astro";
+import SmartPayButton from "@nexora-smartpay/astro/SmartPayButton.astro";
 
 // Valores iniciales (opcionales)
 const initialProcessId = ""
@@ -11,7 +11,7 @@ const initialPrivateKey = ""
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Apolo Pay | Astro Playground</title>
+    <title>Nexora SmartPay | Astro Playground</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
@@ -21,7 +21,7 @@ const initialPrivateKey = ""
       <aside class="sidebar">
         <div class="sidebar-header">
           <div class="logo">
-            <span class="logo-accent">Apolo</span> Pay
+            <span class="logo-accent">Smart</span>Pay
           </div>
           <h1>Playground Astro</h1>
         </div>
@@ -72,7 +72,7 @@ const initialPrivateKey = ""
                 Configura las llaves para ver el botón
              </div>
              <div id="button-container" class="hidden">
-                <ApoloPayButton id="mi-btn" processId={initialProcessId} barrierDismissible />
+                <SmartPayButton id="mi-btn" processId={initialProcessId} barrierDismissible />
              </div>
           </div>
         </div>
@@ -370,7 +370,7 @@ const initialPrivateKey = ""
     </style>
 
     <script>
-      import { ApoloPayClient, type ClientResponse, type ClientError } from "@apolopay-sdk/astro";
+      import { SmartPayClient, type ClientResponse, type ClientError } from "@nexora-smartpay/astro";
 
       // Selectors
       const publicKeyInput = document.getElementById("publicKey") as HTMLInputElement;
@@ -442,11 +442,11 @@ const initialPrivateKey = ""
           addLog(`Process ID obtenido: ${processId}`, "success");
 
           // 2. Configurar Cliente
-          const apolo = new ApoloPayClient({ publicKey: pubKey });
+          const smartPay = new SmartPayClient({ publicKey: pubKey });
 
           // 3. Actualizar Botón (Web Component)
           if (btn) {
-            btn.client = apolo;
+            btn.client = smartPay;
             btn.processId = processId;
             // Forzar actualización si es necesario via atributo
             btn.setAttribute("process-id", processId);

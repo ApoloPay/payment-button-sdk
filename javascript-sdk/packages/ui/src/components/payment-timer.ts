@@ -1,8 +1,7 @@
 import { LitElement, html, css } from 'lit';
-import { customElement, property, state } from 'lit/decorators.js';
-import { I18n } from '@apolopay-sdk/core';
+import { property, state } from 'lit/decorators.js';
+import { I18n } from '@nexora-smartpay/core';
 
-@customElement('payment-timer')
 export class PaymentTimer extends LitElement {
   @property({ type: Number }) expiresAt: number = 0;
 
@@ -69,7 +68,7 @@ export class PaymentTimer extends LitElement {
   static override styles = css`
     :host {
       display: block;
-      color: var(--apolo-accent, #ea580c);
+      color: var(--smartpay-accent, #ea580c);
       font-weight: 600;
       font-size: 0.9rem;
       margin-bottom: 1rem;
@@ -81,8 +80,12 @@ export class PaymentTimer extends LitElement {
   }
 }
 
+if (!customElements.get('smartpay-payment-timer')) {
+  customElements.define('smartpay-payment-timer', PaymentTimer);
+}
+
 declare global {
   interface HTMLElementTagNameMap {
-    'payment-timer': PaymentTimer;
+    'smartpay-payment-timer': PaymentTimer;
   }
 }

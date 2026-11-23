@@ -10,7 +10,7 @@
     "astro": "astro"
   },
   "dependencies": {
-    "@apolopay-sdk/astro": "workspace:*",
+    "@nexora-smartpay/astro": "workspace:*",
     "astro": "4.5.0"
   }
 }

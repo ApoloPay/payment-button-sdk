@@ -1,20 +1,32 @@
 {
-  "name": "@apolopay-sdk/react",
-  "version": "1.3.0",
-  "description": "React Payment Button Adapter",
+  "name": "@nexora-smartpay/react",
+  "version": "2.0.0",
+  "description": "Nexora SmartPay payment button adapter for React",
+  "author": "Nexora SmartPay",
+  "homepage": "https://smartpaylatam.com",
+  "keywords": [
+    "nexora",
+    "smartpay",
+    "nexora-smartpay",
+    "payments",
+    "crypto",
+    "payment-button",
+    "react"
+  ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ApoloPay/payment-button-sdk.git"
+    "url": "git+https://github.com/Nexora-SmartPay/nexora_smartpay_sdk.git",
+    "directory": "javascript-sdk/packages/react"
   },
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "scripts": {
-    "build": "tsup src/index.tsx --format esm,cjs --dts --clean --external react @apolopay-sdk/ui",
-    "dev": "tsup src/index.tsx --format esm,cjs --dts --watch --external react @apolopay-sdk/ui"
+    "build": "tsup src/index.tsx --format esm,cjs --dts --clean --external react @nexora-smartpay/ui",
+    "dev": "tsup src/index.tsx --format esm,cjs --dts --watch --external react @nexora-smartpay/ui"
   },
   "dependencies": {
-    "@apolopay-sdk/ui": "workspace:*"
+    "@nexora-smartpay/ui": "workspace:*"
   },
   "devDependencies": {
     "@types/react": "18.3.3",

@@ -1,1 +1,1 @@
-export * from '@apolopay-sdk/ui';
+export * from '@nexora-smartpay/ui';

@@ -9,14 +9,14 @@ export const spinnerStyles = css`
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: var(--apolo-radius, 12px);
+    border-radius: var(--smartpay-radius, 12px);
     cursor: wait;
     backdrop-filter: blur(2px);
   }
 
   .spinner {
     border: 4px solid #e5e7eb;
-    border-top: 4px solid var(--apolo-primary, #6366f1);
+    border-top: 4px solid var(--smartpay-primary, #6366f1);
     border-radius: 50%;
     width: 40px;
     height: 40px;

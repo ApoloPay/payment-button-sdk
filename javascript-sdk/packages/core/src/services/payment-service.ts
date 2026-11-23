@@ -3,14 +3,14 @@ import { SocketService } from "./socket-service";
 import { sandboxFallbackAssets, buildSandboxQrData } from "./sandbox-data";
 import { Asset } from "../types/asset";
 import { PaymentSessionOptions, QrRequestDetails, QrResponseData } from "../types/payment-client-types";
-import { ApoloPayClient } from "../apolo-pay-client";
+import { SmartPayClient } from "../smart-pay-client";
 
 export class PaymentService {
-  private client: ApoloPayClient;
+  private client: SmartPayClient;
   private socket: SocketService;
   private assets: Asset[] = [];
 
-  constructor(client: ApoloPayClient) {
+  constructor(client: SmartPayClient) {
     this.client = client;
     this.socket = new SocketService(this.client);
   }

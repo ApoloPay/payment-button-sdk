@@ -1,5 +1,5 @@
-import 'package:apolopay_sdk/apolopay_sdk.dart';
-import 'package:apolopay_sdk/utils/variables.dart';
+import 'package:nexora_smartpay_sdk/nexora_smartpay_sdk.dart';
+import 'package:nexora_smartpay_sdk/utils/variables.dart';
 import 'package:flutter/foundation.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 import '../models/client_response.dart';
@@ -52,7 +52,7 @@ class _SocketResponse<T> {
 
 class SocketService {
   SocketService(this.options);
-  final ApoloPayOptions options;
+  final SmartPayOptions options;
   io.Socket? _socket;
 
   void connect(String processId) {

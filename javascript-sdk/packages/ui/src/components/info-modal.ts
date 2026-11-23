@@ -1,6 +1,6 @@
 import { LitElement, html, css, type TemplateResult } from 'lit';
-import { customElement, property, query } from 'lit/decorators.js';
-import { I18n, type Locale } from '@apolopay-sdk/core';
+import { property, query } from 'lit/decorators.js';
+import { I18n, type Locale } from '@nexora-smartpay/core';
 import { modalBaseStyles } from '../styles/modal-base';
 import { sharedStyles } from '../styles/shared-styles';
 import { unsafeHTML } from 'lit/directives/unsafe-html.js';
@@ -17,7 +17,6 @@ export interface InfoModalOptions {
 // 2. Definimos los posibles resultados al cerrar
 export type ModalResult = boolean;
 
-@customElement('info-modal')
 export class InfoModal extends LitElement {
 
   // ==========================================
@@ -26,7 +25,7 @@ export class InfoModal extends LitElement {
   static show(options: InfoModalOptions): Promise<ModalResult> {
     return new Promise((resolve) => {
       // 1. Crear la instancia del Web Component nativamente
-      const modalElement = document.createElement('info-modal') as InfoModal;
+      const modalElement = document.createElement('smartpay-info-modal') as InfoModal;
 
       // 2. Asignar las propiedades recibidas
       modalElement.modalTitle = options.title || '';
@@ -236,8 +235,12 @@ export class InfoModal extends LitElement {
   }
 }
 
+if (!customElements.get('smartpay-info-modal')) {
+  customElements.define('smartpay-info-modal', InfoModal);
+}
+
 declare global {
   interface HTMLElementTagNameMap {
-    'info-modal': InfoModal;
+    'smartpay-info-modal': InfoModal;
   }
 }

@@ -1,7 +1,7 @@
-class ApoloPayClient {
+class SmartPayClient {
   final String publicKey;
 
-  ApoloPayClient({
+  SmartPayClient({
     required this.publicKey,
   });
 

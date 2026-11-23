@@ -1,6 +1,6 @@
-import 'package:apolopay_sdk/models/asset.dart';
-import 'package:apolopay_sdk/models/network.dart';
-import 'package:apolopay_sdk/models/apolopay_models.dart';
+import 'package:nexora_smartpay_sdk/models/asset.dart';
+import 'package:nexora_smartpay_sdk/models/network.dart';
+import 'package:nexora_smartpay_sdk/models/smartpay_models.dart';
 
 class SandboxData {
   // Only used when the real asset catalog can't be fetched (e.g. offline demo).

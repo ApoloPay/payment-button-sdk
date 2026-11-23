@@ -1,7 +1,7 @@
 import 'dart:async';
-import 'package:apolopay_sdk/i18n/i18n.dart';
-import 'package:apolopay_sdk/utils/build_rich_text.dart';
-import 'package:apolopay_sdk/widgets/scrollbar.dart';
+import 'package:nexora_smartpay_sdk/i18n/i18n.dart';
+import 'package:nexora_smartpay_sdk/utils/build_rich_text.dart';
+import 'package:nexora_smartpay_sdk/widgets/scrollbar.dart';
 import 'package:flutter/material.dart';
 
 class InfoModal extends StatefulWidget {

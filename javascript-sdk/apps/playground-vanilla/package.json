@@ -8,7 +8,7 @@
     "build": "vite build"
   },
   "dependencies": {
-    "@apolopay-sdk/ui": "workspace:*"
+    "@nexora-smartpay/ui": "workspace:*"
   },
   "devDependencies": {
     "typescript": "5.4.5",

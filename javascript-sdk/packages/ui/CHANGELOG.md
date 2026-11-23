@@ -1,4 +1,10 @@
-# @apolopay-sdk/ui
+# @nexora-smartpay/ui
+
+## 2.0.0
+
+### Major Changes
+
+- **Renamed to Nexora SmartPay**: This package is now published as `@nexora-smartpay/ui` (previously `@apolopay-sdk/ui`), with all internal workspace dependencies moved to the `@nexora-smartpay` scope. The custom element is now `<smartpay-button>` (class `SmartPayButton`); `<apolopay-button>` is still registered as a deprecated `ApoloPayButton` subclass that logs a one-time warning. Internal elements are prefixed (`smartpay-payment-modal`, `smartpay-info-modal`, `smartpay-trigger-button`, `smartpay-payment-timer`) and every `customElements.define` is guarded against double registration. Internal CSS variables moved from `--apolo-*` / `--apolopay-*` to `--smartpay-*`, still reading the old names as fallbacks (`--payment-button-*` theming variables are unchanged). The bundles are now `dist/nexora-smartpay.{es,umd}.js` and the UMD global is `NexoraSmartPay`, with `window.ApoloPaySDK` kept as a deprecated alias.
 
 ## 1.4.0
 

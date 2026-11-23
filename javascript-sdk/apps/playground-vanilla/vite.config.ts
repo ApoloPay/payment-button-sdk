@@ -4,8 +4,8 @@ import path from 'node:path';
 export default defineConfig({
   resolve: {
     alias: {
-      '@apolopay-sdk/ui': path.resolve(__dirname, '../../packages/ui/src/index.ts'),
-      '@apolopay-sdk/core': path.resolve(__dirname, '../../packages/core/src/index.ts'),
+      '@nexora-smartpay/ui': path.resolve(__dirname, '../../packages/ui/src/index.ts'),
+      '@nexora-smartpay/core': path.resolve(__dirname, '../../packages/core/src/index.ts'),
     }
   }
 });

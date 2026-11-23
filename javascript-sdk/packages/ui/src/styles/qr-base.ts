@@ -4,7 +4,7 @@ export const qrBaseStyles = css`
   .qr-frame {
     background: white;
     padding: 16px;
-    border-radius: var(--apolo-radius);
+    border-radius: var(--smartpay-radius);
     box-shadow: 0 4px 15px rgba(0,0,0,0.08);
     display: inline-flex;
     flex-direction: column;
@@ -15,7 +15,7 @@ export const qrBaseStyles = css`
   }
   
   .qr-badge {
-    color: var(--apolo-accent);
+    color: var(--smartpay-accent);
     font-weight: 700;
     font-size: 1.1rem;
     margin-top: 12px;

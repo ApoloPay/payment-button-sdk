@@ -1,10 +1,9 @@
 import { LitElement, html, css } from 'lit';
-import { customElement, property } from 'lit/decorators.js';
+import { property } from 'lit/decorators.js';
 import { sharedStyles } from '../styles/shared-styles.js';
 import { logoApolo } from '../assets/logo_apolo.js'
-import { I18n, type Locale } from '@apolopay-sdk/core';
+import { I18n, type Locale } from '@nexora-smartpay/core';
 
-@customElement('trigger-button')
 export class TriggerButton extends LitElement {
   @property({ type: String }) override lang: Locale = 'es';
   @property({ type: Boolean }) loading = false;
@@ -33,7 +32,7 @@ export class TriggerButton extends LitElement {
         
         font-size: 0.9rem;
         letter-spacing: 0.5px;
-        color: var(--apolo-on-primary);
+        color: var(--smartpay-on-primary);
         
         background: #74727225;
         border: none;
@@ -52,7 +51,7 @@ export class TriggerButton extends LitElement {
         inset: 0;
         border-radius: 9999px;
         padding: 2px;
-        background: linear-gradient(90deg, var(--apolo-primary), #ffffff);
+        background: linear-gradient(90deg, var(--smartpay-primary), #ffffff);
         -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
         mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
         -webkit-mask-composite: xor;
@@ -128,8 +127,12 @@ export class TriggerButton extends LitElement {
   }
 }
 
+if (!customElements.get('smartpay-trigger-button')) {
+  customElements.define('smartpay-trigger-button', TriggerButton);
+}
+
 declare global {
   interface HTMLElementTagNameMap {
-    'trigger-button': TriggerButton;
+    'smartpay-trigger-button': TriggerButton;
   }
 }

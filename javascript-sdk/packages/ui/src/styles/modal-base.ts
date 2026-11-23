@@ -33,12 +33,12 @@ export const modalBaseStyles = css`
     min-width: 320px;
     max-width: 420px;
     width: 90vw;
-    border-radius: var(--apolo-radius);
+    border-radius: var(--smartpay-radius);
     
-    background-color: var(--apolo-bg);
-    color: var(--apolo-text);
-    box-shadow: var(--apolo-shadow);
-    font-family: var(--apolo-font);
+    background-color: var(--smartpay-bg);
+    color: var(--smartpay-text);
+    box-shadow: var(--smartpay-shadow);
+    font-family: var(--smartpay-font);
 
     opacity: 0;
     pointer-events: none;

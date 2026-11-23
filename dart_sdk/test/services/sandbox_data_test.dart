@@ -1,4 +1,4 @@
-import 'package:apolopay_sdk/services/sandbox_data.dart';
+import 'package:nexora_smartpay_sdk/services/sandbox_data.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

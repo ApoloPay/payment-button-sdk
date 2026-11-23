@@ -1,18 +1,30 @@
 {
-  "name": "@apolopay-sdk/ui",
-  "version": "1.4.0",
-  "description": "UI Components (Web Components) for payment button",
+  "name": "@nexora-smartpay/ui",
+  "version": "2.0.0",
+  "description": "Nexora SmartPay UI components (Web Components) for the payment button",
+  "author": "Nexora SmartPay",
+  "homepage": "https://smartpaylatam.com",
+  "keywords": [
+    "nexora",
+    "smartpay",
+    "nexora-smartpay",
+    "payments",
+    "crypto",
+    "payment-button",
+    "web-components"
+  ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ApoloPay/payment-button-sdk.git"
+    "url": "git+https://github.com/Nexora-SmartPay/nexora_smartpay_sdk.git",
+    "directory": "javascript-sdk/packages/ui"
   },
   "publishConfig": {
     "access": "public",
     "provenance": true
   },
   "type": "module",
-  "main": "./dist/apolopay-sdk.umd.js",
-  "module": "./dist/apolopay-sdk.es.js",
+  "main": "./dist/nexora-smartpay.umd.js",
+  "module": "./dist/nexora-smartpay.es.js",
   "types": "dist/index.d.ts",
   "files": [
     "dist"
@@ -23,15 +35,15 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@apolopay-sdk/core": "workspace:*",
+    "@nexora-smartpay/core": "workspace:*",
     "lit": "3.0.0",
     "tslib": "2.8.1"
   },
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/apolopay-sdk.es.js",
-      "require": "./dist/apolopay-sdk.umd.js"
+      "import": "./dist/nexora-smartpay.es.js",
+      "require": "./dist/nexora-smartpay.umd.js"
     }
   },
   "devDependencies": {

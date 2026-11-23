@@ -19,10 +19,10 @@
     "noEmit": true,
     "jsx": "react-jsx",
     "paths": {
-      "@apolopay-sdk/react": [
+      "@nexora-smartpay/react": [
         "../../packages/react/src/index.tsx"
       ],
-      "@apolopay-sdk/ui": [
+      "@nexora-smartpay/ui": [
         "../../packages/ui/src/index.ts"
       ]
     },

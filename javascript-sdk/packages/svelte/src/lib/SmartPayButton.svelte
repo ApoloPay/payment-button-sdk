@@ -1,17 +1,17 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte';
   // 1. Importa el Web Component para registrarlo
-  import "@apolopay-sdk/ui";
+  import "@nexora-smartpay/ui";
   import type { 
     Locale, 
-    ApoloPayClient, 
+    SmartPayClient, 
     ClientResponse, 
     ClientError, 
     PartialPaymentResponseData 
-  } from "@apolopay-sdk/ui";
+  } from "@nexora-smartpay/ui";
 
   // 2. Define los props que el wrapper acepta
-  export let client: ApoloPayClient | undefined = undefined;
+  export let client: SmartPayClient | undefined = undefined;
   export let processId: string | undefined = undefined;
   export let productTitle: string | undefined = undefined;
   export let lang: Locale | undefined = undefined;
@@ -68,7 +68,7 @@
   }
 </script>
 
-<apolopay-button
+<smartpay-button
   client={client}
   process-id={processId}
   product-title={productTitle}
@@ -84,4 +84,4 @@
   on:dismissed={handleDismissed}
 >
   <slot />
-</apolopay-button>
+</smartpay-button>

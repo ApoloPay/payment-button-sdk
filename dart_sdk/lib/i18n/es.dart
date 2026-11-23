@@ -1,5 +1,5 @@
-import 'package:apolopay_sdk/i18n/types.dart';
-import 'package:apolopay_sdk/utils/variables.dart';
+import 'package:nexora_smartpay_sdk/i18n/types.dart';
+import 'package:nexora_smartpay_sdk/utils/variables.dart';
 
 const es = Dictionary(
   trigger: DictionaryTrigger(

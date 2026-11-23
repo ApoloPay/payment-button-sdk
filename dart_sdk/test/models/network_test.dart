@@ -1,4 +1,4 @@
-import 'package:apolopay_sdk/models/network.dart';
+import 'package:nexora_smartpay_sdk/models/network.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

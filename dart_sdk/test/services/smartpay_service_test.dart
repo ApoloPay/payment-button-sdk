@@ -1,20 +1,20 @@
-import 'package:apolopay_sdk/models/apolopay_models.dart';
-import 'package:apolopay_sdk/services/apolo_pay_client.dart';
-import 'package:apolopay_sdk/services/apolopay_service.dart';
-import 'package:apolopay_sdk/services/sandbox_data.dart';
+import 'package:nexora_smartpay_sdk/models/smartpay_models.dart';
+import 'package:nexora_smartpay_sdk/services/smart_pay_client.dart';
+import 'package:nexora_smartpay_sdk/services/smartpay_service.dart';
+import 'package:nexora_smartpay_sdk/services/sandbox_data.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  group('ApoloPayService (sandbox)', () {
+  group('SmartPayService (sandbox)', () {
     // These tests never call getAssets() first, so the internal asset cache
     // stays empty and fetchQrCodeDetails() must fall back to
     // SandboxData.fallbackAssets — the same offline path used when the real
     // catalog can't be reached. This keeps the test isolated from the network.
-    late ApoloPayService service;
+    late SmartPayService service;
 
     setUp(() {
-      service = ApoloPayService(ApoloPayOptions(
-        client: ApoloPayClient(publicKey: 'pk_test_unit_12345'),
+      service = SmartPayService(SmartPayOptions(
+        client: SmartPayClient(publicKey: 'pk_test_unit_12345'),
         processId: 'proc-unit-test',
       ));
     });
@@ -55,10 +55,10 @@ void main() {
     });
   });
 
-  group('ApoloPayClient.isSandbox', () {
+  group('SmartPayClient.isSandbox', () {
     test('is true only for pk_test_ prefixed keys', () {
-      expect(ApoloPayClient(publicKey: 'pk_test_abc').isSandbox, isTrue);
-      expect(ApoloPayClient(publicKey: 'pk_live_abc').isSandbox, isFalse);
+      expect(SmartPayClient(publicKey: 'pk_test_abc').isSandbox, isTrue);
+      expect(SmartPayClient(publicKey: 'pk_live_abc').isSandbox, isFalse);
     });
   });
 }

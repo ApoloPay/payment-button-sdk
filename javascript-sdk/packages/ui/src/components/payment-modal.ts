@@ -1,7 +1,7 @@
 import { LitElement, html, css } from 'lit';
-import { customElement, property, query, state } from 'lit/decorators.js';
-import { ClientCode, I18n, ModalStep, isApoloPayNetwork } from '@apolopay-sdk/core';
-import type { Locale, Asset, Network, Dictionary, ClientError } from '@apolopay-sdk/core';
+import { property, query, state } from 'lit/decorators.js';
+import { ClientCode, I18n, ModalStep, isApoloPayNetwork } from '@nexora-smartpay/core';
+import type { Locale, Asset, Network, Dictionary, ClientError } from '@nexora-smartpay/core';
 import { modalBaseStyles } from '../styles/modal-base';
 import { sharedStyles } from '../styles/shared-styles';
 import { textFieldBaseStyles } from '../styles/text-field-base';
@@ -14,7 +14,6 @@ import './payment-timer.js';
 import type { ModalStatus } from '../types/status.type';
 import { amountFormatter } from '../utils/amount-formatter';
 
-@customElement('payment-modal')
 export class PaymentModal extends LitElement {
   // --- Props Received from Parent ---
   @property({ type: Boolean }) isOpen = false;
@@ -61,7 +60,7 @@ export class PaymentModal extends LitElement {
     // Wait for Lit's rendering cycle to complete
     await this.updateComplete;
 
-    // Timer is now managed by <payment-timer> component
+    // Timer is now managed by <smartpay-payment-timer> component
 
     if (changedProperties.has('isOpen')) {
       const dialog = this.dialogElement;
@@ -261,7 +260,7 @@ export class PaymentModal extends LitElement {
         font-weight: 700;
         margin: 0 0 0.5rem;
       }
-      .highlight { color: var(--apolo-accent); } /* Naranja de tus imágenes */
+      .highlight { color: var(--smartpay-accent); } /* Naranja de tus imágenes */
       
       p.subtitle {
         font-size: 0.9rem;
@@ -292,7 +291,7 @@ export class PaymentModal extends LitElement {
       .selection-card:hover {
         transform: translateY(-2px);
         box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08);
-        border-color: var(--apolo-accent); /* Hover naranja */
+        border-color: var(--smartpay-accent); /* Hover naranja */
       }
 
       .coin-icon {
@@ -307,12 +306,12 @@ export class PaymentModal extends LitElement {
         display: flex;
         flex-direction: column;
       }
-      .card-title { font-weight: 600; font-size: 1rem; color: var(--apolo-text); }
-      .card-sub { font-size: 0.8rem; color: var(--apolo-text-muted); text-transform: uppercase;}
+      .card-title { font-weight: 600; font-size: 1rem; color: var(--smartpay-text); }
+      .card-sub { font-size: 0.8rem; color: var(--smartpay-text-muted); text-transform: uppercase;}
 
       /* --- QR SCREENS --- */
       .timer {
-        color: var(--apolo-accent);
+        color: var(--smartpay-accent);
         font-weight: 600;
         font-size: 0.9rem;
         margin-bottom: 1rem;
@@ -373,7 +372,7 @@ export class PaymentModal extends LitElement {
         font-size: 1rem;
         font-weight: 700;
         text-decoration: underline;
-        text-decoration-color: var(--apolo-text);
+        text-decoration-color: var(--smartpay-text);
         text-underline-offset: 4px;
         text-align: center;
         margin-bottom: 1.5rem;
@@ -403,7 +402,7 @@ export class PaymentModal extends LitElement {
       .dot {
         width: 12px;
         height: 12px;
-        background-color: var(--apolo-accent);
+        background-color: var(--smartpay-accent);
         border-radius: 50%;
         display: inline-block;
         animation: dot-pulse 1.5s infinite ease-in-out;
@@ -422,14 +421,14 @@ export class PaymentModal extends LitElement {
       .processing-title {
         font-size: 1.5rem;
         font-weight: 800;
-        color: var(--apolo-primary-darkest);
+        color: var(--smartpay-primary-darkest);
         margin: 0;
       }
 
       /* Balance Card */
       .balance-card {
         background-color: #fff7ed; /* Un naranja muy claro de fondo */
-        border: 1px dashed var(--apolo-accent);
+        border: 1px dashed var(--smartpay-accent);
         border-radius: 12px;
         padding: 0.8rem;
         margin-bottom: 1.5rem;
@@ -447,7 +446,7 @@ export class PaymentModal extends LitElement {
       .balance-row:last-child { margin-bottom: 0; }
 
       .balance-label { color: #6b7280; }
-      .balance-value { font-weight: 700; color: var(--apolo-primary-darkest); }
+      .balance-value { font-weight: 700; color: var(--smartpay-primary-darkest); }
 
       @keyframes slideDown {
         from { opacity: 0; transform: translateY(-10px); }
@@ -469,9 +468,9 @@ export class PaymentModal extends LitElement {
       .sandbox-badge {
         font-size: 0.75rem;
         font-weight: 700;
-        color: var(--apolo-accent);
+        color: var(--smartpay-accent);
         background: #fff7ed;
-        border: 1px solid var(--apolo-accent);
+        border: 1px solid var(--smartpay-accent);
         border-radius: 999px;
         padding: 0.3rem 0.8rem;
         cursor: default;
@@ -510,7 +509,7 @@ export class PaymentModal extends LitElement {
         padding: 0.6rem 0.75rem;
         font-size: 0.85rem;
         font-weight: 600;
-        color: var(--apolo-primary-darkest);
+        color: var(--smartpay-primary-darkest);
         cursor: pointer;
         border-radius: 8px;
       }
@@ -521,7 +520,7 @@ export class PaymentModal extends LitElement {
 
       .sandbox-info-banner {
         background-color: #fff7ed;
-        border: 1px solid var(--apolo-accent);
+        border: 1px solid var(--smartpay-accent);
         border-radius: 12px;
         padding: 1rem;
         margin-bottom: 1rem;
@@ -552,7 +551,7 @@ export class PaymentModal extends LitElement {
       <div class="sandbox-cta-wrapper">
         ${this.sandboxPanelOpen ? html`
           <div class="sandbox-panel sandbox-panel--up">
-            <span style="font-size: 0.75rem; font-weight: 700; color: var(--apolo-primary-darkest); padding: 0.4rem 0.75rem;">
+            <span style="font-size: 0.75rem; font-weight: 700; color: var(--smartpay-primary-darkest); padding: 0.4rem 0.75rem;">
               ${t.modal.sandbox.title}
             </span>
             <button @click=${(e: Event) => this.simulate('success', e)}>${t.modal.sandbox.actions.success}</button>
@@ -610,7 +609,7 @@ export class PaymentModal extends LitElement {
     // 1. Caso Apolo Pay
     if (network && isApoloPayNetwork(network)) {
       return html`
-        <payment-timer class="timer" .expiresAt=${this.qrCodeExpiresAt} @expired=${this.handleTimerExpired}></payment-timer>
+        <smartpay-payment-timer class="timer" .expiresAt=${this.qrCodeExpiresAt} @expired=${this.handleTimerExpired}></smartpay-payment-timer>
 
         ${this.amountPaid && this.amountPaid > 0 ? html`
           <div class="balance-card">
@@ -648,7 +647,7 @@ export class PaymentModal extends LitElement {
 
     // 2. Caso Red Externa
     return html`
-      <payment-timer class="timer" .expiresAt=${this.qrCodeExpiresAt} @expired=${this.handleTimerExpired}></payment-timer>
+      <smartpay-payment-timer class="timer" .expiresAt=${this.qrCodeExpiresAt} @expired=${this.handleTimerExpired}></smartpay-payment-timer>
 
       ${this.amountPaid && this.amountPaid > 0 ? html`
         <div class="balance-card">
@@ -881,9 +880,13 @@ export class PaymentModal extends LitElement {
   } // End render
 } // End class
 
+if (!customElements.get('smartpay-payment-modal')) {
+  customElements.define('smartpay-payment-modal', PaymentModal);
+}
+
 // Global type declaration
 declare global {
   interface HTMLElementTagNameMap {
-    'payment-modal': PaymentModal;
+    'smartpay-payment-modal': PaymentModal;
   }
 }

@@ -1,4 +1,10 @@
-# @apolopay-sdk/core
+# @nexora-smartpay/core
+
+## 2.0.0
+
+### Major Changes
+
+- **Renamed to Nexora SmartPay**: This package is now published as `@nexora-smartpay/core` (previously `@apolopay-sdk/core`), with all internal workspace dependencies moved to the `@nexora-smartpay` scope. `ApoloPayClient` / `ApoloPayClientOptions` were renamed to `SmartPayClient` / `SmartPayClientOptions` (source file `smart-pay-client.ts`); the old names remain exported as deprecated aliases.
 
 ## 1.4.0
 

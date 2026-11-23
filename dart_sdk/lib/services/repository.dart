@@ -1,10 +1,10 @@
 import 'dart:convert';
-import 'package:apolopay_sdk/apolopay_sdk.dart';
-import 'package:apolopay_sdk/utils/variables.dart';
+import 'package:nexora_smartpay_sdk/nexora_smartpay_sdk.dart';
+import 'package:nexora_smartpay_sdk/utils/variables.dart';
 import 'package:http/http.dart' as http;
-import 'package:apolopay_sdk/models/client_response.dart';
-import 'package:apolopay_sdk/models/asset.dart';
-import 'package:apolopay_sdk/models/network.dart';
+import 'package:nexora_smartpay_sdk/models/client_response.dart';
+import 'package:nexora_smartpay_sdk/models/asset.dart';
+import 'package:nexora_smartpay_sdk/models/network.dart';
 
 class Repository {
   static Map<String, String> getHeaders(String? publicKey) {

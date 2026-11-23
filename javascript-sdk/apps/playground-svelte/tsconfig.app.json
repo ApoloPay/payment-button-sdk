@@ -11,10 +11,10 @@
     ],
     "noEmit": true,
     "paths": {
-      "@apolopay-sdk/svelte": [
+      "@nexora-smartpay/svelte": [
         "../../packages/svelte/src/lib/index.ts"
       ],
-      "@apolopay-sdk/ui": [
+      "@nexora-smartpay/ui": [
         "../../packages/ui/src/index.ts"
       ]
     },

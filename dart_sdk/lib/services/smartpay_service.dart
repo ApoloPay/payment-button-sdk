@@ -1,16 +1,16 @@
-import 'package:apolopay_sdk/models/asset.dart';
-import 'package:apolopay_sdk/models/apolopay_models.dart';
+import 'package:nexora_smartpay_sdk/models/asset.dart';
+import 'package:nexora_smartpay_sdk/models/smartpay_models.dart';
 
 import 'repository.dart';
 import 'sandbox_data.dart';
 import 'socket_service.dart';
 
-class ApoloPayService {
-  final ApoloPayOptions options;
+class SmartPayService {
+  final SmartPayOptions options;
   late final SocketService _socketService;
   List<Asset> _assets = [];
 
-  ApoloPayService(this.options) {
+  SmartPayService(this.options) {
     _socketService = SocketService(options);
   }
 

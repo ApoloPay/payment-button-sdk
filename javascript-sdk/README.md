@@ -1,23 +1,23 @@
-# Apolo Pay JavaScript SDK
+# Nexora SmartPay JavaScript SDK
 
-Monorepo for the Apolo Pay JavaScript SDK and its framework integrations.
+Monorepo for the Nexora SmartPay JavaScript SDK and its framework integrations.
 
 ## Packages
 
 | Package | Version | Description |
 |---------|---------|-------------|
-| [`@apolopay-sdk/core`](./packages/core) | `0.1.0` | Core logic and TypeScript types. |
-| [`@apolopay-sdk/ui`](./packages/ui) | `0.1.0` | Web Component (Lit) for the payment button. |
-| [`@apolopay-sdk/react`](./packages/react) | `0.1.0` | React wrapper for the SDK. |
-| [`@apolopay-sdk/vue`](./packages/vue) | `0.1.0` | Vue 3 wrapper for the SDK. |
-| [`@apolopay-sdk/angular`](./packages/angular) | `0.1.0` | Angular wrapper for the SDK. |
-| [`@apolopay-sdk/svelte`](./packages/svelte) | `0.1.0` | Svelte wrapper for the SDK. |
-| [`@apolopay-sdk/astro`](./packages/astro) | `0.1.0` | Astro integration for the SDK. |
+| [`@nexora-smartpay/core`](./packages/core) | `2.0.0` | Core logic and TypeScript types. |
+| [`@nexora-smartpay/ui`](./packages/ui) | `2.0.0` | Web Component (Lit) for the payment button. |
+| [`@nexora-smartpay/react`](./packages/react) | `2.0.0` | React wrapper for the SDK. |
+| [`@nexora-smartpay/vue`](./packages/vue) | `2.0.0` | Vue 3 wrapper for the SDK. |
+| [`@nexora-smartpay/angular`](./packages/angular) | `2.0.0` | Angular wrapper for the SDK. |
+| [`@nexora-smartpay/svelte`](./packages/svelte) | `2.0.0` | Svelte wrapper for the SDK. |
+| [`@nexora-smartpay/astro`](./packages/astro) | `2.0.0` | Astro integration for the SDK. |
 
 ## Apps
 
-- `playground-vue`: A demo application built with Vue 3 to test the `@apolopay-sdk/vue` package.
-- `playground-react`: A demo application built with React to test the `@apolopay-sdk/react` package.
+- `playground-vue`: A demo application built with Vue 3 to test the `@nexora-smartpay/vue` package.
+- `playground-react`: A demo application built with React to test the `@nexora-smartpay/react` package.
 
 ## Development
 
@@ -51,6 +51,17 @@ To release:
 npx changeset version
 npx changeset publish
 ```
+
+## Migrating from `@apolopay-sdk/*`
+
+Version 2.0.0 republishes every package under the `@nexora-smartpay` scope (`@apolopay-sdk/core` → `@nexora-smartpay/core`, and so on for `ui`, `react`, `vue`, `angular`, `svelte`, `astro`). Swap the dependency and import paths; the old public names keep working as deprecated aliases:
+
+- `ApoloPayClient` / `ApoloPayClientOptions` → `SmartPayClient` / `SmartPayClientOptions`
+- `<apolopay-button>` → `<smartpay-button>` (the old tag is still registered and logs a one-time deprecation warning)
+- `ApoloPayButton` (React, Vue, Svelte, Astro) → `SmartPayButton`; `ApoloPayButtonComponent` / `ApoloPayButtonModule` (Angular) → `SmartPayButtonComponent` / `SmartPayButtonModule`
+- UMD global `window.ApoloPaySDK` → `window.NexoraSmartPay` (both point to the same object)
+
+The aliases will be removed in a future major version.
 
 ## License
 

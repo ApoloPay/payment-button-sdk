@@ -19,6 +19,6 @@
     "vite": "7.1.7"
   },
   "dependencies": {
-    "@apolopay-sdk/svelte": "workspace:*"
+    "@nexora-smartpay/svelte": "workspace:*"
   }
 }

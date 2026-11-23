@@ -5,13 +5,13 @@ import type {
   ClientResponse,
   ClientError,
   Locale,
-  ApoloPayClient,
+  SmartPayClient,
 PaymentResponseData,
 PartialPaymentResponseData,
-} from "@apolopay-sdk/ui";
+} from "@nexora-smartpay/ui";
 
 interface Props extends HTMLAttributes<"div"> {
-  client?: ApoloPayClient;
+  client?: SmartPayClient;
   processId?: string;
   productTitle?: string;
   lang?: Locale;
@@ -42,7 +42,7 @@ const hasContent = Astro.slots.has("default");
 
 {
   hasContent ? (
-    <apolopay-button
+    <smartpay-button
       client={client}
       process-id={processId}
       product-title={productTitle}
@@ -54,9 +54,9 @@ const hasContent = Astro.slots.has("default");
       {...restProps}
     >
       <slot />
-    </apolopay-button>
+    </smartpay-button>
   ) : (
-    <apolopay-button
+    <smartpay-button
       client={client}
       process-id={processId}
       product-title={productTitle}
@@ -71,5 +71,5 @@ const hasContent = Astro.slots.has("default");
 }
 
 <script>
-  import "@apolopay-sdk/ui";
+  import "@nexora-smartpay/ui";
 </script>

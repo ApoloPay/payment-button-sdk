@@ -1,5 +1,5 @@
-import 'package:apolopay_sdk/models/client_response.dart';
-import 'package:apolopay_sdk/services/apolo_pay_client.dart';
+import 'package:nexora_smartpay_sdk/models/client_response.dart';
+import 'package:nexora_smartpay_sdk/services/smart_pay_client.dart';
 
 class QrRequestDetails {
   final String assetId;
@@ -194,14 +194,14 @@ class PartialPaymentResponseData {
   }
 }
 
-class ApoloPayOptions {
-  final ApoloPayClient client;
+class SmartPayOptions {
+  final SmartPayClient client;
   final String processId;
   final Function(ClientResponse<QrResponseData>)? onSuccess;
   final Function(ClientResponse<PartialPaymentResponseData>)? onPartialPayment;
   final Function(ClientError)? onError;
 
-  ApoloPayOptions({
+  SmartPayOptions({
     required this.client,
     required this.processId,
     this.onSuccess,

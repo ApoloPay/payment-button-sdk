@@ -1,10 +1,22 @@
 {
-  "name": "@apolopay-sdk/angular",
-  "version": "1.3.0",
-  "description": "Angular Payment Button Adapter",
+  "name": "@nexora-smartpay/angular",
+  "version": "2.0.0",
+  "description": "Nexora SmartPay payment button adapter for Angular",
+  "author": "Nexora SmartPay",
+  "homepage": "https://smartpaylatam.com",
+  "keywords": [
+    "nexora",
+    "smartpay",
+    "nexora-smartpay",
+    "payments",
+    "crypto",
+    "payment-button",
+    "angular"
+  ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ApoloPay/payment-button-sdk.git"
+    "url": "git+https://github.com/Nexora-SmartPay/nexora_smartpay_sdk.git",
+    "directory": "javascript-sdk/packages/angular"
   },
   "publishConfig": {
     "access": "public",
@@ -18,7 +30,7 @@
     "dev": "ngc -p tsconfig.lib.json --watch"
   },
   "dependencies": {
-    "@apolopay-sdk/ui": "workspace:*"
+    "@nexora-smartpay/ui": "workspace:*"
   },
   "peerDependencies": {
     "@angular/common": ">=16.0.0",

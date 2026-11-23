@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { ApoloPayButton, ApoloPayClient } from "@apolopay-sdk/svelte";
+  import { SmartPayButton, SmartPayClient } from "@nexora-smartpay/svelte";
 
   // --- VALORES INICIALES (OPCIONALES) ---
   const initialPublicKey = "";
@@ -16,7 +16,7 @@
   let pubKey = initialPublicKey;
   let privKey = initialPrivateKey;
   let amount = 1;
-  let client: ApoloPayClient | undefined = undefined;
+  let client: SmartPayClient | undefined = undefined;
   let processId = initialProcessId;
   let isLoading = false;
   let status = initialProcessId ? "Botón Listo ✅" : "Esperando configuración...";
@@ -61,7 +61,7 @@
       const newProcessId = await getProcessId(amount, privKey);
       addLog(`Process ID obtenido: ${newProcessId}`, "success");
 
-      const newClient = new ApoloPayClient({ publicKey: pubKey });
+      const newClient = new SmartPayClient({ publicKey: pubKey });
       client = newClient;
       processId = newProcessId;
       status = "Botón Listo ✅";
@@ -84,7 +84,7 @@
   <aside class="sidebar">
     <div class="sidebar-header">
       <div class="logo">
-        <span class="logo-accent">Apolo</span> Pay
+        <span class="logo-accent">Smart</span>Pay
       </div>
       <h1>Playground Svelte</h1>
     </div>
@@ -158,7 +158,7 @@
             Configura las llaves para ver el botón
           </div>
         {:else}
-          <ApoloPayButton
+          <SmartPayButton
             {client}
             {processId}
             barrierDismissible

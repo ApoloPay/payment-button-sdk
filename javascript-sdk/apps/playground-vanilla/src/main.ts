@@ -1,8 +1,8 @@
 // 1. Importa el paquete de UI.
-import '@apolopay-sdk/ui';
+import '@nexora-smartpay/ui';
 
 // 2. Importa el cliente y los tipos
-import { ApoloPayClient, type ClientResponse, type ClientError } from '@apolopay-sdk/ui';
+import { SmartPayClient, type ClientResponse, type ClientError } from '@nexora-smartpay/ui';
 
 // --- VALORES INICIALES (OPCIONALES) ---
 const initialPublicKey = "";
@@ -84,11 +84,11 @@ async function updateButton() {
     addLog(`Process ID obtenido: ${processId}`, "success");
 
     // 2. Configurar Cliente
-    const apolo = new ApoloPayClient({ publicKey: pubKey });
+    const smartPay = new SmartPayClient({ publicKey: pubKey });
 
     // 3. Actualizar Botón (Web Component)
     if (miBoton) {
-      miBoton.client = apolo;
+      miBoton.client = smartPay;
       miBoton.processId = processId;
       miBoton.setAttribute("process-id", processId);
 
@@ -154,4 +154,4 @@ if (initialProcessId) {
     if (statusValue) statusValue.innerText = "Botón Listo ✅";
 }
 
-addLog("Introduce tus credenciales y haz clic en 'Configurar Botón'", "system");
+addLog("Introduce tus credenciales y haz clic en 'Configurar Botón'", "system");

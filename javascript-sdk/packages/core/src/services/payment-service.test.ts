@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { ApoloPayClient } from '../apolo-pay-client';
+import { SmartPayClient } from '../smart-pay-client';
 import { sandboxFallbackAssets } from './sandbox-data';
 
 const mockSocketConnect = vi.fn();
@@ -44,7 +44,7 @@ describe('PaymentService', () => {
         result: [{ id: 'a1', name: 'USDT', symbol: 'USDT', image: 'https://real/icon.png', networks: [] }],
       }));
 
-      const service = new PaymentService(new ApoloPayClient({ publicKey: 'pk_test_x' }));
+      const service = new PaymentService(new SmartPayClient({ publicKey: 'pk_test_x' }));
       const assets = await service.getAssets();
 
       expect(fetchMock).toHaveBeenCalledTimes(1);
@@ -54,14 +54,14 @@ describe('PaymentService', () => {
     it('getAssets falls back to sandboxFallbackAssets when the catalog fetch fails', async () => {
       fetchMock.mockRejectedValueOnce(new Error('network down'));
 
-      const service = new PaymentService(new ApoloPayClient({ publicKey: 'pk_test_x' }));
+      const service = new PaymentService(new SmartPayClient({ publicKey: 'pk_test_x' }));
       const assets = await service.getAssets();
 
       expect(assets).toBe(sandboxFallbackAssets);
     });
 
     it('fetchQrCodeDetails never touches the real backend or socket', async () => {
-      const service = new PaymentService(new ApoloPayClient({ publicKey: 'pk_test_x' }));
+      const service = new PaymentService(new SmartPayClient({ publicKey: 'pk_test_x' }));
       const asset = sandboxFallbackAssets[0];
       const network = asset.networks[0];
 
@@ -77,7 +77,7 @@ describe('PaymentService', () => {
     });
 
     it('fetchQrCodeDetails falls back to the first asset/network for unknown ids', async () => {
-      const service = new PaymentService(new ApoloPayClient({ publicKey: 'pk_test_x' }));
+      const service = new PaymentService(new SmartPayClient({ publicKey: 'pk_test_x' }));
 
       const qr = await service.fetchQrCodeDetails(
         { assetId: 'unknown', networkId: 'unknown' },
@@ -92,7 +92,7 @@ describe('PaymentService', () => {
     it('getAssets hits the real catalog endpoint', async () => {
       fetchMock.mockResolvedValueOnce(jsonResponse({ status: 'success', message: 'ok', result: [] }));
 
-      const service = new PaymentService(new ApoloPayClient({ publicKey: 'pk_live_x' }));
+      const service = new PaymentService(new SmartPayClient({ publicKey: 'pk_live_x' }));
       await service.getAssets();
 
       expect(fetchMock).toHaveBeenCalledTimes(1);
@@ -105,7 +105,7 @@ describe('PaymentService', () => {
         result: { id: 'proc-1', network: 'apolopay', wallet: '0xabc' },
       }));
 
-      const service = new PaymentService(new ApoloPayClient({ publicKey: 'pk_live_x' }));
+      const service = new PaymentService(new SmartPayClient({ publicKey: 'pk_live_x' }));
       const qr = await service.fetchQrCodeDetails(
         { assetId: 'a1', networkId: 'n1' },
         { processId: 'proc-1' }

@@ -10,7 +10,7 @@
     "isolatedModules": true,
     "noEmit": true,
     "paths": {
-      "@apolopay-sdk/ui": [
+      "@nexora-smartpay/ui": [
         "../../packages/ui/src/index.ts"
       ],
     }

@@ -1,4 +1,4 @@
-import type { Locale } from "@apolopay-sdk/core";
+import type { Locale } from "@nexora-smartpay/core";
 
 export function amountFormatter(
   amount?: number | string | null,

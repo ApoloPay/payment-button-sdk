@@ -1,5 +1,5 @@
 name: example
-description: "Demuestra cómo usar el paquete apolopay_sdk."
+description: "Demuestra cómo usar el paquete nexora_smartpay_sdk."
 publish_to: 'none' 
 
 environment:
@@ -9,7 +9,7 @@ dependencies:
   flutter:
     sdk: flutter
 
-  apolopay_sdk:
+  nexora_smartpay_sdk:
     path: ../
   http: ^1.6.0
 

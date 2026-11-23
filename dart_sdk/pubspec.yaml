@@ -1,9 +1,9 @@
-name: apolopay_sdk
-description: Apolo Pay SDK for Flutter.
-version: 1.2.0
-homepage: https://www.apolopay.app
-repository: https://github.com/ApoloPay/payment-button-sdk
-issue_tracker: https://github.com/ApoloPay/payment-button-sdk/issues
+name: nexora_smartpay_sdk
+description: Nexora SmartPay SDK for Flutter. Drop-in crypto payment button and checkout modal (formerly apolopay_sdk).
+version: 2.0.0
+homepage: https://smartpaylatam.com
+repository: https://github.com/Nexora-SmartPay/nexora_smartpay_sdk
+issue_tracker: https://github.com/Nexora-SmartPay/nexora_smartpay_sdk/issues
 
 environment:
   sdk: '>=3.0.0 <4.0.0'

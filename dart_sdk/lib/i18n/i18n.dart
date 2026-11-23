@@ -1,4 +1,4 @@
-import 'package:apolopay_sdk/i18n/types.dart';
+import 'package:nexora_smartpay_sdk/i18n/types.dart';
 
 import 'es.dart';
 import 'en.dart';

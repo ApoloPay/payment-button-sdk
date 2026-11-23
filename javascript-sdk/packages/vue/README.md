@@ -1,23 +1,23 @@
-# @apolopay-sdk/vue
+# @nexora-smartpay/vue
 
-Vue wrapper for the Apolo Pay SDK. Provides a convenient component to integrate the Apolo Pay payment button into Vue 3 applications.
+Vue wrapper for the Nexora SmartPay SDK. Provides a convenient component to integrate the Nexora SmartPay payment button into Vue 3 applications.
 
 ## Installation
 
 ```bash
-npm install @apolopay-sdk/vue
+npm install @nexora-smartpay/vue
 # or
-pnpm add @apolopay-sdk/vue
+pnpm add @nexora-smartpay/vue
 ```
 
 ## Usage
 
 ```vue
 <script setup lang="ts">
-import { ApoloPayButton, ApoloPayClient, type ClientResponse, type ClientError } from '@apolopay-sdk/vue';
+import { SmartPayButton, SmartPayClient, type ClientResponse, type ClientError } from '@nexora-smartpay/vue';
 
 // 1. Initialize the client
-const client = new ApoloPayClient({
+const client = new SmartPayClient({
   publicKey: 'pk_test_...',
 });
 
@@ -38,7 +38,7 @@ const handleError = (error: ClientError) => {
     <h1>My Store</h1>
     
     <!-- 3. Use the component -->
-    <ApoloPayButton
+    <SmartPayButton
       :client="client"
       :processId="processId"
       productTitle="Order #VUE-1"
@@ -53,9 +53,13 @@ const handleError = (error: ClientError) => {
 
 ## Props and Events
 
-The `ApoloPayButton` component accepts the same props as attributes (e.g., `:processId`, `:client`) and emits standard events (`@success`, `@error`).
+The `SmartPayButton` component accepts the same props as attributes (e.g., `:processId`, `:client`) and emits standard events (`@success`, `@error`).
 
-For a full list of available properties, see the documentation for [@apolopay-sdk/ui](../ui/README.md).
+For a full list of available properties, see the documentation for [@nexora-smartpay/ui](../ui/README.md).
+
+## Migrating from `@apolopay-sdk/vue`
+
+This package was previously published as `@apolopay-sdk/vue`. Replace the dependency with `@nexora-smartpay/vue`. `ApoloPayButton` and `ApoloPayClient` are still exported as deprecated aliases of `SmartPayButton` / `SmartPayClient`, so existing code keeps working after changing the import path.
 
 ## License
 

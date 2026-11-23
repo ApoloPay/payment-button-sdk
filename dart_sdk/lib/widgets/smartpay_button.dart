@@ -1,16 +1,16 @@
 import 'dart:convert';
-import 'package:apolopay_sdk/utils/build_rich_text.dart';
-import 'package:apolopay_sdk/widgets/info_modal.dart';
+import 'package:nexora_smartpay_sdk/utils/build_rich_text.dart';
+import 'package:nexora_smartpay_sdk/widgets/info_modal.dart';
 import 'package:flutter/material.dart';
-import 'package:apolopay_sdk/assets/logo_apolo.dart';
-import 'package:apolopay_sdk/i18n/i18n.dart';
-import 'package:apolopay_sdk/models/client_response.dart';
-import 'package:apolopay_sdk/models/apolopay_models.dart';
-import 'package:apolopay_sdk/services/apolo_pay_client.dart';
-import 'apolopay_modal.dart';
+import 'package:nexora_smartpay_sdk/assets/logo_apolo.dart';
+import 'package:nexora_smartpay_sdk/i18n/i18n.dart';
+import 'package:nexora_smartpay_sdk/models/client_response.dart';
+import 'package:nexora_smartpay_sdk/models/smartpay_models.dart';
+import 'package:nexora_smartpay_sdk/services/smart_pay_client.dart';
+import 'smartpay_modal.dart';
 
-class ApoloPayButton extends StatefulWidget {
-  final ApoloPayClient? client;
+class SmartPayButton extends StatefulWidget {
+  final SmartPayClient? client;
   final String? processId;
   final String? productTitle;
   final void Function(
@@ -31,7 +31,7 @@ class ApoloPayButton extends StatefulWidget {
   final bool disabled;
   final I18nLocale? locale;
 
-  const ApoloPayButton({
+  const SmartPayButton({
     super.key,
     this.client,
     this.processId,
@@ -49,10 +49,10 @@ class ApoloPayButton extends StatefulWidget {
   });
 
   @override
-  State<ApoloPayButton> createState() => _ApoloPayButtonState();
+  State<SmartPayButton> createState() => _SmartPayButtonState();
 }
 
-class _ApoloPayButtonState extends State<ApoloPayButton> {
+class _SmartPayButtonState extends State<SmartPayButton> {
   bool _hasConfigError = false;
   bool _alreadyShownInfoModal = false;
 
@@ -64,7 +64,7 @@ class _ApoloPayButtonState extends State<ApoloPayButton> {
   }
 
   @override
-  void didUpdateWidget(covariant ApoloPayButton oldWidget) {
+  void didUpdateWidget(covariant SmartPayButton oldWidget) {
     super.didUpdateWidget(oldWidget);
     _validateConfig();
   }
@@ -86,7 +86,7 @@ class _ApoloPayButtonState extends State<ApoloPayButton> {
 
     if (!isValid) {
       debugPrint(
-          'ApoloPayButton Error: Invalid publicKey "$key". Must start with "pk_" and be 35 characters long.');
+          'SmartPayButton Error: Invalid publicKey "$key". Must start with "pk_" and be 35 characters long.');
     }
   }
 
@@ -115,9 +115,9 @@ class _ApoloPayButtonState extends State<ApoloPayButton> {
     }
 
     if (!context.mounted) return;
-    await ApoloPayModal.show(
+    await SmartPayModal.show(
       context,
-      ApoloPayOptions(
+      SmartPayOptions(
         client: widget.client!,
         processId: widget.processId!,
         onSuccess: (res) => widget.onSuccess?.call(context, res),

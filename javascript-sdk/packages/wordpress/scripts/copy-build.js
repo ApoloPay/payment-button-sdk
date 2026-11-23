@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 // Definir rutas (path.join se encarga de las barras / o \ según el OS)
-const source = path.join(__dirname, '..', '..', 'ui', 'dist', 'apolopay-sdk.umd.js');
+const source = path.join(__dirname, '..', '..', 'ui', 'dist', 'nexora-smartpay.umd.js');
 const destDir = path.join(__dirname, '..', 'assets');
 const distDir = path.resolve(__dirname, '../dist');
 const destFile = path.join(destDir, 'apolopay-sdk.js');
@@ -18,7 +18,7 @@ if (!fs.existsSync(distDir)) {
 // 2. Verificar que el build de UI exista
 if (!fs.existsSync(source)) {
     console.error('❌ Error: No se encontró el build de UI.');
-    console.error('   Asegúrate de haber corrido "turbo run build" en @apolo-pay/ui primero.');
+    console.error('   Asegúrate de haber corrido "turbo run build" en @nexora-smartpay/ui primero.');
     process.exit(1);
 }
 
