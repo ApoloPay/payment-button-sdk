@@ -19,8 +19,13 @@ final class ApoloPay_Blocks_Integration extends AbstractPaymentMethodType {
         $this->settings = get_option( 'woocommerce_apolo_pay_settings', array() );
     }
 
+    /**
+     * Same rule as ApoloPay_Gateway::is_available(): enabled, and with the
+     * webhook secret that confirms payments.
+     */
     public function is_active() {
-        return ! empty( $this->settings['enabled'] ) && 'yes' === $this->settings['enabled'];
+        return ! empty( $this->settings['enabled'] ) && 'yes' === $this->settings['enabled']
+            && ! empty( $this->settings['webhook_secret'] );
     }
 
     /**
