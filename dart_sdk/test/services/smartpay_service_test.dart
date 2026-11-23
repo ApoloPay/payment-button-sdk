@@ -19,7 +19,8 @@ void main() {
       ));
     });
 
-    test('fetchQrCodeDetails never touches the real backend or socket', () async {
+    test('fetchQrCodeDetails never touches the real backend or socket',
+        () async {
       final asset = SandboxData.fallbackAssets.first;
       final network = asset.networks.firstWhere((n) => n.isApoloPay);
 
@@ -36,7 +37,8 @@ void main() {
       expect(qrData.amountPaid, 0);
     });
 
-    test('fetchQrCodeDetails falls back to the first asset/network for unknown ids',
+    test(
+        'fetchQrCodeDetails falls back to the first asset/network for unknown ids',
         () async {
       final qrData = await service.fetchQrCodeDetails(
         assetId: 'does-not-exist',

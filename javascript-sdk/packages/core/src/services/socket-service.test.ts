@@ -33,8 +33,8 @@ describe('SocketService base URL', () => {
   });
 
   it("connects to the client's socketUrl override", () => {
-    const client = new SmartPayClient({ publicKey: 'pk_test_x', socketUrl: 'https://ws.example.com/' });
+    const client = new SmartPayClient({ publicKey: 'pk_test_x', socketUrl: 'https://sandbox-ws.smartpaylatam.com/' });
     new SocketService(client).connect({ processId: 'p1' });
-    expect((ioMock.mock.calls[0] as unknown[])[0]).toBe('https://ws.example.com');
+    expect((ioMock.mock.calls[0] as unknown[])[0]).toBe('https://sandbox-ws.smartpaylatam.com');
   });
 });

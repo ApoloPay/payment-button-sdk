@@ -21,8 +21,7 @@ void main() {
     final asset = SandboxData.fallbackAssets.first;
 
     test('builds a process-scoped address for the apolopay network', () {
-      final apolopayNetwork =
-          asset.networks.firstWhere((n) => n.isApoloPay);
+      final apolopayNetwork = asset.networks.firstWhere((n) => n.isApoloPay);
 
       final qr = SandboxData.buildQrData(
         processId: 'proc-123',

@@ -34,7 +34,7 @@ const client = new SmartPayClient({
 | `apiUrl` | `string` (optional) | `DEFAULT_API_URL` = `https://api.smartpaylatam.com` | REST API base URL. Read it back with `client.getApiUrl()`. |
 | `socketUrl` | `string` (optional) | `DEFAULT_SOCKET_URL` = `https://ws.smartpaylatam.com` | Realtime (Socket.IO) base URL. Read it back with `client.getSocketUrl()`. |
 
-Both URLs must use `https://` (plain `http://` is accepted only for `localhost` / `127.0.0.1`, for local development); anything else makes the constructor throw an `Error`. Trailing slashes are trimmed, so `getApiUrl()` / `getSocketUrl()` never end in `/`.
+Only Nexora SmartPay hosts are accepted: `https://` on `smartpaylatam.com` or any of its subdomains (production, sandbox, testing), Apolo Pay's two legacy hosts (`pb-api.apolopay.app`, `pb-ws.apolopay.app`), and `localhost` / `127.0.0.1` (also over `http://`) for local development. Any other host, lookalikes included (`api.smartpaylatam.com.evil.com`), makes the constructor throw an `Error`. Trailing slashes are trimmed, so `getApiUrl()` / `getSocketUrl()` never end in `/`.
 
 **Transition from Apolo Pay hosts**: the same backend is still served on Apolo Pay's old hosts, exported as `LEGACY_APOLO_API_URL` (`https://pb-api.apolopay.app`) and `LEGACY_APOLO_SOCKET_URL` (`https://pb-ws.apolopay.app`). To keep using them explicitly:
 

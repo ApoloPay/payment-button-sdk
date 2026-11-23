@@ -25,9 +25,9 @@ describe('Repository base URL', () => {
   it('getAssets hits the given base URL', async () => {
     fetchMock.mockResolvedValueOnce(jsonResponse({ status: 'success', message: 'ok', result: [] }));
 
-    await Repository.getAssets('https://api.example.com');
+    await Repository.getAssets('https://sandbox-api.smartpaylatam.com');
 
-    expect(fetchMock.mock.calls[0][0]).toBe('https://api.example.com/payment-button/assets');
+    expect(fetchMock.mock.calls[0][0]).toBe('https://sandbox-api.smartpaylatam.com/payment-button/assets');
   });
 
   it('fetchQrCodeDetails hits the given base URL', async () => {
@@ -37,14 +37,14 @@ describe('Repository base URL', () => {
       result: { id: 'q1', wallet: '0xabc', network: 'tron', asset: 'USDT', amount: 1 },
     }));
 
-    await Repository.fetchQrCodeDetails('https://api.example.com', {
+    await Repository.fetchQrCodeDetails('https://sandbox-api.smartpaylatam.com', {
       processId: 'proc-1',
       assetId: 'a1',
       networkId: 'n1',
       publicKey: 'pk_live',
     });
 
-    expect(fetchMock.mock.calls[0][0]).toBe('https://api.example.com/payment-button/process/confirm');
+    expect(fetchMock.mock.calls[0][0]).toBe('https://sandbox-api.smartpaylatam.com/payment-button/process/confirm');
   });
 
   it('PaymentService passes the client apiUrl through (default and override)', async () => {
@@ -52,10 +52,10 @@ describe('Repository base URL', () => {
 
     await new PaymentService(new SmartPayClient({ publicKey: 'pk_test_x' })).getAssets();
     await new PaymentService(
-      new SmartPayClient({ publicKey: 'pk_test_x', apiUrl: 'https://custom.example.com/' })
+      new SmartPayClient({ publicKey: 'pk_test_x', apiUrl: 'https://testing.smartpaylatam.com/' })
     ).getAssets();
 
     expect(fetchMock.mock.calls[0][0]).toBe('https://api.smartpaylatam.com/payment-button/assets');
-    expect(fetchMock.mock.calls[1][0]).toBe('https://custom.example.com/payment-button/assets');
+    expect(fetchMock.mock.calls[1][0]).toBe('https://testing.smartpaylatam.com/payment-button/assets');
   });
 });

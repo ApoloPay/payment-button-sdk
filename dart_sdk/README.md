@@ -84,7 +84,7 @@ SmartPayButton(
 | `apiUrl` | `String?` | `defaultApiUrl` = `https://api.smartpaylatam.com` | REST API base URL. Exposed as `client.apiUrl` / `client.getApiUrl()`. |
 | `socketUrl` | `String?` | `defaultSocketUrl` = `https://ws.smartpaylatam.com` | Realtime (Socket.IO) base URL. Exposed as `client.socketUrl` / `client.getSocketUrl()`. |
 
-Both URLs must use `https://` (plain `http://` is accepted only for `localhost` / `127.0.0.1`, for local development); anything else throws an `ArgumentError` from the constructor. Trailing slashes are trimmed.
+Only Nexora SmartPay hosts are accepted: `https://` on `smartpaylatam.com` or any of its subdomains (production, sandbox, testing), Apolo Pay's two legacy hosts (`pb-api.apolopay.app`, `pb-ws.apolopay.app`), and `localhost` / `127.0.0.1` (also over `http://`) for local development. Any other host, lookalikes included (`api.smartpaylatam.com.evil.com`), throws an `ArgumentError` from the constructor. Trailing slashes are trimmed.
 
 **Transition from Apolo Pay hosts**: the same backend is still served on Apolo Pay's old hosts, exported as `legacyApoloApiUrl` (`https://pb-api.apolopay.app`) and `legacyApoloSocketUrl` (`https://pb-ws.apolopay.app`):
 

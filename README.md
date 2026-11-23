@@ -37,7 +37,7 @@ Version 2.0.0 renames the SDKs: the npm packages moved from `@apolopay-sdk/*` to
 
 ### API and realtime hosts
 
-Both SDKs talk to `https://api.smartpaylatam.com` (REST) and `https://ws.smartpaylatam.com` (realtime) by default. Each client accepts optional overrides, validated to `https://` only (`http://localhost` / `http://127.0.0.1` allowed for local development):
+Both SDKs talk to `https://api.smartpaylatam.com` (REST) and `https://ws.smartpaylatam.com` (realtime) by default. Each client accepts optional overrides, validated against an allowlist (`*.smartpaylatam.com`, Apolo Pay's legacy hosts, and `localhost` for development):
 
 | SDK | Option | Type | Default |
 |-----|--------|------|---------|

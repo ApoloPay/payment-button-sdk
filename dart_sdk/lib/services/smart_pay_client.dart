@@ -15,10 +15,31 @@ const String legacyApoloSocketUrl = 'https://pb-ws.apolopay.app';
 
 const Set<String> _localDevHosts = {'localhost', '127.0.0.1'};
 
+/// The only domain (and its subdomains: production, sandbox, testing) a
+/// client may talk to, besides [_legacyApoloHosts] and [_localDevHosts].
+/// Pointing the SDK anywhere else (a lookalike server showing its own
+/// deposit address, or a typo) fails here instead of mid-payment; a new
+/// Nexora host means a new SDK release.
+const String _smartPayDomain = 'smartpaylatam.com';
+
+/// Apolo Pay's old hosts, still serving the same backend during the
+/// transition.
+const Set<String> _legacyApoloHosts = {
+  'pb-api.apolopay.app',
+  'pb-ws.apolopay.app'
+};
+
+bool _isAllowedHost(String host) =>
+    host == _smartPayDomain ||
+    host.endsWith('.$_smartPayDomain') ||
+    _legacyApoloHosts.contains(host) ||
+    _localDevHosts.contains(host);
+
 /// Validates [value] and returns it without trailing slashes.
 ///
-/// Only `https://` is accepted, except `http://localhost` /
-/// `http://127.0.0.1` for local development. Throws [ArgumentError] otherwise.
+/// Only `https://` on Nexora's own hosts (or Apolo Pay's legacy ones) is
+/// accepted, plus `http(s)://localhost` / `127.0.0.1` for local
+/// development. Throws [ArgumentError] otherwise.
 String _normalizeBaseUrl(String value, String name) {
   final trimmed = value.trim();
   final uri = Uri.tryParse(trimmed);
@@ -42,6 +63,15 @@ String _normalizeBaseUrl(String value, String name) {
     );
   }
 
+  if (!_isAllowedHost(uri.host.toLowerCase())) {
+    throw ArgumentError.value(
+      value,
+      name,
+      '[Nexora SmartPay] Invalid $name: host "${uri.host}" is not a Nexora '
+      'SmartPay host (*.$_smartPayDomain)',
+    );
+  }
+
   return trimmed.replaceFirst(RegExp(r'/+$'), '');
 }
 
@@ -56,8 +86,9 @@ class SmartPayClient {
   final String socketUrl;
 
   /// [apiUrl] defaults to [defaultApiUrl] and [socketUrl] to
-  /// [defaultSocketUrl]. Both must be `https://` (or `http://localhost` /
-  /// `http://127.0.0.1`); an invalid value throws [ArgumentError].
+  /// [defaultSocketUrl]. Both must be `https://` on a Nexora SmartPay host
+  /// (`*.smartpaylatam.com`, or [legacyApoloApiUrl] / [legacyApoloSocketUrl]),
+  /// or `localhost` / `127.0.0.1`; anything else throws [ArgumentError].
   SmartPayClient({
     required this.publicKey,
     String? apiUrl,

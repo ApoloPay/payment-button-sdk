@@ -30,11 +30,28 @@ void main() {
     test('trims trailing slashes', () {
       final client = SmartPayClient(
         publicKey: 'pk_test_abc',
-        apiUrl: 'https://api.example.com/v1//',
-        socketUrl: 'https://ws.example.com/',
+        apiUrl: 'https://sandbox-api.smartpaylatam.com/v1//',
+        socketUrl: 'https://sandbox-ws.smartpaylatam.com/',
       );
-      expect(client.apiUrl, 'https://api.example.com/v1');
-      expect(client.socketUrl, 'https://ws.example.com');
+      expect(client.apiUrl, 'https://sandbox-api.smartpaylatam.com/v1');
+      expect(client.socketUrl, 'https://sandbox-ws.smartpaylatam.com');
+    });
+
+    test('accepts every Nexora subdomain and the legacy Apolo hosts', () {
+      for (final url in [
+        'https://smartpaylatam.com',
+        'https://sandbox.smartpaylatam.com',
+        'https://API.SmartPayLatam.com',
+      ]) {
+        expect(
+            SmartPayClient(publicKey: 'pk_test_abc', apiUrl: url).apiUrl, url);
+      }
+      final legacy = SmartPayClient(
+        publicKey: 'pk_test_abc',
+        apiUrl: legacyApoloApiUrl,
+        socketUrl: legacyApoloSocketUrl,
+      );
+      expect(legacy.apiUrl, legacyApoloApiUrl);
     });
 
     test('allows plain http only for localhost / 127.0.0.1', () {
@@ -48,11 +65,17 @@ void main() {
     });
 
     for (final invalid in [
-      'http://api.example.com',
+      'http://sandbox-api.smartpaylatam.com',
       'not a url',
       '',
-      'ftp://api.example.com',
-      'ws://ws.example.com',
+      'ftp://sandbox-api.smartpaylatam.com',
+      'ws://sandbox-ws.smartpaylatam.com',
+      // Only Nexora's own hosts: no lookalikes, no other servers.
+      'https://api.example.com',
+      'https://api.smartpaylatam.com.evil.com',
+      'https://evilsmartpaylatam.com',
+      'https://api.smartpaylatam.com@evil.com',
+      'https://p2p.apolopay.app',
     ]) {
       test('rejects invalid URL "$invalid" at construction', () {
         expect(
@@ -95,9 +118,9 @@ void main() {
 
     test('Repository hits the given base URL', () async {
       await http.runWithClient(() async {
-        await Repository.getAssets('https://api.example.com');
+        await Repository.getAssets('https://sandbox-api.smartpaylatam.com');
         await Repository.fetchQrCodeDetails(
-          apiUrl: 'https://api.example.com',
+          apiUrl: 'https://sandbox-api.smartpaylatam.com',
           publicKey: 'pk_live',
           processId: 'proc-1',
           assetId: 'a1',
@@ -106,8 +129,8 @@ void main() {
       }, () => mockHttp);
 
       expect(requested.map((u) => u.toString()), [
-        'https://api.example.com/payment-button/assets',
-        'https://api.example.com/payment-button/process/confirm',
+        'https://sandbox-api.smartpaylatam.com/payment-button/assets',
+        'https://sandbox-api.smartpaylatam.com/payment-button/process/confirm',
       ]);
     });
 
@@ -120,7 +143,7 @@ void main() {
         await SmartPayService(SmartPayOptions(
           client: SmartPayClient(
             publicKey: 'pk_test_x',
-            apiUrl: 'https://custom.example.com/',
+            apiUrl: 'https://testing.smartpaylatam.com/',
           ),
           processId: 'p1',
         )).getAssets();
@@ -128,7 +151,7 @@ void main() {
 
       expect(requested.map((u) => u.toString()), [
         'https://api.smartpaylatam.com/payment-button/assets',
-        'https://custom.example.com/payment-button/assets',
+        'https://testing.smartpaylatam.com/payment-button/assets',
       ]);
     });
 
@@ -140,13 +163,13 @@ void main() {
       final overridden = SocketService(SmartPayOptions(
         client: SmartPayClient(
           publicKey: 'pk_test_x',
-          socketUrl: 'https://ws.example.com/',
+          socketUrl: 'https://sandbox-ws.smartpaylatam.com/',
         ),
         processId: 'p1',
       ));
 
       expect(byDefault.url, defaultSocketUrl);
-      expect(overridden.url, 'https://ws.example.com');
+      expect(overridden.url, 'https://sandbox-ws.smartpaylatam.com');
     });
   });
 }

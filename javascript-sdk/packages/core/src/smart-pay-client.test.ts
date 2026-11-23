@@ -42,11 +42,23 @@ describe('SmartPayClient base URLs', () => {
   it('trims trailing slashes', () => {
     const client = new SmartPayClient({
       publicKey: 'pk_test_abc',
-      apiUrl: 'https://api.example.com/v1//',
-      socketUrl: 'https://ws.example.com/',
+      apiUrl: 'https://sandbox-api.smartpaylatam.com/v1//',
+      socketUrl: 'https://sandbox-ws.smartpaylatam.com/',
     });
-    expect(client.getApiUrl()).toBe('https://api.example.com/v1');
-    expect(client.getSocketUrl()).toBe('https://ws.example.com');
+    expect(client.getApiUrl()).toBe('https://sandbox-api.smartpaylatam.com/v1');
+    expect(client.getSocketUrl()).toBe('https://sandbox-ws.smartpaylatam.com');
+  });
+
+  it('accepts every Nexora subdomain and the legacy Apolo hosts', () => {
+    for (const url of ['https://smartpaylatam.com', 'https://sandbox.smartpaylatam.com', 'https://API.SmartPayLatam.com']) {
+      expect(new SmartPayClient({ publicKey: 'pk_test_abc', apiUrl: url }).getApiUrl()).toBe(url);
+    }
+    const legacy = new SmartPayClient({
+      publicKey: 'pk_test_abc',
+      apiUrl: LEGACY_APOLO_API_URL,
+      socketUrl: LEGACY_APOLO_SOCKET_URL,
+    });
+    expect(legacy.getApiUrl()).toBe(LEGACY_APOLO_API_URL);
   });
 
   it('allows plain http only for localhost / 127.0.0.1', () => {
@@ -60,12 +72,18 @@ describe('SmartPayClient base URLs', () => {
   });
 
   it.each([
-    ['apiUrl', { apiUrl: 'http://api.example.com' }],
+    ['apiUrl', { apiUrl: 'http://sandbox-api.smartpaylatam.com' }],
     ['apiUrl', { apiUrl: 'not a url' }],
     ['apiUrl', { apiUrl: '' }],
-    ['apiUrl', { apiUrl: 'ftp://api.example.com' }],
-    ['socketUrl', { socketUrl: 'ws://ws.example.com' }],
-    ['socketUrl', { socketUrl: 'http://ws.example.com' }],
+    ['apiUrl', { apiUrl: 'ftp://sandbox-api.smartpaylatam.com' }],
+    ['socketUrl', { socketUrl: 'ws://sandbox-ws.smartpaylatam.com' }],
+    ['socketUrl', { socketUrl: 'http://sandbox-ws.smartpaylatam.com' }],
+    // Only Nexora's own hosts: no lookalikes, no other servers.
+    ['apiUrl', { apiUrl: 'https://api.example.com' }],
+    ['apiUrl', { apiUrl: 'https://api.smartpaylatam.com.evil.com' }],
+    ['apiUrl', { apiUrl: 'https://evilsmartpaylatam.com' }],
+    ['apiUrl', { apiUrl: 'https://api.smartpaylatam.com@evil.com' }],
+    ['socketUrl', { socketUrl: 'https://p2p.apolopay.app' }],
   ])('rejects an invalid %s at construction (%o)', (name, overrides) => {
     expect(() => new SmartPayClient({ publicKey: 'pk_test_abc', ...overrides })).toThrow(
       new RegExp(`Invalid ${name}`)

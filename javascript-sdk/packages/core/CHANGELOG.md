@@ -6,6 +6,7 @@
 
 - **Renamed to Nexora SmartPay**: This package is now published as `@nexora-smartpay/core` (previously `@apolopay-sdk/core`), with all internal workspace dependencies moved to the `@nexora-smartpay` scope. `ApoloPayClient` / `ApoloPayClientOptions` were renamed to `SmartPayClient` / `SmartPayClientOptions` (source file `smart-pay-client.ts`); the old names remain exported as deprecated aliases.
 - **New default hosts, configurable per client**: `SmartPayClient` now talks to `https://api.smartpaylatam.com` / `https://ws.smartpaylatam.com` by default (previously `pb-api.apolopay.app` / `pb-ws.apolopay.app`). New optional `SmartPayClientOptions.apiUrl` / `socketUrl` override them per client and are read back with `getApiUrl()` / `getSocketUrl()`; only `https://` is accepted (`http://localhost` / `http://127.0.0.1` for local development), trailing slashes are trimmed, and an invalid value throws at construction. New exports `DEFAULT_API_URL`, `DEFAULT_SOCKET_URL`, `LEGACY_APOLO_API_URL` and `LEGACY_APOLO_SOCKET_URL` (the old Apolo hosts, still serving the same backend during the transition).
+- **Host allowlist**: the client only accepts Nexora SmartPay hosts (`*.smartpaylatam.com`), Apolo Pay's legacy `pb-api`/`pb-ws.apolopay.app`, and `localhost`; any other host fails at construction.
 
 ## 1.4.0
 
