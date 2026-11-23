@@ -11,6 +11,6 @@
   },
   "dependencies": {
     "@nexora-smartpay/astro": "workspace:*",
-    "astro": "4.5.0"
+    "astro": "7.4.7"
   }
 }
