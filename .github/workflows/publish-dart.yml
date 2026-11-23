@@ -17,8 +17,8 @@ jobs:
       run:
         working-directory: dart_sdk
     steps:
-      - uses: actions/checkout@v4
-      - uses: subosito/flutter-action@v2
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
         with:
           channel: stable
       - run: flutter pub get
@@ -28,6 +28,6 @@ jobs:
     needs: test
     permissions:
       id-token: write
-    uses: dart-lang/setup-dart/.github/workflows/publish.yml@v1
+    uses: dart-lang/setup-dart/.github/workflows/publish.yml@2286a0c042b44434fe26d292bbce8d34f7ec662b # v1
     with:
       working-directory: dart_sdk
