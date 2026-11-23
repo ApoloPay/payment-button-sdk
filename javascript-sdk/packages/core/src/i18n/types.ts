@@ -26,6 +26,7 @@ export interface Dictionary {
       copied: string;
       payFromDevice: string;
       understood: string;
+      retry: string;
     };
     labels: {
       network: string;

@@ -156,6 +156,10 @@ export class PaymentModal extends LitElement {
     this.dispatchEvent(new CustomEvent('assetSelect', { detail: { assetId } }));
   }
 
+  private requestRetryLoad() {
+    this.dispatchEvent(new CustomEvent('retryLoad'));
+  }
+
   // Emit event when a network is selected
   private selectNetwork(network: Network) {
     this.dispatchEvent(new CustomEvent('networkSelect', { detail: { network } }));
@@ -726,8 +730,19 @@ export class PaymentModal extends LitElement {
       </div>
     `;
 
+    // Catalog failed to load (timeout, host down): say so and let the buyer
+    // try again, instead of an empty list with no way out.
+    if (this.currentStep === ModalStep.SELECT_ASSET && !this.isLoadingData && this.assets.length === 0) {
+      content = html`
+        <h2>${unsafeHTML(t.modal.titles.selectAsset)}</h2>
+        <p class="subtitle">${this.error?.message || t.errors.dataLoadError}</p>
+        <button class="btn-primary" style="width: 100%; margin-top: 1rem;" @click=${this.requestRetryLoad}>
+          ${t.modal.actions.retry}
+        </button>
+      `;
+    }
     // Selección de Asset
-    if (this.currentStep === ModalStep.SELECT_ASSET) {
+    else if (this.currentStep === ModalStep.SELECT_ASSET) {
       content = html`
         <h2>${unsafeHTML(t.modal.titles.selectAsset)}</h2>
         <p class="subtitle">${t.modal.subtitles.selectAsset}</p>

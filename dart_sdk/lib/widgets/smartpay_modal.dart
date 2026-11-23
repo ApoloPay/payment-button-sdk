@@ -156,17 +156,43 @@ class _SmartPayModalState extends State<SmartPayModal>
     }
   }
 
+  /// A failure (timeout, host down) leaves [_assets] empty, and the first
+  /// step then shows the error with a retry (see [_buildCatalogError]).
   Future<void> _loadAssets() async {
+    if (mounted && !_isLoading) setState(() => _isLoading = true);
     try {
       final assets = await _service.getAssets();
       _assets = assets;
-      _isLoading = false;
-      if (mounted) setState(() {});
-    } on ClientError catch (err) {
-      debugPrint('Error loading assets: ${err.message}');
-      _isLoading = false;
-      if (mounted) setState(() {});
+    } catch (err) {
+      debugPrint('Error loading assets: $err');
     }
+    _isLoading = false;
+    if (mounted) setState(() {});
+  }
+
+  Widget _buildCatalogError() {
+    return Column(
+      children: [
+        _buildStepTitleAndSubtitle(
+          title: I18n.t.modal.titles.selectAsset,
+          subtitle: I18n.t.errors.dataLoadError,
+        ),
+        const SizedBox(height: 16),
+        SizedBox(
+          width: 350,
+          child: ElevatedButton(
+            onPressed: _loadAssets,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: NexoraStyle.black,
+              foregroundColor: Colors.white,
+              shape: NexoraStyle.buttonShape,
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+            ),
+            child: Text(I18n.t.modal.actions.retry),
+          ),
+        ),
+      ],
+    );
   }
 
   void _startTimer(int expiresAtMs) {
@@ -689,6 +715,8 @@ class _SmartPayModalState extends State<SmartPayModal>
     if (_isLoading) return const Center(child: CircularProgressIndicator());
 
     switch (_currentStep) {
+      case ModalStep.selectAsset when _assets.isEmpty:
+        return _buildCatalogError();
       case ModalStep.selectAsset:
         return Column(
           children: [

@@ -79,6 +79,7 @@ class DictionaryModalActions {
     required this.copied,
     required this.payFromDevice,
     required this.understood,
+    required this.retry,
   });
   final String back;
   final String close;
@@ -88,6 +89,7 @@ class DictionaryModalActions {
   final String copied;
   final String payFromDevice;
   final String understood;
+  final String retry;
 }
 
 class DictionaryModalLabels {

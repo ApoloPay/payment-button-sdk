@@ -489,6 +489,7 @@ export class SmartPayButton extends LitElement {
         .isSandbox=${this.client?.isSandbox() ?? false}
         @closeRequest=${this.handleCloseRequest}
         @assetSelect=${this.handleAssetSelect}
+        @retryLoad=${this.loadInitialData}
         @networkSelect=${this.handleInitiatePayment}
         @changeStep=${this.handleChangeStep}
         @expired=${this.handleExpired}

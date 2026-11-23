@@ -30,6 +30,7 @@ const es = Dictionary(
       copied: '¡Copiado!',
       payFromDevice: 'Pagar desde este dispositivo',
       understood: 'Entendido',
+      retry: 'Reintentar',
     ),
     labels: DictionaryModalLabels(
       network: 'Red',
