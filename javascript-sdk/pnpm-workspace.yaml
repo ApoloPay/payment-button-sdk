@@ -1,3 +1,25 @@
 packages:
   - 'apps/*'
   - 'packages/*'
+
+# Never resolve a version published less than 14 days ago (in minutes):
+# supply-chain attacks ship as new versions and are usually caught within days.
+minimumReleaseAge: 20160
+
+# Which dependencies may run install scripts: only esbuild (its binary).
+# Denied on purpose: nice-napi (optional piscina speed-up), sharp (only the
+# Astro playground's image optimization), svelte-preprocess (just prints a
+# notice). Anything new is blocked until listed here.
+allowBuilds:
+  esbuild: true
+  nice-napi: false
+  sharp: false
+  svelte-preprocess: false
+
+overrides:
+  '@types/react': '18.3.3'
+  '@types/react-dom': '18.3.0'
+  'react': '18.3.1'
+  'react-dom': '18.3.1'
+  'socket.io-parser@>=4.0.0 <4.2.7': '4.2.7'
+  'ws@>=8.0.0 <8.21.0': '8.21.3'
