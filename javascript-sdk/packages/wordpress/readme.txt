@@ -91,6 +91,7 @@ The payment QR code is generated locally in the customer's browser; no QR servic
 * Bundled Nexora SmartPay SDK 2.0.0 (`assets/nexora-smartpay.js`, script handle `nexora-smartpay-sdk`, element `<smartpay-button>`).
 * New Nexora SmartPay icon.
 * Fixed: the release zip now contains a single `apolopay-checkout-for-woocommerce/` folder, so every version installs over the same plugin.
+* Fixed: a partial payment no longer leaves the checkout stuck. If the customer closes the payment window after paying only part of the amount, the checkout is unlocked with a notice, and the next "Place order" goes on paying the same payment (same session and cart total) instead of creating a new one. Only a complete payment is sent with the order.
 
 = 1.2.0 =
 * Renamed plugin to "ApoloPay Checkout for WooCommerce" (new slug: apolopay-checkout-for-woocommerce).

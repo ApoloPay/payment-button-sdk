@@ -16,6 +16,21 @@ jQuery(function ($) {
         $(formSelector).removeClass('processing').unblock();
     };
 
+    const PARTIAL_MESSAGE =
+        'Recibimos un pago parcial. Para completar tu pedido, vuelve a presionar ' +
+        '"Realizar pedido" y paga el monto restante con la misma moneda y red.';
+    const CART_CHANGED_MESSAGE =
+        'El total del carrito cambió desde tu pago parcial, así que se generó un cobro nuevo. ' +
+        'Para recuperar el pago parcial anterior, contacta a la tienda.';
+
+    /**
+     * Process that received a partial payment and was closed before the rest
+     * arrived. The next "Place order" goes on paying it (like the SDK's modal
+     * does while open) instead of creating a new preorder, which would leave
+     * the money already sent on the first one.
+     */
+    let partialProcessId = null;
+
     /**
      * Hook into WooCommerce's own event: checkout_place_order_{gateway_id}
      * This event fires AFTER WooCommerce has validated all required checkout
@@ -31,8 +46,8 @@ jQuery(function ($) {
     $(formSelector).on('checkout_place_order_apolo_pay', function () {
         const processIdInput = document.querySelector('#apolo_process_id');
 
-        // If the process ID is already set (payment completed via WebSocket),
-        // let WooCommerce proceed with order creation.
+        // The process ID is only set once the payment is complete (WebSocket
+        // "success"): then let WooCommerce proceed with order creation.
         if (processIdInput && processIdInput.value !== '') {
             return true;
         }
@@ -55,17 +70,17 @@ jQuery(function ($) {
             dataType: 'json',
             data: {
                 action: 'apolopay_create_process',
-                security: apolo_params.nonce
+                security: apolo_params.nonce,
+                resume_process_id: partialProcessId || ''
             },
             success: function (response) {
                 if (response.success && response.data.process_id) {
                     const processId = response.data.process_id;
 
-                    // Store the processId immediately; it will be sent to
-                    // process_payment() on the server when WC submits the order.
-                    if (processIdInput) {
-                        processIdInput.value = processId;
+                    if (partialProcessId && !response.data.resumed) {
+                        alert(CART_CHANGED_MESSAGE);
                     }
+                    partialProcessId = null;
 
                     const component = document.querySelector(componentSelector);
 
@@ -80,6 +95,7 @@ jQuery(function ($) {
                             component.removeEventListener('error', handleError);
                             component.removeEventListener('expired', handleExpired);
                             component.removeEventListener('dismissed', handleDismissed);
+                            component.removeEventListener('partialPayment', handlePartialPayment);
                         };
 
                         /**
@@ -92,10 +108,21 @@ jQuery(function ($) {
                             cleanupEvents();
                             unblockUI();
 
-                            // processId is already set above; re-trigger WooCommerce's
-                            // AJAX checkout. process_payment() will set the order to
-                            // "on-hold" and save the processId for the webhook handler.
+                            // Only now, with the payment complete, the processId goes
+                            // to the order; re-trigger WooCommerce's AJAX checkout.
+                            // process_payment() sets the order to "on-hold" and saves
+                            // the processId for the webhook handler.
+                            if (processIdInput) processIdInput.value = processId;
                             $(formSelector).trigger('submit');
+                        };
+
+                        // Closed after a partial payment: keep the process to go on
+                        // paying it on the next "Place order".
+                        const handlePartialPayment = () => {
+                            cleanupEvents();
+                            partialProcessId = processId;
+                            unblockUI();
+                            alert(PARTIAL_MESSAGE);
                         };
 
                         const handleError = (e) => {
@@ -115,8 +142,10 @@ jQuery(function ($) {
 
                         const handleDismissed = () => {
                             cleanupEvents();
-                            // Also clear processId when the user dismisses,
-                            // so next "Place Order" click starts a fresh preorder.
+                            // A process that had already received part of the payment
+                            // is still pending: keep going on it next time. Otherwise
+                            // the next "Place Order" starts a fresh preorder.
+                            if (response.data.resumed) partialProcessId = processId;
                             if (processIdInput) processIdInput.value = '';
                             unblockUI();
                         };
@@ -125,6 +154,7 @@ jQuery(function ($) {
                         component.addEventListener('error', handleError);
                         component.addEventListener('expired', handleExpired);
                         component.addEventListener('dismissed', handleDismissed);
+                        component.addEventListener('partialPayment', handlePartialPayment);
 
                         setTimeout(() => {
                             try {

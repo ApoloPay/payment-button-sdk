@@ -199,11 +199,27 @@ class ApoloPay_Gateway extends WC_Payment_Gateway {
 
     /**
      * AJAX: Creates a preorder in Nexora SmartPay and returns the processId to the frontend.
+     *
+     * After a partial payment the customer goes on paying the SAME process
+     * (`resume_process_id`), like the SDK's own modal does, instead of a new
+     * preorder that would leave the money already sent on the first one. It's
+     * only reused when it is the last process created in this customer's
+     * session and the cart total hasn't changed since.
      */
     public function ajax_create_process() {
         check_ajax_referer( 'apolopay_nonce', 'security' );
 
         $cart_total = (float) WC()->cart->get_total( 'edit' );
+        $last       = WC()->session ? WC()->session->get( 'apolopay_last_process' ) : null;
+        $resume_id  = isset( $_POST['resume_process_id'] )
+            ? sanitize_text_field( wp_unslash( $_POST['resume_process_id'] ) )
+            : '';
+
+        if ( '' !== $resume_id && is_array( $last ) && isset( $last['id'], $last['amount'] ) ) {
+            if ( $last['id'] === $resume_id && abs( (float) $last['amount'] - $cart_total ) < 0.00001 ) {
+                wp_send_json_success( array( 'process_id' => $resume_id, 'resumed' => true ) );
+            }
+        }
 
         $body = array(
             'amount'   => $cart_total,
@@ -235,7 +251,11 @@ class ApoloPay_Gateway extends WC_Payment_Gateway {
             wp_send_json_error( array( 'message' => 'The API did not return a valid ID in result.' ) );
         }
 
-        wp_send_json_success( array( 'process_id' => $process_id ) );
+        if ( WC()->session ) {
+            WC()->session->set( 'apolopay_last_process', array( 'id' => $process_id, 'amount' => $cart_total ) );
+        }
+
+        wp_send_json_success( array( 'process_id' => $process_id, 'resumed' => false ) );
     }
 
     /**
@@ -277,6 +297,11 @@ class ApoloPay_Gateway extends WC_Payment_Gateway {
 
         $order->update_meta_data( '_apolo_process_id', $process_id );
         $order->save();
+
+        // The process now belongs to this order: never resumed for another one.
+        if ( WC()->session ) {
+            WC()->session->set( 'apolopay_last_process', null );
+        }
 
         // ── Race-condition check ──────────────────────────────────────────────
         // Nexora SmartPay fires the webhook almost instantly after payment. If it
