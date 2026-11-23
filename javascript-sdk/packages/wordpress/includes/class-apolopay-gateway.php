@@ -342,11 +342,16 @@ class ApoloPay_Gateway extends WC_Payment_Gateway {
         if ( ! empty( $this->webhook_secret ) ) {
             $expected_signature = hash_hmac( 'sha256', $payload, $this->webhook_secret );
 
+            // With a secret configured, an unsigned request is rejected like a
+            // badly signed one: the processId it carries is visible to the
+            // buyer, so accepting it would let anyone mark an order as paid.
             if ( empty( $signature ) ) {
-                $logger->warning(
+                $logger->error(
                     '[WEBHOOK] Webhook secret is configured but no X-Signature header was received.',
                     $context
                 );
+                http_response_code( 401 );
+                exit( 'Missing signature.' );
             } elseif ( ! hash_equals( $expected_signature, $signature ) ) {
                 $logger->error( '[WEBHOOK] Invalid signature.', $context );
                 http_response_code( 401 );
