@@ -7,3 +7,4 @@ export * from "./types/modal-step";
 export * from "./types/payment-client-types";
 export * from "./i18n";
 export * from "./i18n/types";
+export { generateQrCodeDataUri } from "./utils/qr-code";

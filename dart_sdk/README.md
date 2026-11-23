@@ -9,6 +9,7 @@ The official Flutter SDK for integrating the Nexora SmartPay payment button into
 - **Multiple Assets Support**: Display and handle payments for various cryptocurrencies and assets.
 - **I18n Support**: Full support for English and Spanish locales.
 - **Real-time Updates**: WebSocket integration for instant payment status updates.
+- **QR generated locally**: the deposit QR is rendered on-device; the payment address is never sent to a third-party QR service.
 
 ## Installation
 

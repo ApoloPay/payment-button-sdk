@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { SmartPayButton, SmartPayClient, type ClientResponse, type ClientError } from '@nexora-smartpay/vue';
+import { SmartPayButton, SmartPayClient, LEGACY_APOLO_API_URL, LEGACY_APOLO_SOCKET_URL, type ClientResponse, type ClientError } from '@nexora-smartpay/vue';
 
 // --- VALORES INICIALES (OPCIONALES) ---
 const initialPublicKey = "";
@@ -30,7 +30,8 @@ const addLog = (message: string, type: LogEntry['type'] = 'system') => {
 };
 
 const getProcessId = async (amt: number, key: string) => {
-  const response = await fetch("https://pb-api.apolopay.app/payment-button/process/preorder", {
+  // Legacy Apolo host until the backend is live on smartpaylatam.com (nexora_web#1); then switch to the defaults.
+  const response = await fetch(`${LEGACY_APOLO_API_URL}/payment-button/process/preorder`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -62,7 +63,7 @@ const handleUpdate = async () => {
     const newProcessId = await getProcessId(amount.value, privKey.value);
     addLog(`Process ID obtenido: ${newProcessId}`, "success");
 
-    const newClient = new SmartPayClient({ publicKey: pubKey.value });
+    const newClient = new SmartPayClient({ publicKey: pubKey.value, apiUrl: LEGACY_APOLO_API_URL, socketUrl: LEGACY_APOLO_SOCKET_URL });
     client.value = newClient;
     processId.value = newProcessId;
     status.value = "Botón Listo ✅";

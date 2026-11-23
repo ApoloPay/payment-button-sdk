@@ -30,6 +30,9 @@ class QrResponseData {
   final num amount;
   final num amountPaid;
   final String address;
+
+  /// QR of [address], generated locally as an SVG data URI
+  /// (`data:image/svg+xml;...`). No third-party QR service is involved.
   final String qrCodeUrl;
   final int expiresAtMs;
   final String? paymentUrl;

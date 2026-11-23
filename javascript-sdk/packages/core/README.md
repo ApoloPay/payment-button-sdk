@@ -56,6 +56,7 @@ This package also exports various types and services:
 - `I18n`: Internationalization utility for the SDK.
 - `Locale`: Type for supported languages ('es', 'en').
 - `ClientResponse`, `ClientError`: Standardized response and error types.
+- `generateQrCodeDataUri(data)`: Generates a QR code locally as an SVG data URI. `QrResponseData.qrCodeUrl` is built with it, so the payment address is never sent to a third-party QR service.
 
 ## Migrating from `@apolopay-sdk/core`
 

@@ -2,6 +2,7 @@ import 'package:nexora_smartpay_sdk/models/asset.dart';
 import 'package:nexora_smartpay_sdk/models/network.dart';
 import 'package:nexora_smartpay_sdk/services/sandbox_data.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:nexora_smartpay_sdk/utils/qr_code.dart';
 
 void main() {
   group('SandboxData.fallbackAssets', () {
@@ -72,7 +73,7 @@ void main() {
       );
 
       expect(qr.address, 'sandbox-process-proc-123');
-      expect(qr.qrCodeUrl, contains(qr.address));
+      expect(qr.qrCodeUrl, generateQrCodeDataUri(qr.address));
       expect(qr.network, 'apolopay');
       expect(qr.asset, 'USDT');
       expect(qr.amount, 103.75);

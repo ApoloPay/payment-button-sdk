@@ -1003,6 +1003,8 @@ class _SmartPayModalState extends State<SmartPayModal>
                           ? I18n.t.modal.sandbox.qrPlaceholder
                           : _qrData!.address,
                       size: 180,
+                      // H: the center logo overlay hides part of the code.
+                      errorCorrectionLevel: QrErrorCorrectLevel.H,
                     ),
                     Container(
                       width: 40,
@@ -1014,7 +1016,8 @@ class _SmartPayModalState extends State<SmartPayModal>
                       padding: const EdgeInsets.all(4),
                       child: isApoloPay
                           ? const NexoraMark(size: 32)
-                          : (_selectedNetwork?.image != null
+                          // Sandbox fallback networks have no image (empty).
+                          : ((_selectedNetwork?.image.isNotEmpty ?? false)
                               ? Image.network(_selectedNetwork!.image,
                                   filterQuality: FilterQuality.high)
                               : const Icon(Icons.qr_code,

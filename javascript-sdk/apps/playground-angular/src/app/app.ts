@@ -1,7 +1,7 @@
 import { Component, CUSTOM_ELEMENTS_SCHEMA, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { SmartPayButtonModule, SmartPayClient } from '@nexora-smartpay/angular';
+import { SmartPayButtonModule, SmartPayClient, LEGACY_APOLO_API_URL, LEGACY_APOLO_SOCKET_URL } from '@nexora-smartpay/angular';
 
 // --- VALORES INICIALES (OPCIONALES) ---
 const initialPublicKey = "";
@@ -44,7 +44,8 @@ export class App {
   }
 
   async getProcessId(amt: number, key: string) {
-    const response = await fetch("https://pb-api.apolopay.app/payment-button/process/preorder", {
+    // Legacy Apolo host until the backend is live on smartpaylatam.com (nexora_web#1); then switch to the defaults.
+    const response = await fetch(`${LEGACY_APOLO_API_URL}/payment-button/process/preorder`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -80,7 +81,7 @@ export class App {
       const newProcessId = await this.getProcessId(amt, sk);
       this.addLog(`Process ID obtenido: ${newProcessId}`, "success");
 
-      const newClient = new SmartPayClient({ publicKey: pk });
+      const newClient = new SmartPayClient({ publicKey: pk, apiUrl: LEGACY_APOLO_API_URL, socketUrl: LEGACY_APOLO_SOCKET_URL });
       this.client.set(newClient);
       this.processId.set(newProcessId);
       this.status.set("Botón Listo ✅");

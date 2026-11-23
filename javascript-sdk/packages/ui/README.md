@@ -1,6 +1,6 @@
 # @nexora-smartpay/ui
 
-The UI components for Nexora SmartPay, built with Lit (Web Components). This package contains the `<smartpay-button>` which manages the payment flow, including asset selection, network selection, and QR code display.
+The UI components for Nexora SmartPay, built with Lit (Web Components). This package contains the `<smartpay-button>` which manages the payment flow, including asset selection, network selection, and QR code display. The QR code is generated locally in the browser; the payment address is never sent to a third-party QR service.
 
 ## Installation
 

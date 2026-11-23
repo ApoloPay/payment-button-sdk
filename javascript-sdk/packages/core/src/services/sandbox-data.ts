@@ -1,6 +1,7 @@
 import { Asset } from "../types/asset";
 import { Network, APOLOPAY_NETWORK_ID, isApoloPayNetwork } from "../types/network";
 import { QrResponseData } from "../types/payment-client-types";
+import { generateQrCodeDataUri } from "../utils/qr-code";
 
 // Only used when the real asset catalog can't be fetched (e.g. offline demo).
 export const sandboxFallbackAssets: Asset[] = [
@@ -37,7 +38,7 @@ export function buildSandboxQrData({
     amount: 103.75,
     amountPaid: 0,
     address,
-    qrCodeUrl: `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(address)}&ecc=H`,
+    qrCodeUrl: generateQrCodeDataUri(address),
     expiresAtMs: now + 10 * 60 * 1000,
     paymentUrl: undefined,
   };

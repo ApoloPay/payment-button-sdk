@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:nexora_smartpay_sdk/nexora_smartpay_sdk.dart';
 import 'package:nexora_smartpay_sdk/utils/variables.dart';
@@ -5,6 +6,11 @@ import 'package:http/http.dart' as http;
 import 'package:nexora_smartpay_sdk/models/client_response.dart';
 import 'package:nexora_smartpay_sdk/models/asset.dart';
 import 'package:nexora_smartpay_sdk/models/network.dart';
+
+/// Max time to wait for a REST request before giving up. Without it, an
+/// unreachable host (DNS failure, server down) leaves the button stuck in
+/// "loading" for as long as the platform's own network timeout (20+ s).
+const Duration requestTimeout = Duration(seconds: 10);
 
 class Repository {
   static Map<String, String> getHeaders(String? publicKey) {
@@ -21,10 +27,12 @@ class Repository {
   /// without a trailing slash.
   static Future<ClientResponse<List<Asset>>> getAssets(String apiUrl) async {
     try {
-      final response = await http.get(
-            Uri.parse('$apiUrl/payment-button/assets'),
-            headers: getHeaders(null),
-          ),
+      final response = await http
+              .get(
+                Uri.parse('$apiUrl/payment-button/assets'),
+                headers: getHeaders(null),
+              )
+              .timeout(requestTimeout),
           data = jsonDecode(response.body);
 
       return ClientResponse.fromJson(
@@ -50,15 +58,17 @@ class Repository {
     required String networkId,
   }) async {
     try {
-      final response = await http.post(
-        Uri.parse('$apiUrl/payment-button/process/confirm'),
-        headers: getHeaders(publicKey),
-        body: jsonEncode({
-          'processId': processId,
-          'assetId': assetId,
-          'networkId': networkId,
-        }),
-      );
+      final response = await http
+          .post(
+            Uri.parse('$apiUrl/payment-button/process/confirm'),
+            headers: getHeaders(publicKey),
+            body: jsonEncode({
+              'processId': processId,
+              'assetId': assetId,
+              'networkId': networkId,
+            }),
+          )
+          .timeout(requestTimeout);
       final data = jsonDecode(response.body);
 
       if (data['result'] == null) {
@@ -84,8 +94,7 @@ class Repository {
           return QrResponseData.fromJson({
             ...map,
             'address': address,
-            'qrCodeUrl':
-                'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=$address&ecc=H',
+            'qrCodeUrl': generateQrCodeDataUri(address),
             'paymentUrl': address.startsWith('http') ? address : null,
           });
         },

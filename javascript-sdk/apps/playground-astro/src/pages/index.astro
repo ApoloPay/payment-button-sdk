@@ -370,7 +370,7 @@ const initialPrivateKey = ""
     </style>
 
     <script>
-      import { SmartPayClient, type ClientResponse, type ClientError } from "@nexora-smartpay/astro";
+      import { SmartPayClient, LEGACY_APOLO_API_URL, LEGACY_APOLO_SOCKET_URL, type ClientResponse, type ClientError } from "@nexora-smartpay/astro";
 
       // Selectors
       const publicKeyInput = document.getElementById("publicKey") as HTMLInputElement;
@@ -396,7 +396,8 @@ const initialPrivateKey = ""
 
       async function getProcessId(amount: number, privateKey: string) {
         try {
-          const response = await fetch("https://pb-api.apolopay.app/payment-button/process/preorder", {
+          // Legacy Apolo host until the backend is live on smartpaylatam.com (nexora_web#1); then switch to the defaults.
+          const response = await fetch(`${LEGACY_APOLO_API_URL}/payment-button/process/preorder`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -442,7 +443,7 @@ const initialPrivateKey = ""
           addLog(`Process ID obtenido: ${processId}`, "success");
 
           // 2. Configurar Cliente
-          const smartPay = new SmartPayClient({ publicKey: pubKey });
+          const smartPay = new SmartPayClient({ publicKey: pubKey, apiUrl: LEGACY_APOLO_API_URL, socketUrl: LEGACY_APOLO_SOCKET_URL });
 
           // 3. Actualizar Botón (Web Component)
           if (btn) {

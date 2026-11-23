@@ -101,8 +101,9 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
   }
 
   Future<String> _getProcessId(double amount, String secretKey) async {
+    // Legacy Apolo host until the backend is live on smartpaylatam.com (nexora_web#1); then switch to the defaults.
     final response = await http.post(
-      Uri.parse("https://pb-api.apolopay.app/payment-button/process/preorder"),
+      Uri.parse('$legacyApoloApiUrl/payment-button/process/preorder'),
       headers: {
         "Content-Type": "application/json",
         "x-secret-key": secretKey,
@@ -146,7 +147,11 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
       _addLog("Process ID obtenido: $newProcessId", "success");
 
       setState(() {
-        _client = SmartPayClient(publicKey: pubKey);
+        _client = SmartPayClient(
+          publicKey: pubKey,
+          apiUrl: legacyApoloApiUrl,
+          socketUrl: legacyApoloSocketUrl,
+        );
         _processId = newProcessId;
         _status = "Botón Listo ✅";
       });

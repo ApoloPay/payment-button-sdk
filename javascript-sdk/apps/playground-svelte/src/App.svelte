@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { SmartPayButton, SmartPayClient } from "@nexora-smartpay/svelte";
+  import { SmartPayButton, SmartPayClient, LEGACY_APOLO_API_URL, LEGACY_APOLO_SOCKET_URL } from "@nexora-smartpay/svelte";
 
   // --- VALORES INICIALES (OPCIONALES) ---
   const initialPublicKey = "";
@@ -29,7 +29,8 @@
   }
 
   async function getProcessId(amt: number, key: string) {
-    const response = await fetch("https://pb-api.apolopay.app/payment-button/process/preorder", {
+    // Legacy Apolo host until the backend is live on smartpaylatam.com (nexora_web#1); then switch to the defaults.
+    const response = await fetch(`${LEGACY_APOLO_API_URL}/payment-button/process/preorder`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -61,7 +62,7 @@
       const newProcessId = await getProcessId(amount, privKey);
       addLog(`Process ID obtenido: ${newProcessId}`, "success");
 
-      const newClient = new SmartPayClient({ publicKey: pubKey });
+      const newClient = new SmartPayClient({ publicKey: pubKey, apiUrl: LEGACY_APOLO_API_URL, socketUrl: LEGACY_APOLO_SOCKET_URL });
       client = newClient;
       processId = newProcessId;
       status = "Botón Listo ✅";

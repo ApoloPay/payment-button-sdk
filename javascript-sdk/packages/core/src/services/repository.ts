@@ -3,7 +3,27 @@ import { Asset } from "../types/asset";
 import { ClientCode, ClientError, ClientResponse } from "../types/client-response";
 import { APOLOPAY_NETWORK_ID } from "../types/network";
 import { appURL } from "../utils/variables";
+import { generateQrCodeDataUri } from "../utils/qr-code";
 import { I18n } from "../i18n";
+
+/**
+ * Max time to wait for a REST request before giving up. Without it, an unreachable host (DNS
+ * failure, server down) leaves the button stuck in "loading" for as long as the browser's own
+ * network timeout (20+ s).
+ */
+export const REQUEST_TIMEOUT_MS = 10_000;
+
+/** `fetch` that aborts (and rejects) after {@link REQUEST_TIMEOUT_MS}, covering the body read too. */
+async function fetchJsonWithTimeout(url: string, init: RequestInit): Promise<any> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+  try {
+    const response = await fetch(url, { ...init, signal: controller.signal });
+    return await response.json();
+  } finally {
+    clearTimeout(timer);
+  }
+}
 
 export class Repository {
   static headers = (publicKey?: string) => {
@@ -19,11 +39,10 @@ export class Repository {
   /** @param apiUrl REST API base URL (from `SmartPayClient.getApiUrl()`), without trailing slash. */
   static async getAssets(apiUrl: string): Promise<ClientResponse<Asset[]>> {
     try {
-      const response = await fetch(`${apiUrl}/payment-button/assets`, {
+      const data = await fetchJsonWithTimeout(`${apiUrl}/payment-button/assets`, {
         method: 'GET',
         headers: this.headers(),
       })
-      const data = await response.json()
 
       return ClientResponse.fromJson<Asset[]>(data);
     } catch (error) {
@@ -42,7 +61,7 @@ export class Repository {
     publicKey
   }: (QrRequestDetails & Omit<PaymentOptions, 'onSuccess' | 'onError'>)): Promise<ClientResponse<QrResponseData>> {
     try {
-      const response = await fetch(`${apiUrl}/payment-button/process/confirm`, {
+      const data = await fetchJsonWithTimeout(`${apiUrl}/payment-button/process/confirm`, {
         method: 'POST',
         headers: this.headers(publicKey),
         body: JSON.stringify({
@@ -50,8 +69,7 @@ export class Repository {
           assetId,
           networkId
         })
-      }),
-        data = await response.json();
+      });
 
       if (!data.result) {
         throw new ClientError({
@@ -106,7 +124,7 @@ export class Repository {
           return {
             ...json,
             address,
-            qrCodeUrl: `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${address}&ecc=H`,
+            qrCodeUrl: generateQrCodeDataUri(address),
             paymentUrl: address.startsWith('http') ? address : undefined,
             expiresAtMs
           }

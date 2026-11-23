@@ -284,6 +284,9 @@ importers:
 
   packages/core:
     dependencies:
+      qrcode-generator:
+        specifier: 2.0.4
+        version: 2.0.4
       socket.io-client:
         specifier: 4.8.3
         version: 4.8.3
@@ -6133,6 +6136,9 @@ packages:
   qjobs@1.2.0:
     resolution: {integrity: sha512-8YOJEHtxpySA3fFDyCRxA+UUV+fA+rTWnuWvylOK/NCjhY+b4ocCtmu8TtsWb+mYeU+GCHf/S66KZF/AsteKHg==}
     engines: {node: '>=0.9'}
+
+  qrcode-generator@2.0.4:
+    resolution: {integrity: sha512-mZSiP6RnbHl4xL2Ap5HfkjLnmxfKcPWpWe/c+5XxCuetEenqmNFf1FH/ftXPCtFG5/TDobjsjz6sSNL0Sr8Z9g==}
 
   qs@6.11.0:
     resolution: {integrity: sha512-MvjoMCJwEarSbUYk5O+nmoSzSutSsTwF85zcHPQ9OrlFoZOYIjaqBAJIqIXjptyD5vThxGq52Xu/MaJzRkIk4Q==}
@@ -14503,6 +14509,8 @@ snapshots:
   punycode@2.3.1: {}
 
   qjobs@1.2.0: {}
+
+  qrcode-generator@2.0.4: {}
 
   qs@6.11.0:
     dependencies:

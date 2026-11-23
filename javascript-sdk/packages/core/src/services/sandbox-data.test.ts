@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { sandboxFallbackAssets, buildSandboxQrData } from './sandbox-data';
+import { generateQrCodeDataUri } from '../utils/qr-code';
 import { isApoloPayNetwork, withoutApoloPayNetworks, APOLOPAY_NETWORK_ID } from '../types/network';
 
 describe('sandboxFallbackAssets', () => {
@@ -38,7 +39,7 @@ describe('buildSandboxQrData', () => {
     const qr = buildSandboxQrData({ processId: 'proc-123', asset, network: apolopayNetwork });
 
     expect(qr.address).toBe('sandbox-process-proc-123');
-    expect(qr.qrCodeUrl).toContain(encodeURIComponent(qr.address));
+    expect(qr.qrCodeUrl).toBe(generateQrCodeDataUri(qr.address));
     expect(qr.network).toBe('apolopay');
     expect(qr.asset).toBe('USDT');
     expect(qr.amount).toBe(103.75);

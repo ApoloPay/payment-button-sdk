@@ -1,6 +1,7 @@
 import 'package:nexora_smartpay_sdk/models/asset.dart';
 import 'package:nexora_smartpay_sdk/models/network.dart';
 import 'package:nexora_smartpay_sdk/models/smartpay_models.dart';
+import 'package:nexora_smartpay_sdk/utils/qr_code.dart';
 
 class SandboxData {
   // Only used when the real asset catalog can't be fetched (e.g. offline demo).
@@ -46,8 +47,7 @@ class SandboxData {
       amount: 103.75,
       amountPaid: 0,
       address: address,
-      qrCodeUrl:
-          'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=$address&ecc=H',
+      qrCodeUrl: generateQrCodeDataUri(address),
       expiresAtMs: now + 10 * 60 * 1000,
       paymentUrl: null,
     );

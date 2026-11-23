@@ -1,6 +1,6 @@
 import { LitElement, html, css } from 'lit';
 import { property, query, state } from 'lit/decorators.js';
-import { ClientCode, I18n, ModalStep, isApoloPayNetwork } from '@nexora-smartpay/core';
+import { ClientCode, I18n, ModalStep, generateQrCodeDataUri, isApoloPayNetwork } from '@nexora-smartpay/core';
 import type { Locale, Asset, Network, Dictionary, ClientError } from '@nexora-smartpay/core';
 import { modalBaseStyles } from '../styles/modal-base';
 import { sharedStyles } from '../styles/shared-styles';
@@ -604,8 +604,9 @@ export class PaymentModal extends LitElement {
     const symbol = this.currentAsset?.symbol || '';
     const remainingForPay = this.amount - (this.amountPaid || 0);
 
+    // Generated locally (no third-party QR service): the sandbox shows a placeholder QR.
     const qrImgSrc = this.isSandbox
-      ? `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(t.modal.sandbox.qrPlaceholder)}&ecc=H`
+      ? generateQrCodeDataUri(t.modal.sandbox.qrPlaceholder)
       : this.qrCodeUrl;
 
     // 1. Caso red apolopay (pago desde la app)
