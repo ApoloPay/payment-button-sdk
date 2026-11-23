@@ -22,7 +22,7 @@ void main() {
     test('fetchQrCodeDetails never touches the real backend or socket',
         () async {
       final asset = SandboxData.fallbackAssets.first;
-      final network = asset.networks.firstWhere((n) => n.isApoloPay);
+      final network = asset.networks.first;
 
       final qrData = await service.fetchQrCodeDetails(
         assetId: asset.id,
@@ -32,7 +32,14 @@ void main() {
       // Matches SandboxData.buildQrData's fixed mock shape — if this ever
       // drifted to the real Repository/SocketService path, either the values
       // below would be wrong or the test would hang/fail on a real network call.
-      expect(qrData.address, 'sandbox-process-proc-unit-test');
+      expect(
+        qrData.address,
+        SandboxData.buildQrData(
+          processId: 'proc-unit-test',
+          asset: asset,
+          network: network,
+        ).address,
+      );
       expect(qrData.amount, 103.75);
       expect(qrData.amountPaid, 0);
     });

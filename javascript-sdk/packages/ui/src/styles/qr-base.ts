@@ -5,7 +5,8 @@ export const qrBaseStyles = css`
     background: white;
     padding: 16px;
     border-radius: var(--smartpay-radius);
-    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    border: 1px solid var(--smartpay-border);
+    box-shadow: 0 4px 15px rgba(8, 9, 11, 0.06);
     display: inline-flex;
     flex-direction: column;
     align-items: center;
@@ -15,7 +16,7 @@ export const qrBaseStyles = css`
   }
   
   .qr-badge {
-    color: var(--smartpay-accent);
+    color: var(--smartpay-text);
     font-weight: 700;
     font-size: 1.1rem;
     margin-top: 12px;
@@ -46,6 +47,7 @@ export const qrBaseStyles = css`
     height: 36px;
     
     object-fit: contain;
+    color: #08090b; /* Marca Nexora (SVG con currentColor) */
     background-color: white;
     border-radius: 50%;
     padding: 2px;

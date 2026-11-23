@@ -1,1 +1,1 @@
-export const termsURL = "https://www.apolopay.app/term-conditions/TerminosApoloPay"
+export const termsURL = "https://smartpaylatam.com/terminos"

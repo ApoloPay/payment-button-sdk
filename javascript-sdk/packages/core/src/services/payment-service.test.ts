@@ -41,7 +41,10 @@ describe('PaymentService', () => {
       fetchMock.mockResolvedValueOnce(jsonResponse({
         status: 'success',
         message: 'ok',
-        result: [{ id: 'a1', name: 'USDT', symbol: 'USDT', image: 'https://real/icon.png', networks: [] }],
+        result: [{
+          id: 'a1', name: 'USDT', symbol: 'USDT', image: 'https://real/icon.png',
+          networks: [{ id: 'n1', name: 'Ethereum', network: 'ethereum', image: '', isNative: false }],
+        }],
       }));
 
       const service = new PaymentService(new SmartPayClient({ publicKey: 'pk_test_x' }));

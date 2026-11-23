@@ -20,7 +20,7 @@ class SmartPayService {
       // still fetch it in sandbox mode just to reuse its real asset/network icons.
       try {
         final response = await Repository.getAssets(options.client.apiUrl);
-        _assets = response.result!;
+        _assets = withoutApoloPayNetworks(response.result!);
       } catch (_) {
         _assets = SandboxData.fallbackAssets;
       }
@@ -28,7 +28,7 @@ class SmartPayService {
     }
 
     final response = await Repository.getAssets(options.client.apiUrl);
-    _assets = response.result!;
+    _assets = withoutApoloPayNetworks(response.result!);
     return _assets;
   }
 

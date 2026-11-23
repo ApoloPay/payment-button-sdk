@@ -73,8 +73,11 @@ SmartPayButton(
   client: client,
   processId: 'order_123',
   productTitle: 'Order #123', // Optional, shown in the payment modal
+  label: 'Nexora', // Optional, this is the default
 )
 ```
+
+The button is black with white text and Nexora's mark, and the modal uses Nexora's monochrome palette (white surfaces, black text, grey borders). Use `builder` to draw your own button instead.
 
 #### `SmartPayClient` parameters
 

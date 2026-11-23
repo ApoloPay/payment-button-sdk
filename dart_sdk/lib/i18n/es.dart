@@ -50,9 +50,9 @@ const es = Dictionary(
       selectNetworkLater: 'Luego podrás seleccionar la red de tu preferencia',
       disclaimerTitle: 'Términos y Condiciones',
       disclaimerSubtitle:
-          'Al utilizar Apolo Pay para procesar tu pago con criptomonedas, aceptas las siguientes condiciones operativas:',
+          'Al utilizar Nexora para procesar tu pago con criptomonedas, aceptas las siguientes condiciones operativas:',
       disclaimerBody:
-          "<strong>1. Rol de Apolo Pay:</strong> Somos exclusivamente una pasarela tecnológica de pagos. "
+          "<strong>1. Rol de Nexora:</strong> Somos exclusivamente una pasarela tecnológica de pagos. "
           "No vendemos los productos ni servicios que estás adquiriendo. Cualquier reclamo, garantía o "
           "solicitud de reembolso relacionada con tu compra debe gestionarse <strong>directamente con el comercio.</strong><br><br>"
           "<strong>2. Moneda y Red Estricta:</strong> Este pago solo acepta <strong>USDT</strong>. Es tu "
@@ -67,9 +67,9 @@ const es = Dictionary(
           "Si envías el pago después de que el tiempo haya expirado, la transacción no se procesará automáticamente y "
           "deberás contactar al soporte del comercio.<br><br>"
           "<strong>5. Comisiones de Red (Gas Fees):</strong> Tú eres responsable de pagar las comisiones de red "
-          "(gas) necesarias para enviar la transacción desde tu billetera personal hacia Apolo Pay.",
+          "(gas) necesarias para enviar la transacción desde tu billetera personal hacia la dirección de pago.",
       disclaimerConfirmation:
-          'He leído y acepto los <a href="$termsURL" target="_blank"><strong>Términos de Pago con Criptomonedas</strong></a> de Apolo Pay.\n\nEntiendo que enviar fondos por la red incorrecta y o enviar un monto incompleto resultará en la falla de la orden o la pérdida irreversible de mis fondos.',
+          'He leído y acepto los <a href="$termsURL" target="_blank"><strong>Términos y Condiciones</strong></a> de Nexora.\n\nEntiendo que enviar fondos por la red incorrecta y o enviar un monto incompleto resultará en la falla de la orden o la pérdida irreversible de mis fondos.',
     ),
     warnings: DictionaryModalWarnings(
       networkMatch:

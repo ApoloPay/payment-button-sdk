@@ -6,7 +6,7 @@ import { modalBaseStyles } from '../styles/modal-base';
 import { sharedStyles } from '../styles/shared-styles';
 import { textFieldBaseStyles } from '../styles/text-field-base';
 import { unsafeHTML } from 'lit/directives/unsafe-html.js';
-import { logoApolo } from '../assets/logo_apolo'
+import { nexoraMark } from '../assets/nexora_mark'
 import { qrBaseStyles } from '../styles/qr-base';
 import { handleImageError } from '../utils/image_error';
 import { spinnerStyles } from '../styles/spinner-styles';
@@ -240,13 +240,13 @@ export class PaymentModal extends LitElement {
         background: none;
         border: none;
         cursor: pointer;
-        color: #9ca3af;
+        color: var(--smartpay-text-muted);
         transition: color 0.2s;
         padding: 5px;
       }
       .close-button { right: 1.5rem; font-size: 1.5rem; }
       .back-button { left: 1.5rem; font-size: 1.2rem; }
-      .close-button:hover, .back-button:hover { color: #374151; }
+      .close-button:hover, .back-button:hover { color: var(--smartpay-text); }
 
       /* --- BODY --- */
       .modal-body {
@@ -260,11 +260,11 @@ export class PaymentModal extends LitElement {
         font-weight: 700;
         margin: 0 0 0.5rem;
       }
-      .highlight { color: var(--smartpay-accent); } /* Naranja de tus imágenes */
+      .highlight { color: var(--smartpay-accent); }
       
       p.subtitle {
         font-size: 0.9rem;
-        color: #6b7280;
+        color: var(--smartpay-text-muted);
         margin: 0 0 1rem;
         line-height: 1.4;
       }
@@ -280,18 +280,18 @@ export class PaymentModal extends LitElement {
         display: flex;
         align-items: center;
         background: white;
-        border: 1px solid #f3f4f6; /* Borde muy sutil */
+        border: 1px solid var(--smartpay-border);
         border-radius: 16px;
         padding: 1rem;
         cursor: pointer;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        box-shadow: 0 2px 4px -1px rgba(8, 9, 11, 0.04);
         transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
       }
 
       .selection-card:hover {
         transform: translateY(-2px);
         box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08);
-        border-color: var(--smartpay-accent); /* Hover naranja */
+        border-color: var(--smartpay-text);
       }
 
       .coin-icon {
@@ -299,6 +299,8 @@ export class PaymentModal extends LitElement {
         height: 40px;
         margin-right: 1rem;
         object-fit: cover;
+        flex-shrink: 0;
+        color: var(--smartpay-text); /* Marca Nexora (SVG con currentColor) */
       }
 
       .card-text {
@@ -338,7 +340,7 @@ export class PaymentModal extends LitElement {
         stroke-dasharray: 166;
         stroke-dashoffset: 166;
         stroke-width: 2;
-        stroke: #22c55e; /* Verde éxito */
+        stroke: #1e7a4c; /* Verde éxito Nexora */
         fill: none;
         animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
       }
@@ -346,7 +348,7 @@ export class PaymentModal extends LitElement {
         transform-origin: 50% 50%;
         stroke-dasharray: 48;
         stroke-dashoffset: 48;
-        stroke: #22c55e;
+        stroke: #1e7a4c;
         stroke-width: 4;
         animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.6s forwards;
       }
@@ -427,8 +429,8 @@ export class PaymentModal extends LitElement {
 
       /* Balance Card */
       .balance-card {
-        background-color: #fff7ed; /* Un naranja muy claro de fondo */
-        border: 1px dashed var(--smartpay-accent);
+        background-color: #f4f5f6; /* Nube */
+        border: 1px dashed var(--smartpay-border);
         border-radius: 12px;
         padding: 0.8rem;
         margin-bottom: 1.5rem;
@@ -445,8 +447,8 @@ export class PaymentModal extends LitElement {
 
       .balance-row:last-child { margin-bottom: 0; }
 
-      .balance-label { color: #6b7280; }
-      .balance-value { font-weight: 700; color: var(--smartpay-primary-darkest); }
+      .balance-label { color: var(--smartpay-text-muted); }
+      .balance-value { font-weight: 700; color: var(--smartpay-text); }
 
       @keyframes slideDown {
         from { opacity: 0; transform: translateY(-10px); }
@@ -468,9 +470,9 @@ export class PaymentModal extends LitElement {
       .sandbox-badge {
         font-size: 0.75rem;
         font-weight: 700;
-        color: var(--smartpay-accent);
-        background: #fff7ed;
-        border: 1px solid var(--smartpay-accent);
+        color: #5e430f; /* Atención */
+        background: #fdf3e1;
+        border: 1px solid #5e430f;
         border-radius: 999px;
         padding: 0.3rem 0.8rem;
         cursor: default;
@@ -509,18 +511,18 @@ export class PaymentModal extends LitElement {
         padding: 0.6rem 0.75rem;
         font-size: 0.85rem;
         font-weight: 600;
-        color: var(--smartpay-primary-darkest);
+        color: var(--smartpay-text);
         cursor: pointer;
         border-radius: 8px;
       }
 
       .sandbox-panel button:hover {
-        background: #f3f4f6;
+        background: #f4f5f6;
       }
 
       .sandbox-info-banner {
-        background-color: #fff7ed;
-        border: 1px solid var(--smartpay-accent);
+        background-color: #fdf3e1; /* Atención */
+        border: 1px solid #5e430f;
         border-radius: 12px;
         padding: 1rem;
         margin-bottom: 1rem;
@@ -530,7 +532,7 @@ export class PaymentModal extends LitElement {
         margin: 0;
         font-size: 0.85rem;
         font-weight: 600;
-        color: #9a3412;
+        color: #5e430f;
         text-align: center;
       }
     `
@@ -551,7 +553,7 @@ export class PaymentModal extends LitElement {
       <div class="sandbox-cta-wrapper">
         ${this.sandboxPanelOpen ? html`
           <div class="sandbox-panel sandbox-panel--up">
-            <span style="font-size: 0.75rem; font-weight: 700; color: var(--smartpay-primary-darkest); padding: 0.4rem 0.75rem;">
+            <span style="font-size: 0.75rem; font-weight: 700; color: var(--smartpay-text); padding: 0.4rem 0.75rem;">
               ${t.modal.sandbox.title}
             </span>
             <button @click=${(e: Event) => this.simulate('success', e)}>${t.modal.sandbox.actions.success}</button>
@@ -606,7 +608,7 @@ export class PaymentModal extends LitElement {
       ? `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(t.modal.sandbox.qrPlaceholder)}&ecc=H`
       : this.qrCodeUrl;
 
-    // 1. Caso Apolo Pay
+    // 1. Caso red apolopay (pago desde la app)
     if (network && isApoloPayNetwork(network)) {
       return html`
         <smartpay-payment-timer class="timer" .expiresAt=${this.qrCodeExpiresAt} @expired=${this.handleTimerExpired}></smartpay-payment-timer>
@@ -626,8 +628,8 @@ export class PaymentModal extends LitElement {
 
         <div class="qr-frame">
           <div class="qr-wrapper">
-            <img src="${qrImgSrc}" class="qr-code-img" alt="QR Apolo Pay" />
-            <img src="${logoApolo}" class="qr-overlay-icon" style="padding: 4px;" />
+            <img src="${qrImgSrc}" class="qr-code-img" alt="QR" />
+            ${nexoraMark('qr-overlay-icon')}
           </div>
           <span class="qr-badge">${amountFormatter(remainingForPay, { symbol, lang: this.lang })}</span>
         </div>
@@ -754,7 +756,9 @@ export class PaymentModal extends LitElement {
         <div class="selection-list">
           ${this.currentAsset?.networks.map((network: Network) => html`
             <div class="selection-card" @click=${() => this.selectNetwork(network)}>
-              <img src="${isApoloPayNetwork(network) ? logoApolo : network.image}" class="coin-icon" @error=${handleImageError} />
+              ${isApoloPayNetwork(network)
+                ? nexoraMark('coin-icon')
+                : html`<img src="${network.image}" class="coin-icon" @error=${handleImageError} />`}
               <div class="card-text">
                 <span class="card-title">${network.name}</span>
               </div>

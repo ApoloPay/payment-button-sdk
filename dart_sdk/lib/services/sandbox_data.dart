@@ -12,13 +12,6 @@ class SandboxData {
       image: '',
       networks: [
         Network(
-          id: 'sandbox-apolopay',
-          name: 'Apolo Pay',
-          network: Network.apolopayNetworkId,
-          image: '',
-          isNative: true,
-        ),
-        Network(
           id: 'sandbox-near',
           name: 'NEAR',
           network: 'near',

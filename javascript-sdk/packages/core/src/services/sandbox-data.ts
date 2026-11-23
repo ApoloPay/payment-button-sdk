@@ -10,7 +10,6 @@ export const sandboxFallbackAssets: Asset[] = [
     symbol: 'USDT',
     image: '',
     networks: [
-      { id: 'sandbox-apolopay', name: 'Apolo Pay', network: APOLOPAY_NETWORK_ID, image: '', isNative: true },
       { id: 'sandbox-near', name: 'NEAR', network: 'near', image: '', isNative: false },
       { id: 'sandbox-ethereum', name: 'Ethereum', network: 'ethereum', image: '', isNative: false },
     ],

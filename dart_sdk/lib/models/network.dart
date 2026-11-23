@@ -15,7 +15,7 @@ class Network {
     required this.isNative,
   });
 
-  bool get isApoloPay => network == apolopayNetworkId;
+  bool get isApoloPay => network.toLowerCase() == apolopayNetworkId;
 
   Network copyWith({
     String? id,

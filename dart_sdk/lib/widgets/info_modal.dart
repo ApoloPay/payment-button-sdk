@@ -3,6 +3,7 @@ import 'package:nexora_smartpay_sdk/i18n/i18n.dart';
 import 'package:nexora_smartpay_sdk/utils/build_rich_text.dart';
 import 'package:nexora_smartpay_sdk/widgets/scrollbar.dart';
 import 'package:flutter/material.dart';
+import 'package:nexora_smartpay_sdk/utils/nexora_style.dart';
 
 class InfoModal extends StatefulWidget {
   final String title;
@@ -58,8 +59,8 @@ class _InfoModalState extends State<InfoModal> {
         constraints: const BoxConstraints(maxWidth: 600),
         padding: const EdgeInsets.symmetric(vertical: 16),
         decoration: const BoxDecoration(
-          color: Color(0xFFF6F2EC),
-          borderRadius: BorderRadius.all(Radius.circular(24)),
+          color: NexoraStyle.white,
+          borderRadius: BorderRadius.all(Radius.circular(18)),
         ),
         child: Column(mainAxisSize: MainAxisSize.min, children: [
           Container(
@@ -67,7 +68,7 @@ class _InfoModalState extends State<InfoModal> {
             child: Align(
               alignment: Alignment.centerRight,
               child: IconButton(
-                icon: const Icon(Icons.close, color: Color(0xFF9CA3AF)),
+                icon: const Icon(Icons.close, color: NexoraStyle.gray),
                 onPressed: handleClose,
               ),
             ),
@@ -78,7 +79,7 @@ class _InfoModalState extends State<InfoModal> {
               buildRichText(
                 widget.title,
                 baseStyle: const TextStyle(
-                  color: Color(0xFF1C315C),
+                  color: NexoraStyle.black,
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
                 ),
@@ -89,8 +90,7 @@ class _InfoModalState extends State<InfoModal> {
                 Text(
                   widget.subtitle!,
                   textAlign: TextAlign.center,
-                  style:
-                      const TextStyle(color: Color(0xFF6B7280), fontSize: 14),
+                  style: const TextStyle(color: NexoraStyle.gray, fontSize: 14),
                 ),
               ],
               const SizedBox(height: 24),
@@ -104,7 +104,7 @@ class _InfoModalState extends State<InfoModal> {
                       child: widget.content!(
                         context,
                         const TextStyle(
-                          color: Color(0xFF1C315C),
+                          color: NexoraStyle.black,
                           fontSize: 13,
                           fontWeight: FontWeight.normal,
                         ),
@@ -122,9 +122,9 @@ class _InfoModalState extends State<InfoModal> {
               child: ElevatedButton(
                 onPressed: () => handleClose(false, true),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFEA580C),
+                  backgroundColor: NexoraStyle.black,
                   foregroundColor: Colors.white,
-                  shape: const StadiumBorder(),
+                  shape: NexoraStyle.buttonShape,
                   padding: const EdgeInsets.symmetric(horizontal: 24),
                 ),
                 child: Text(I18n.t.modal.actions.understood),

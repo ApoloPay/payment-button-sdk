@@ -51,9 +51,9 @@ const en = Dictionary(
           'You will be able to select your preferred network later',
       disclaimerTitle: 'Terms and Conditions',
       disclaimerSubtitle:
-          'By using Apolo Pay to process your cryptocurrency payment, you accept the following operating conditions:',
+          'By using Nexora to process your cryptocurrency payment, you accept the following operating conditions:',
       disclaimerBody:
-          "<strong>1. Role of Apolo Pay:</strong> We are exclusively a technological payment gateway. "
+          "<strong>1. Role of Nexora:</strong> We are exclusively a technological payment gateway. "
           "We do not sell the products or services you are acquiring. Any claim, warranty, or "
           "refund request related to your purchase must be managed <strong>directly with the merchant.</strong><br><br>"
           "<strong>2. Strict Currency and Network:</strong> This payment only accepts <strong>USDT</strong>. It is your "
@@ -68,9 +68,9 @@ const en = Dictionary(
           "If you send the payment after the time has expired, the transaction will not be processed automatically and "
           "you will need to contact the merchant's support.<br><br>"
           "<strong>5. Network Fees (Gas Fees):</strong> You are responsible for paying the network fees "
-          "(gas) required to send the transaction from your personal wallet to Apolo Pay.",
+          "(gas) required to send the transaction from your personal wallet to the payment address.",
       disclaimerConfirmation:
-          'I have read and accept the <a href="$termsURL" target="_blank"><strong>Terms of Payment with Cryptocurrencies</strong></a> of Apolo Pay.\n\nI understand that sending funds through the wrong network and or sending an incomplete amount will result in the failure of the order or the irreversible loss of my funds.',
+          'I have read and accept the <a href="$termsURL" target="_blank"><strong>Terms and Conditions</strong></a> of Nexora.\n\nI understand that sending funds through the wrong network and or sending an incomplete amount will result in the failure of the order or the irreversible loss of my funds.',
     ),
     warnings: DictionaryModalWarnings(
       networkMatch:

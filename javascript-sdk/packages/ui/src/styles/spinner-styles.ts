@@ -4,7 +4,7 @@ export const spinnerStyles = css`
   .spinner-overlay {
     position: absolute;
     inset: 0;
-    background-color: rgba(255, 255, 255, 0.3);
+    background-color: rgba(255, 255, 255, 0.5);
     z-index: 50;
     display: flex;
     align-items: center;
@@ -15,8 +15,8 @@ export const spinnerStyles = css`
   }
 
   .spinner {
-    border: 4px solid #e5e7eb;
-    border-top: 4px solid var(--smartpay-primary, #6366f1);
+    border: 4px solid var(--smartpay-border, #d9dde1);
+    border-top: 4px solid var(--smartpay-primary, #08090b);
     border-radius: 50%;
     width: 40px;
     height: 40px;

@@ -1,11 +1,13 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:nexora_smartpay_sdk/utils/nexora_style.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 Widget buildRichText(
   String text, {
-  Color highlightColor = const Color(0xFF1C315C),
-  Color linkColor = const Color(0xFFEA580C),
+  // Null: highlights/bold keep the surrounding color (monochrome).
+  Color? highlightColor,
+  Color linkColor = NexoraStyle.black,
   TextStyle? baseStyle,
   TextAlign textAlign = TextAlign.start,
 }) {
@@ -75,7 +77,7 @@ Widget buildRichText(
     textAlign: textAlign,
     text: TextSpan(
       style:
-          baseStyle ?? const TextStyle(color: Color(0xFF1C315C), fontSize: 14),
+          baseStyle ?? const TextStyle(color: NexoraStyle.black, fontSize: 14),
       children: spans,
     ),
   );

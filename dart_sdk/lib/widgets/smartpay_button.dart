@@ -1,8 +1,8 @@
-import 'dart:convert';
 import 'package:nexora_smartpay_sdk/utils/build_rich_text.dart';
 import 'package:nexora_smartpay_sdk/widgets/info_modal.dart';
 import 'package:flutter/material.dart';
-import 'package:nexora_smartpay_sdk/assets/logo_apolo.dart';
+import 'package:nexora_smartpay_sdk/assets/nexora_mark.dart';
+import 'package:nexora_smartpay_sdk/utils/nexora_style.dart';
 import 'package:nexora_smartpay_sdk/i18n/i18n.dart';
 import 'package:nexora_smartpay_sdk/models/client_response.dart';
 import 'package:nexora_smartpay_sdk/models/smartpay_models.dart';
@@ -42,7 +42,7 @@ class SmartPayButton extends StatefulWidget {
     this.onExpired,
     this.onDismissed,
     this.builder,
-    this.label = 'Apolo Pay',
+    this.label = 'Nexora',
     this.loading = false,
     this.disabled = false,
     this.locale,
@@ -147,54 +147,45 @@ class _SmartPayButtonState extends State<SmartPayButton> {
       return widget.builder!(context, () => handlePress(context));
     }
 
-    return InkWell(
-      onTap: isDisabled ? null : () => handlePress(context),
-      borderRadius: BorderRadius.circular(9999),
-      child: AnimatedOpacity(
-        duration: const Duration(milliseconds: 200),
-        opacity: widget.disabled ? 0.6 : 1.0,
-        child: CustomPaint(
-          painter: _GradientBorderPainter(
-            strokeWidth: 2,
-            gradient: LinearGradient(
-              colors: _hasConfigError
-                  ? [Colors.red, Colors.redAccent]
-                  : [const Color(0xFF0388C0), Colors.white],
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
-            ),
-          ),
-          child: Container(
+    // Nexora's primary button: black with white text and the white mark;
+    // soft corners (not a pill). Config errors get a white button with the
+    // error color.
+    final Color foreground =
+        _hasConfigError ? NexoraStyle.error : NexoraStyle.white;
+
+    return Material(
+      color: _hasConfigError ? NexoraStyle.white : NexoraStyle.black,
+      shape: _hasConfigError
+          ? NexoraStyle.buttonShape.copyWith(
+              side: const BorderSide(color: NexoraStyle.error, width: 1.5),
+            )
+          : NexoraStyle.buttonShape,
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: isDisabled ? null : () => handlePress(context),
+        child: AnimatedOpacity(
+          duration: const Duration(milliseconds: 200),
+          opacity: widget.disabled ? 0.6 : 1.0,
+          child: SizedBox(
             height: 48,
-            decoration: ShapeDecoration(
-              color: _hasConfigError
-                  ? Colors.red.withValues(alpha: 0.1)
-                  : const Color(0x25747272),
-              shape: const StadiumBorder(),
-            ),
             child: Stack(
               alignment: Alignment.center,
               children: [
                 Positioned(
                   left: 16,
                   child: isLoading
-                      ? const SizedBox(
+                      ? SizedBox(
                           width: 24,
                           height: 24,
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
-                            color: Colors.white,
+                            color: foreground,
                           ),
                         )
                       : (_hasConfigError
-                          ? const Icon(Icons.error_outline,
-                              color: Colors.red, size: 24)
-                          : Image.memory(
-                              base64Decode(logoApolo),
-                              width: 24,
-                              height: 24,
-                              filterQuality: FilterQuality.high,
-                            )),
+                          ? Icon(Icons.error_outline,
+                              color: foreground, size: 24)
+                          : NexoraMark(size: 24, color: foreground)),
                 ),
                 Padding(
                   padding: const EdgeInsets.only(left: 48, right: 32),
@@ -204,9 +195,9 @@ class _SmartPayButtonState extends State<SmartPayButton> {
                         : (isLoading ? I18n.t.trigger.loading : widget.label),
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      color: _hasConfigError ? Colors.red : Colors.white,
+                      color: foreground,
                       fontSize: 14,
-                      fontWeight: FontWeight.w500,
+                      fontWeight: FontWeight.w600,
                       letterSpacing: 0.5,
                     ),
                   ),
@@ -218,30 +209,4 @@ class _SmartPayButtonState extends State<SmartPayButton> {
       ),
     );
   }
-}
-
-class _GradientBorderPainter extends CustomPainter {
-  final double strokeWidth;
-  final Gradient gradient;
-
-  _GradientBorderPainter({required this.strokeWidth, required this.gradient});
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final Rect rect = Offset.zero & size;
-    final Paint paint = Paint()
-      ..shader = gradient.createShader(rect)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = strokeWidth;
-
-    final RRect rrect = RRect.fromRectAndRadius(
-      rect,
-      Radius.circular(size.height / 2),
-    );
-
-    canvas.drawRRect(rrect, paint);
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
 }

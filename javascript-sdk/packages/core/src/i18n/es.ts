@@ -46,17 +46,17 @@ export const es: Dictionary = {
       selectNetworkLater: 'Luego podrás seleccionar la red de tu preferencia',
       disclaimerTitle: 'Términos y Condiciones',
       disclaimerSubtitle:
-        'Al utilizar Apolo Pay para procesar tu pago en criptomonedas, aceptas las siguientes condiciones de operación:',
+        'Al utilizar Nexora para procesar tu pago en criptomonedas, aceptas las siguientes condiciones de operación:',
       disclaimerBody: `
-        <strong>1. Rol de Apolo Pay:</strong> Somos exclusivamente una pasarela tecnológica de pagos.
+        <strong>1. Rol de Nexora:</strong> Somos exclusivamente una pasarela tecnológica de pagos.
         No vendemos los productos ni servicios que estás adquiriendo. Cualquier reclamo, garantía o solicitud de reembolso relacionada con tu compra debe gestionarse <strong>directamente con el comercio.</strong><br><br>
         <strong>2. Moneda y Red Estricta:</strong> Este pago solo acepta <strong>USDT</strong>. Es tu responsabilidad exclusiva seleccionar la red correcta (ej. Ethereum, Binance Smart Chain, Arbitrum, Near Protocol) y enviar los fondos a la dirección generada. <strong>Si envías fondos a través de una red incorrecta o envías una criptomoneda distinta, tus fondos se perderán de forma permanente e irrecuperable.</strong><br><br>
         <strong>3. Montos Exactos (Cuidado con los Exchanges):</strong> Debes enviar el <strong>monto exacto</strong> que se muestra en pantalla. Si envías los fondos desde un Exchange centralizado (como Binance, KuCoin, etc.), asegúrate de agregar la comisión de retiro (withdrawal fee) al total. <strong>Los pagos parciales no completarán tu orden</strong> y deberás contactar al comercio para resolverlo.<br><br>
         <strong>4. Tiempo Límite:</strong> Tienes <strong>un plazo de tiempo</strong> para realizar la transferencia. Si envías el pago después de que el tiempo haya expirado, la transacción no se procesará automáticamente y deberás contactar al soporte del comercio.<br><br>
-        <strong>5. Comisiones de Red (Gas Fees):</strong> Tú eres responsable de pagar las comisiones de red (gas) necesarias para enviar la transacción desde tu billetera personal hacia Apolo Pay.
+        <strong>5. Comisiones de Red (Gas Fees):</strong> Tú eres responsable de pagar las comisiones de red (gas) necesarias para enviar la transacción desde tu billetera personal hacia la dirección de pago.
         `,
       disclaimerConfirmation:
-        'He leído y acepto los <a href="$termsURL" target="_blank"><strong>Términos de Pago con Criptomonedas</strong></a> de Apolo Pay.<br><br>Entiendo que enviar fondos por la red incorrecta y o enviar un monto incompleto resultará en la falla de la orden o la pérdida irreversible de mis fondos.',
+        'He leído y acepto los <a href="$termsURL" target="_blank"><strong>Términos y Condiciones</strong></a> de Nexora.<br><br>Entiendo que enviar fondos por la red incorrecta y o enviar un monto incompleto resultará en la falla de la orden o la pérdida irreversible de mis fondos.',
     },
     warnings: {
       networkMatch: 'Asegúrate de que la <strong>red de tu wallet coincida</strong> con la red de destino.',

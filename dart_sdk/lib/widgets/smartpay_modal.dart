@@ -5,6 +5,7 @@ import 'package:nexora_smartpay_sdk/utils/build_rich_text.dart';
 import 'package:nexora_smartpay_sdk/widgets/Info_modal.dart';
 import 'package:nexora_smartpay_sdk/widgets/scrollbar.dart';
 import 'package:flutter/material.dart';
+import 'package:nexora_smartpay_sdk/utils/nexora_style.dart';
 import 'package:flutter/services.dart';
 import 'package:nexora_smartpay_sdk/i18n/i18n.dart';
 import 'package:nexora_smartpay_sdk/models/client_response.dart';
@@ -12,8 +13,7 @@ import 'package:nexora_smartpay_sdk/models/asset.dart';
 import 'package:nexora_smartpay_sdk/models/network.dart';
 import 'package:nexora_smartpay_sdk/models/smartpay_models.dart';
 import 'package:qr_flutter/qr_flutter.dart';
-import 'dart:convert';
-import 'package:nexora_smartpay_sdk/assets/logo_apolo.dart';
+import 'package:nexora_smartpay_sdk/assets/nexora_mark.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../services/smartpay_service.dart';
 
@@ -288,7 +288,7 @@ class _SmartPayModalState extends State<SmartPayModal>
             title: Text(
               label,
               style: const TextStyle(
-                color: Color(0xFF1C315C),
+                color: NexoraStyle.black,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -305,7 +305,7 @@ class _SmartPayModalState extends State<SmartPayModal>
                 child: Text(
                   I18n.t.modal.sandbox.title,
                   style: const TextStyle(
-                    color: Color(0xFF1C315C),
+                    color: NexoraStyle.black,
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                   ),
@@ -331,9 +331,9 @@ class _SmartPayModalState extends State<SmartPayModal>
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: const Color(0xFFFFF7ED),
+        color: NexoraStyle.cloud,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFFEA580C)),
+        border: Border.all(color: NexoraStyle.black),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.1),
@@ -345,7 +345,7 @@ class _SmartPayModalState extends State<SmartPayModal>
       child: Text(
         I18n.t.modal.sandbox.badge,
         style: const TextStyle(
-          color: Color(0xFFEA580C),
+          color: NexoraStyle.black,
           fontWeight: FontWeight.bold,
           fontSize: 12,
         ),
@@ -358,15 +358,15 @@ class _SmartPayModalState extends State<SmartPayModal>
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFFFFF7ED),
+        color: NexoraStyle.cloud,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFEA580C)),
+        border: Border.all(color: NexoraStyle.black),
       ),
       child: _buildRichText(
         I18n.t.modal.sandbox.qrInfo,
         textAlign: TextAlign.center,
         baseStyle: const TextStyle(
-          color: Color(0xFF9A3412),
+          color: NexoraStyle.carbon,
           fontSize: 13,
           fontWeight: FontWeight.w600,
         ),
@@ -381,9 +381,9 @@ class _SmartPayModalState extends State<SmartPayModal>
       child: ElevatedButton(
         onPressed: _showSandboxSheet,
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFFEA580C),
+          backgroundColor: NexoraStyle.black,
           foregroundColor: Colors.white,
-          shape: const StadiumBorder(),
+          shape: NexoraStyle.buttonShape,
           padding: const EdgeInsets.symmetric(horizontal: 24),
         ),
         child: Text(I18n.t.modal.sandbox.simulateButton),
@@ -512,7 +512,8 @@ class _SmartPayModalState extends State<SmartPayModal>
         spans.add(TextSpan(
           text: part,
           style: TextStyle(
-            color: isHighlight || isBold ? const Color(0xFFEA580C) : null,
+            // Monochrome: highlights are bold in the surrounding color, so
+            // they also read on the dark banners.
             fontWeight: isBold || isHighlight ? FontWeight.bold : null,
           ),
         ));
@@ -523,7 +524,7 @@ class _SmartPayModalState extends State<SmartPayModal>
       textAlign: textAlign,
       text: TextSpan(
         style: baseStyle ??
-            const TextStyle(color: Color(0xFF1C315C), fontSize: 14),
+            const TextStyle(color: NexoraStyle.black, fontSize: 14),
         children: spans,
       ),
     );
@@ -541,10 +542,10 @@ class _SmartPayModalState extends State<SmartPayModal>
           Container(
             height: isDesktop ? null : MediaQuery.of(context).size.height * 0.9,
             decoration: BoxDecoration(
-              color: const Color(0xFFF6F2EC),
+              color: NexoraStyle.white,
               borderRadius: isDesktop
-                  ? BorderRadius.circular(24)
-                  : const BorderRadius.vertical(top: Radius.circular(24)),
+                  ? BorderRadius.circular(18)
+                  : const BorderRadius.vertical(top: Radius.circular(18)),
             ),
             child: Column(children: [
               _buildHeader(),
@@ -575,7 +576,7 @@ class _SmartPayModalState extends State<SmartPayModal>
           _currentStep != ModalStep.selectAsset &&
                   _currentStep != ModalStep.result
               ? IconButton(
-                  icon: const Icon(Icons.arrow_back, color: Color(0xFF9CA3AF)),
+                  icon: const Icon(Icons.arrow_back, color: NexoraStyle.gray),
                   onPressed: () {
                     setState(() {
                       if (_currentStep == ModalStep.selectNetwork) {
@@ -589,7 +590,7 @@ class _SmartPayModalState extends State<SmartPayModal>
                 )
               : const SizedBox(width: 48),
           IconButton(
-            icon: const Icon(Icons.close, color: Color(0xFF9CA3AF)),
+            icon: const Icon(Icons.close, color: NexoraStyle.gray),
             onPressed: () => Navigator.pop(context),
           ),
         ],
@@ -605,7 +606,7 @@ class _SmartPayModalState extends State<SmartPayModal>
         _buildRichText(
           title,
           baseStyle: const TextStyle(
-            color: Color(0xFF1C315C),
+            color: NexoraStyle.black,
             fontSize: 22,
             fontWeight: FontWeight.bold,
           ),
@@ -616,7 +617,7 @@ class _SmartPayModalState extends State<SmartPayModal>
           Text(
             subtitle,
             textAlign: TextAlign.center,
-            style: const TextStyle(color: Color(0xFF6B7280), fontSize: 14),
+            style: const TextStyle(color: NexoraStyle.gray, fontSize: 14),
           ),
         ],
         const SizedBox(height: 16),
@@ -635,7 +636,7 @@ class _SmartPayModalState extends State<SmartPayModal>
         _buildRichText(
           I18n.t.modal.titles.processing,
           baseStyle: const TextStyle(
-            color: Color(0xFF1C315C),
+            color: NexoraStyle.black,
             fontSize: 24,
             fontWeight: FontWeight.bold,
           ),
@@ -646,7 +647,7 @@ class _SmartPayModalState extends State<SmartPayModal>
           width: double.infinity,
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: const Color(0xFF041C4C),
+            color: NexoraStyle.carbon,
             borderRadius: BorderRadius.circular(12),
           ),
           child: Column(children: [
@@ -701,7 +702,7 @@ class _SmartPayModalState extends State<SmartPayModal>
               child: Text(
                 I18n.t.modal.info.selectNetworkLater,
                 style: const TextStyle(
-                  color: Color(0xFF1C315C),
+                  color: NexoraStyle.black,
                   fontSize: 16,
                   fontWeight: FontWeight.normal,
                 ),
@@ -781,10 +782,10 @@ class _SmartPayModalState extends State<SmartPayModal>
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: const Color(0xFFF3F4F6)),
+            border: Border.all(color: NexoraStyle.silver),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.05),
+                color: NexoraStyle.black.withValues(alpha: 0.04),
                 blurRadius: 10,
                 offset: const Offset(0, 4),
               ),
@@ -801,14 +802,9 @@ class _SmartPayModalState extends State<SmartPayModal>
                       errorBuilder: (ctx, _, __) => const Icon(
                           Icons.monetization_on,
                           size: 40,
-                          color: Color(0xFF1C315C)),
+                          color: NexoraStyle.black),
                     )
-                  : Image.memory(
-                      base64Decode(logoApolo),
-                      width: 40,
-                      height: 40,
-                      filterQuality: FilterQuality.high,
-                    ),
+                  : const NexoraMark(size: 40),
               const SizedBox(width: 16),
               Expanded(
                 child: Column(
@@ -817,7 +813,7 @@ class _SmartPayModalState extends State<SmartPayModal>
                     Text(
                       title,
                       style: const TextStyle(
-                        color: Color(0xFF1C315C),
+                        color: NexoraStyle.black,
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
                       ),
@@ -826,7 +822,7 @@ class _SmartPayModalState extends State<SmartPayModal>
                       Text(
                         subtitle,
                         style: const TextStyle(
-                          color: Color(0xFF6B7280),
+                          color: NexoraStyle.gray,
                           fontSize: 12,
                         ),
                       ),
@@ -855,7 +851,8 @@ class _SmartPayModalState extends State<SmartPayModal>
             subtitle: '',
             imageUrl: network.isApoloPay
                 ? ''
-                : network.image, // Temporary, will handle apolopay logo
+                : network
+                    .image, // Empty: the card falls back to the Nexora mark
             onTap: () => handleSelectNetwork(network),
           );
         },
@@ -867,7 +864,7 @@ class _SmartPayModalState extends State<SmartPayModal>
     if (_qrData == null) {
       return Center(
         child: Text(I18n.t.modal.titles.error,
-            style: const TextStyle(color: Color(0xFF1C315C))),
+            style: const TextStyle(color: NexoraStyle.black)),
       );
     }
 
@@ -906,14 +903,12 @@ class _SmartPayModalState extends State<SmartPayModal>
         children: [
           Text(
             label,
-            style: const TextStyle(color: Color(0xFF6B7280), fontSize: 13),
+            style: const TextStyle(color: NexoraStyle.gray, fontSize: 13),
           ),
           Text(
             value,
             style: TextStyle(
-              color: isHighlight
-                  ? const Color(0xFFEA580C)
-                  : const Color(0xFF1C315C),
+              color: isHighlight ? NexoraStyle.black : NexoraStyle.black,
               fontWeight: FontWeight.bold,
               fontSize: isHighlight ? 14 : 13,
             ),
@@ -934,7 +929,7 @@ class _SmartPayModalState extends State<SmartPayModal>
               return Text(
                 snapshot.data!,
                 style: const TextStyle(
-                  color: Color(0xFFEA580C),
+                  color: NexoraStyle.black,
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
                   letterSpacing: 1.0,
@@ -950,10 +945,10 @@ class _SmartPayModalState extends State<SmartPayModal>
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
-                color: const Color(0xFFFFF7ED), // Fondo naranja muy suave
+                color: NexoraStyle.cloud, // Fondo naranja muy suave
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: const Color(0xFFEA580C).withValues(alpha: 0.5),
+                  color: NexoraStyle.silver,
                   width: 1,
                 ),
               ),
@@ -990,7 +985,8 @@ class _SmartPayModalState extends State<SmartPayModal>
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(24),
+                  borderRadius: BorderRadius.circular(18),
+                  border: Border.all(color: NexoraStyle.silver),
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black.withValues(alpha: 0.05),
@@ -1017,13 +1013,12 @@ class _SmartPayModalState extends State<SmartPayModal>
                       ),
                       padding: const EdgeInsets.all(4),
                       child: isApoloPay
-                          ? Image.memory(base64Decode(logoApolo),
-                              filterQuality: FilterQuality.high)
+                          ? const NexoraMark(size: 32)
                           : (_selectedNetwork?.image != null
                               ? Image.network(_selectedNetwork!.image,
                                   filterQuality: FilterQuality.high)
                               : const Icon(Icons.qr_code,
-                                  color: Color(0xFF1C315C))),
+                                  color: NexoraStyle.black)),
                     ),
                   ],
                 ),
@@ -1051,7 +1046,7 @@ class _SmartPayModalState extends State<SmartPayModal>
                       locale: widget.locale,
                     ),
                     style: const TextStyle(
-                        color: Color(0xFFEA580C),
+                        color: NexoraStyle.black,
                         fontSize: 16,
                         fontWeight: FontWeight.bold),
                   ),
@@ -1064,7 +1059,7 @@ class _SmartPayModalState extends State<SmartPayModal>
             width: double.infinity,
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: const Color(0xFF041C4C),
+              color: NexoraStyle.carbon,
               borderRadius: BorderRadius.circular(12),
             ),
             child: Column(children: [
@@ -1109,7 +1104,7 @@ class _SmartPayModalState extends State<SmartPayModal>
               const SizedBox(height: 12),
               _buildRichText(warningTimer,
                   baseStyle:
-                      const TextStyle(color: Color(0xFF1C315C), fontSize: 12)),
+                      const TextStyle(color: NexoraStyle.black, fontSize: 12)),
             ],
           ),
           const SizedBox(height: 24),
@@ -1120,7 +1115,7 @@ class _SmartPayModalState extends State<SmartPayModal>
               width: double.infinity,
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: const Color(0xFF041C4C),
+                color: NexoraStyle.carbon,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: _buildRichText(
@@ -1151,9 +1146,9 @@ class _SmartPayModalState extends State<SmartPayModal>
       child: ElevatedButton(
         onPressed: _handlePayFromDevice,
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFFEA580C),
+          backgroundColor: NexoraStyle.black,
           foregroundColor: Colors.white,
-          shape: const StadiumBorder(),
+          shape: NexoraStyle.buttonShape,
           padding: const EdgeInsets.symmetric(horizontal: 24),
         ),
         child: Text(I18n.t.modal.actions.payFromDevice),
@@ -1169,13 +1164,13 @@ class _SmartPayModalState extends State<SmartPayModal>
         children: [
           const Padding(
             padding: EdgeInsets.only(top: 6),
-            child: CircleAvatar(radius: 2, backgroundColor: Color(0xFF1C315C)),
+            child: CircleAvatar(radius: 2, backgroundColor: NexoraStyle.black),
           ),
           const SizedBox(width: 8),
           Expanded(
               child: _buildRichText(text,
                   baseStyle:
-                      const TextStyle(color: Color(0xFF1C315C), fontSize: 12))),
+                      const TextStyle(color: NexoraStyle.black, fontSize: 12))),
         ],
       ),
     );
@@ -1188,14 +1183,14 @@ class _SmartPayModalState extends State<SmartPayModal>
       children: [
         if (isSuccess)
           const Icon(Icons.check_circle_outline,
-              color: Color(0xFF22C55E), size: 80)
+              color: NexoraStyle.success, size: 80)
         else
-          const Icon(Icons.error_outline, color: Colors.red, size: 80),
+          const Icon(Icons.error_outline, color: NexoraStyle.error, size: 80),
         const SizedBox(height: 24),
         _buildRichText(
           isSuccess ? I18n.t.modal.titles.success : I18n.t.modal.titles.error,
           baseStyle: const TextStyle(
-              color: Color(0xFF1C315C),
+              color: NexoraStyle.black,
               fontSize: 24,
               fontWeight: FontWeight.bold),
           textAlign: TextAlign.center,
@@ -1206,14 +1201,14 @@ class _SmartPayModalState extends State<SmartPayModal>
               ? '${I18n.t.modal.success.message} ${I18n.t.modal.success.message2}'
               : (_finalResult?.message ?? I18n.t.errors.generic),
           textAlign: TextAlign.center,
-          baseStyle: const TextStyle(color: Color(0xFF1C315C), fontSize: 15),
+          baseStyle: const TextStyle(color: NexoraStyle.black, fontSize: 15),
         ),
         if (isSuccess) ...[
           const SizedBox(height: 32),
           Text(
             I18n.t.modal.success.details,
             style: const TextStyle(
-              color: Color(0xFF1C315C),
+              color: NexoraStyle.black,
               fontSize: 16,
               fontWeight: FontWeight.bold,
               decoration: TextDecoration.underline,
@@ -1239,9 +1234,9 @@ class _SmartPayModalState extends State<SmartPayModal>
             child: ElevatedButton(
               onPressed: () => Navigator.pop(context),
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFEA580C),
+                backgroundColor: NexoraStyle.black,
                 foregroundColor: Colors.white,
-                shape: const StadiumBorder(),
+                shape: NexoraStyle.buttonShape,
                 padding: const EdgeInsets.symmetric(horizontal: 24),
               ),
               child: Text(I18n.t.modal.actions.close),
@@ -1264,21 +1259,21 @@ class _SmartPayModalState extends State<SmartPayModal>
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: const Color(0xFF526282)),
+              border: Border.all(color: NexoraStyle.silver),
             ),
             child: Row(
               children: [
                 Expanded(
                   child: Text(
                     value,
-                    style:
-                        const TextStyle(color: Color(0xFF4B5563), fontSize: 14),
+                    style: const TextStyle(
+                        color: NexoraStyle.carbon, fontSize: 14),
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
                 if (hasCopy)
                   Material(
-                    color: const Color(0xFF526282),
+                    color: NexoraStyle.carbon,
                     borderRadius: BorderRadius.circular(8),
                     child: InkWell(
                       borderRadius: BorderRadius.circular(8),
@@ -1320,7 +1315,7 @@ class _SmartPayModalState extends State<SmartPayModal>
               color: Colors.white,
               child: Text(
                 label,
-                style: const TextStyle(color: Color(0xFF9CA3AF), fontSize: 12),
+                style: const TextStyle(color: NexoraStyle.gray, fontSize: 12),
               ),
             ),
           ),
@@ -1377,7 +1372,7 @@ class _DotsLoaderState extends State<_DotsLoader>
               width: baseSizes[index] * scale,
               height: baseSizes.reduce(max),
               decoration: const BoxDecoration(
-                color: Color(0xFFEA580C),
+                color: NexoraStyle.black,
                 shape: BoxShape.circle,
               ),
             );

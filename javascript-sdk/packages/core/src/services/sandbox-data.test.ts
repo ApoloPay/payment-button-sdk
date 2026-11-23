@@ -1,17 +1,30 @@
 import { describe, it, expect } from 'vitest';
 import { sandboxFallbackAssets, buildSandboxQrData } from './sandbox-data';
-import { isApoloPayNetwork } from '../types/network';
+import { isApoloPayNetwork, withoutApoloPayNetworks, APOLOPAY_NETWORK_ID } from '../types/network';
 
 describe('sandboxFallbackAssets', () => {
-  it('exposes one asset with apolopay + near + ethereum networks', () => {
+  it('exposes one asset with near + ethereum networks, never apolopay', () => {
     expect(sandboxFallbackAssets).toHaveLength(1);
 
     const asset = sandboxFallbackAssets[0];
     expect(asset.symbol).toBe('USDT');
-    expect(asset.networks.map(n => n.network)).toEqual(
-      expect.arrayContaining(['apolopay', 'near', 'ethereum'])
-    );
-    expect(asset.networks.filter(isApoloPayNetwork)).toHaveLength(1);
+    expect(asset.networks.map(n => n.network)).toEqual(['near', 'ethereum']);
+    expect(asset.networks.filter(isApoloPayNetwork)).toHaveLength(0);
+  });
+});
+
+describe('withoutApoloPayNetworks', () => {
+  const apolo = { id: 'n-apolo', name: 'Apolo Pay', network: 'APOLOPAY', image: '', isNative: true };
+  const eth = { id: 'n-eth', name: 'Ethereum', network: 'ethereum', image: '', isNative: false };
+
+  it('drops the apolopay network, and an asset left without networks', () => {
+    const result = withoutApoloPayNetworks([
+      { id: 'usdt', networks: [apolo, eth] },
+      { id: 'only-apolo', networks: [apolo] },
+    ]);
+
+    expect(result.map(a => a.id)).toEqual(['usdt']);
+    expect(result[0].networks).toEqual([eth]);
   });
 });
 
@@ -19,7 +32,8 @@ describe('buildSandboxQrData', () => {
   const asset = sandboxFallbackAssets[0];
 
   it('builds a process-scoped address for the apolopay network', () => {
-    const apolopayNetwork = asset.networks.find(isApoloPayNetwork)!;
+    // Never offered anymore (filtered out), but the builder still handles it.
+    const apolopayNetwork = { id: 'sandbox-apolopay', name: 'Apolo Pay', network: APOLOPAY_NETWORK_ID, image: '', isNative: true };
 
     const qr = buildSandboxQrData({ processId: 'proc-123', asset, network: apolopayNetwork });
 

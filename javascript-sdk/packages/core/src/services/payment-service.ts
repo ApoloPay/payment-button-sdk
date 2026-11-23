@@ -2,6 +2,7 @@ import { Repository } from "./repository";
 import { SocketService } from "./socket-service";
 import { sandboxFallbackAssets, buildSandboxQrData } from "./sandbox-data";
 import { Asset } from "../types/asset";
+import { withoutApoloPayNetworks } from "../types/network";
 import { PaymentSessionOptions, QrRequestDetails, QrResponseData } from "../types/payment-client-types";
 import { SmartPayClient } from "../smart-pay-client";
 
@@ -26,7 +27,7 @@ export class PaymentService {
       // still fetch it in sandbox mode just to reuse its real asset/network icons.
       try {
         const assets = await Repository.getAssets(this.client.getApiUrl());
-        this.assets = assets.result!;
+        this.assets = withoutApoloPayNetworks(assets.result!);
       } catch {
         this.assets = sandboxFallbackAssets;
       }
@@ -34,7 +35,7 @@ export class PaymentService {
     }
 
     const assets = await Repository.getAssets(this.client.getApiUrl());
-    this.assets = assets.result!;
+    this.assets = withoutApoloPayNetworks(assets.result!);
 
     return this.assets;
   }

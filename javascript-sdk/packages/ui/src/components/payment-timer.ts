@@ -68,7 +68,7 @@ export class PaymentTimer extends LitElement {
   static override styles = css`
     :host {
       display: block;
-      color: var(--smartpay-accent, #ea580c);
+      color: var(--smartpay-accent, #08090b);
       font-weight: 600;
       font-size: 0.9rem;
       margin-bottom: 1rem;

@@ -1,19 +1,54 @@
+import 'package:nexora_smartpay_sdk/models/asset.dart';
+import 'package:nexora_smartpay_sdk/models/network.dart';
 import 'package:nexora_smartpay_sdk/services/sandbox_data.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('SandboxData.fallbackAssets', () {
-    test('exposes one asset with apolopay + near + ethereum networks', () {
+    test('exposes one asset with near + ethereum networks, never apolopay', () {
       expect(SandboxData.fallbackAssets, hasLength(1));
 
       final asset = SandboxData.fallbackAssets.first;
       expect(asset.symbol, 'USDT');
-      expect(asset.networks.map((n) => n.network),
-          containsAll(['apolopay', 'near', 'ethereum']));
-      expect(
-        asset.networks.where((n) => n.isApoloPay),
-        hasLength(1),
-      );
+      expect(asset.networks.map((n) => n.network), ['near', 'ethereum']);
+      expect(asset.networks.where((n) => n.isApoloPay), isEmpty);
+    });
+  });
+
+  group('withoutApoloPayNetworks', () {
+    final apolo = Network(
+      id: 'n-apolo',
+      name: 'Apolo Pay',
+      network: 'APOLOPAY',
+      image: '',
+      isNative: true,
+    );
+    final eth = Network(
+      id: 'n-eth',
+      name: 'Ethereum',
+      network: 'ethereum',
+      image: '',
+      isNative: false,
+    );
+
+    test('drops the apolopay network, and an asset left without networks', () {
+      final result = withoutApoloPayNetworks([
+        Asset(
+            id: 'usdt',
+            name: 'Tether',
+            symbol: 'USDT',
+            image: '',
+            networks: [apolo, eth]),
+        Asset(
+            id: 'apl',
+            name: 'Solo Apolo',
+            symbol: 'APL',
+            image: '',
+            networks: [apolo]),
+      ]);
+
+      expect(result.map((a) => a.id), ['usdt']);
+      expect(result.single.networks.map((n) => n.id), ['n-eth']);
     });
   });
 
@@ -21,7 +56,14 @@ void main() {
     final asset = SandboxData.fallbackAssets.first;
 
     test('builds a process-scoped address for the apolopay network', () {
-      final apolopayNetwork = asset.networks.firstWhere((n) => n.isApoloPay);
+      // Never offered anymore (filtered out), but the builder still handles it.
+      final apolopayNetwork = Network(
+        id: 'sandbox-apolopay',
+        name: 'Apolo Pay',
+        network: Network.apolopayNetworkId,
+        image: '',
+        isNative: true,
+      );
 
       final qr = SandboxData.buildQrData(
         processId: 'proc-123',

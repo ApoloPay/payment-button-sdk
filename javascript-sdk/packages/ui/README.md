@@ -41,10 +41,27 @@ You can use the component directly in your HTML or any framework that supports W
 | `process-id` | `processId` | `string` | **Required**. The UUID of the payment process. |
 | `product-title`| `productTitle`| `string` | Title to display in the payment modal. |
 | `lang` | `lang` | `'es' \| 'en'` | Language (default: 'es'). |
-| `label` | `label` | `string` | Custom label for the trigger button. |
+| `label` | `label` | `string` | Custom label for the trigger button (default: `'Nexora'`). |
 | `barrier-dismissible`| `barrierDismissible`| `boolean` | If true, clicking the backdrop closes the modal. |
 
 The API and realtime hosts are configured on the client, not on the element: pass `apiUrl` / `socketUrl` to `new SmartPayClient({ publicKey, apiUrl, socketUrl })` (types `string`, defaults `https://api.smartpaylatam.com` / `https://ws.smartpaylatam.com`, `https://` only). The framework wrappers (React, Vue, Angular, Svelte, Astro) forward the same `client` object, so this works the same everywhere. See [`@nexora-smartpay/core`](../core#options), including the `LEGACY_APOLO_API_URL` / `LEGACY_APOLO_SOCKET_URL` constants for the Apolo Pay host transition.
+
+### Styling
+
+By default the button and the modal follow Nexora's visual identity: a black button with white text and Nexora's mark, white modal surfaces, black text and grey borders. The font is `'Montserrat', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif`: Montserrat is used only if your page already loads it (the SDK loads no third-party fonts). Override any of it with the `--payment-button-*` CSS variables on the element, e.g.:
+
+```css
+smartpay-button {
+  --payment-button-primary: #08090b;      /* button and primary actions */
+  --payment-button-on-primary: #ffffff;   /* text on them */
+  --payment-button-bg: #ffffff;           /* modal background */
+  --payment-button-text: #08090b;
+  --payment-button-text-muted: #6b7078;
+  --payment-button-border: #d9dde1;
+  --payment-button-radius-lg: 10px;       /* button corners */
+  --payment-button-font: 'Montserrat', sans-serif;
+}
+```
 
 ### Events
 

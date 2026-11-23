@@ -183,12 +183,12 @@ export class InfoModal extends LitElement {
         background: none;
         border: none;
         cursor: pointer;
-        color: #9ca3af;
+        color: var(--smartpay-text-muted);
         transition: color 0.2s;
         padding: 5px;
         font-size: 1.5rem;
       }
-      .close-button:hover { color: #374151; }
+      .close-button:hover { color: var(--smartpay-text); }
       .modal-body {
         padding: 1rem 2rem 2.5rem;
         text-align: center;
@@ -207,7 +207,7 @@ export class InfoModal extends LitElement {
       }
       p.subtitle {
         font-size: 0.9rem;
-        color: #6b7280;
+        color: var(--smartpay-text-muted);
         margin: 0 0 1rem;
         line-height: 1.4;
       }
