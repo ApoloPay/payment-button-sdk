@@ -15,7 +15,11 @@
 # Every .fvmrc that changed between the two commits (one per Flutter project
 # in the repo - a package may keep its own in a subfolder). Checked first:
 # most checkouts change none, and then there's nothing else to do.
-changed=$(git diff --name-only "$1" "$2" -- '.fvmrc' '*/.fvmrc')
+if [ "$1" = 0000000000000000000000000000000000000000 ]; then
+  changed=$(git ls-files -- '.fvmrc' '*/.fvmrc')
+else
+  changed=$(git diff --name-only "$1" "$2" -- '.fvmrc' '*/.fvmrc')
+fi
 [ -n "$changed" ] || exit 0
 
 # Git for Windows' sh can run fvm.bat but can't find it with `command -v`,
@@ -33,7 +37,7 @@ for rc in $changed; do
   [ -f "$rc" ] || continue
   dir=$(dirname "$rc")
   echo "post-checkout: $rc changed, running fvm use in $dir"
-  (cd "$dir" && "$FVM" use --skip-pub-get --force) ||
+  (cd "$dir" && "$FVM" use --skip-pub-get --force </dev/null) ||
     echo "post-checkout: fvm use failed in $dir - run it by hand." >&2
 done
 
