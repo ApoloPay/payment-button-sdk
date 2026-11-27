@@ -29,3 +29,7 @@ migrate_working_dir/
 .flutter-plugins
 .flutter-plugins-dependencies
 build/
+
+# FVM: .fvm/ is each machine's local SDK link; .fvmrc (the version this
+# branch pins) is committed.
+.fvm/
