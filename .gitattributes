@@ -1,0 +1,6 @@
+# Git runs hooks with sh: they must keep LF endings on every platform,
+# whatever core.autocrlf says.
+.githooks/* text eol=lf
+# `fvm use` rewrites .fvmrc with LF; a CRLF checkout would then show it as
+# modified and block the next branch switch.
+.fvmrc text eol=lf

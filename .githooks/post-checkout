@@ -1,0 +1,44 @@
+#!/bin/sh
+# Keeps the local Flutter SDK (FVM) in sync with the checked-out branch.
+#
+# Each branch pins its Flutter version in a committed .fvmrc. After switching
+# to a branch whose .fvmrc differs, this runs `fvm use` there, which installs
+# that version if needed and repoints .fvm/flutter_sdk plus the editor's
+# dart.flutterSdkPath. Without it the IDE keeps the previous branch's SDK.
+#
+# Enable once per clone:  git config core.hooksPath .githooks
+#
+# Git passes: <previous HEAD> <new HEAD> <1 = branch checkout, 0 = file>.
+
+[ "$3" = "1" ] || exit 0
+
+# Every .fvmrc that changed between the two commits (one per Flutter project
+# in the repo - a package may keep its own in a subfolder). Checked first:
+# most checkouts change none, and then there's nothing else to do.
+if [ "$1" = 0000000000000000000000000000000000000000 ]; then
+  changed=$(git ls-files -- '.fvmrc' '*/.fvmrc')
+else
+  changed=$(git diff --name-only "$1" "$2" -- '.fvmrc' '*/.fvmrc')
+fi
+[ -n "$changed" ] || exit 0
+
+# Git for Windows' sh can run fvm.bat but can't find it with `command -v`,
+# so it's probed by running it. No FVM: the global Flutter is used as usual.
+if command -v fvm >/dev/null 2>&1; then
+  FVM=fvm
+elif fvm.bat --version >/dev/null 2>&1; then
+  FVM=fvm.bat
+else
+  exit 0
+fi
+
+for rc in $changed; do
+  # Deleted on the new branch: nothing pinned there anymore.
+  [ -f "$rc" ] || continue
+  dir=$(dirname "$rc")
+  echo "post-checkout: $rc changed, running fvm use in $dir"
+  (cd "$dir" && "$FVM" use --skip-pub-get --force </dev/null) ||
+    echo "post-checkout: fvm use failed in $dir - run it by hand." >&2
+done
+
+exit 0

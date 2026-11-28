@@ -61,6 +61,21 @@ For full documentation on APIs, integration guides, and best practices, please v
 
 👉 [**docs.apolopay.app**](https://docs.apolopay.app)
 
+## Flutter SDK for contributors (FVM)
+
+`dart_sdk/` pins the Flutter version contributors work with in `dart_sdk/.fvmrc`
+(change it with `fvm use <version>` inside `dart_sdk/`, never by hand). The
+package itself still supports the range declared in its `pubspec.yaml`. Once per
+clone:
+
+```sh
+(cd dart_sdk && fvm use)               # installs the pinned SDK and links dart_sdk/.fvm/flutter_sdk
+git config core.hooksPath .githooks   # re-runs `fvm use` when a checkout changes a .fvmrc
+```
+
+Without FVM the machine's global Flutter is used. To have the editor follow the
+pinned SDK, point `dart.flutterSdkPath` at `dart_sdk/.fvm/flutter_sdk`.
+
 ## Contributing
 
 We welcome contributions! Please refer to the specific SDK directories for development guides and ways to contribute code, report bugs, or request features.
